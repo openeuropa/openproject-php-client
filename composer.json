@@ -1,0 +1,28 @@
+{
+    "name": "openeuropa/openproject-php-client",
+    "description": "PHP client for the OpenProject API v3",
+    "type": "library",
+    "license": "EUPL-1.2",
+    "autoload": {
+        "psr-4": {
+            "OpenEuropa\\OpenProjectClient\\": "src/"
+        }
+    },
+    "require": {
+        "php": ">=8.3",
+        "psr/http-client": "^1.0",
+        "psr/http-factory": "^1.0"
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^2.1",
+        "squizlabs/php_codesniffer": "^3.13"
+    },
+    "scripts": {
+        "phpcs": "phpcs",
+        "phpcbf": "phpcbf",
+        "phpstan": "phpstan analyse"
+    },
+    "config": {
+        "sort-packages": true
+    }
+}

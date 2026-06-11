@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<ruleset name="OpenProjectClient">
+    <description>PSR-12 coding standard for the OpenProject PHP client.</description>
+
+    <arg name="basepath" value="."/>
+    <arg name="colors"/>
+    <arg name="extensions" value="php"/>
+    <arg value="p"/>
+
+    <rule ref="PSR12"/>
+
+    <file>src</file>
+</ruleset>

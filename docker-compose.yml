@@ -1,0 +1,40 @@
+services:
+  php:
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM php:8.3-cli
+        RUN apt-get update \
+          && apt-get install -y --no-install-recommends git unzip \
+          && rm -rf /var/lib/apt/lists/*
+        COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
+    working_dir: /app
+    volumes:
+      - .:/app
+
+  # Throwaway OpenProject instance for capturing real API fixtures.
+  # Opt-in via profile — never started by default:
+  #   docker compose --profile openproject up -d
+  #   docker compose --profile openproject down        # add -v to wipe data
+  # First boot seeds the database and takes a few minutes; then the API is at
+  # http://localhost:8080/api/v3 (admin / admin_dev_password — generate an API
+  # token under My account > Access tokens).
+  openproject:
+    image: openproject/openproject:17
+    profiles:
+      - openproject
+    ports:
+      - "8080:80"
+    environment:
+      OPENPROJECT_HOST__NAME: localhost:8080
+      OPENPROJECT_HTTPS: "false"
+      OPENPROJECT_SECRET_KEY_BASE: dev-only-not-a-secret
+      OPENPROJECT_SEED_ADMIN_USER_PASSWORD: admin_dev_password
+      OPENPROJECT_SEED_ADMIN_USER_PASSWORD__RESET: "false"
+    volumes:
+      - openproject-data:/var/openproject/pgdata
+      - openproject-assets:/var/openproject/assets
+
+volumes:
+  openproject-data:
+  openproject-assets:
