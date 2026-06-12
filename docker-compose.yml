@@ -25,7 +25,7 @@ services:
   #   docker compose --profile openproject up -d
   #   docker compose --profile openproject down        # add -v to wipe data
   # First boot seeds the database and takes a few minutes; then the API is at
-  # http://localhost:8080/api/v3 (admin / admin_dev_password — generate an API
+  # http://localhost:8080/api/v3 (admin / admin — generate an API
   # token under My account > Access tokens).
   openproject:
     image: openproject/openproject:17
@@ -36,9 +36,10 @@ services:
     environment:
       OPENPROJECT_HOST__NAME: localhost:8080
       OPENPROJECT_HTTPS: "false"
-      OPENPROJECT_SECRET_KEY_BASE: dev-only-not-a-secret
-      OPENPROJECT_SEED_ADMIN_USER_PASSWORD: admin_dev_password
-      OPENPROJECT_SEED_ADMIN_USER_PASSWORD__RESET: "false"
+      # Throwaway dev-only secret; the image refuses to boot on its
+      # well-known default and reads this var without the OPENPROJECT_ prefix.
+      SECRET_KEY_BASE: ec14f1f9f740c46af8150ebe8df168bb0f63f74244cb333148777e842949926c
+      OPENPROJECT_SEED_ADMIN_USER_PASSWORD_RESET: "false"
     volumes:
       - openproject-data:/var/openproject/pgdata
       - openproject-assets:/var/openproject/assets
