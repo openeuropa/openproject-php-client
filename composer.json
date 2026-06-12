@@ -29,7 +29,11 @@
         "phpcs": "phpcs",
         "phpcbf": "phpcbf",
         "phpstan": "phpstan analyse",
-        "test": "phpunit"
+        "test": "phpunit",
+        "coverage": [
+            "@putenv XDEBUG_MODE=coverage",
+            "phpunit --coverage-text"
+        ]
     },
     "config": {
         "sort-packages": true

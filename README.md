@@ -44,10 +44,18 @@ docker compose run --rm php composer phpcbf
 
 # Run static analysis (PHPStan, level max).
 docker compose run --rm php composer phpstan
+
+# Run the test suite (PHPUnit).
+docker compose run --rm php composer test
+
+# Run the test suite with a text coverage report.
+docker compose run --rm php composer coverage
 ```
 
 The container is built from `php:8.3-cli` (the minimum supported PHP version)
-with Composer included; the image is built automatically on first run.
+with Composer included; the image is built automatically on first run. Xdebug
+is installed but off by default — the `coverage` script enables it for the
+run, and `-e XDEBUG_MODE=debug` enables step debugging.
 
 ## License
 
