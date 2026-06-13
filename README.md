@@ -57,6 +57,23 @@ with Composer included; the image is built automatically on first run. Xdebug
 is installed but off by default — the `coverage` script enables it for the
 run, and `-e XDEBUG_MODE=debug` enables step debugging.
 
+### Integration tests
+
+`composer test` runs the unit suite only (mock-based, no server). A separate
+`integration` suite drives the client against a real, throwaway OpenProject
+instance and skips unless `OPENPROJECT_API_TOKEN` is set. Bring the instance up
+behind its compose profile and pass the token (the base URL and Host header
+default to the compose instance, so nothing else is needed):
+
+```sh
+docker compose --profile openproject up -d        # first boot seeds, minutes
+scripts/wait-for-openproject.sh                    # poll until the API answers
+docker compose --profile openproject run --rm \
+  -e OPENPROJECT_API_TOKEN="$(scripts/generate-api-token.sh)" \
+  php composer test:integration
+docker compose --profile openproject down -v       # throw the instance away
+```
+
 ## License
 
 Licensed under the [EUPL-1.2](https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12).

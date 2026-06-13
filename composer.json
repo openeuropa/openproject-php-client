@@ -30,6 +30,7 @@
         "phpcbf": "phpcbf",
         "phpstan": "phpstan analyse",
         "test": "phpunit",
+        "test:integration": "phpunit --testsuite=integration",
         "coverage": [
             "@putenv XDEBUG_MODE=coverage",
             "phpunit --coverage-text"
