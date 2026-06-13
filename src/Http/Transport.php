@@ -5,6 +5,11 @@ declare(strict_types=1);
 namespace OpenEuropa\OpenProjectClient\Http;
 
 use OpenEuropa\OpenProjectClient\Authentication\AuthenticationInterface;
+use OpenEuropa\OpenProjectClient\Exception\ApiErrorException;
+use OpenEuropa\OpenProjectClient\Exception\ApiUnreachableException;
+use OpenEuropa\OpenProjectClient\Exception\AuthenticationException;
+use OpenEuropa\OpenProjectClient\Exception\ForbiddenException;
+use OpenEuropa\OpenProjectClient\Exception\NotFoundException;
 use OpenEuropa\OpenProjectClient\Exception\OpenProjectException;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Client\ClientInterface;
@@ -48,8 +53,7 @@ final class Transport
      *   The decoded response body.
      *
      * @throws \OpenEuropa\OpenProjectClient\Exception\OpenProjectException
-     *   When the request fails on the network, the API responds with a
-     *   non-2xx status, or the body is not valid JSON.
+     *   On a network failure, a non-2xx response, or an invalid JSON body.
      */
     public function get(string $path = ''): array
     {
@@ -61,19 +65,15 @@ final class Transport
         try {
             $response = $this->httpClient->sendRequest($request);
         } catch (ClientExceptionInterface $exception) {
-            throw new OpenProjectException(
-                sprintf('Request to the OpenProject API failed: %s', $exception->getMessage()),
-                0,
-                $exception,
+            throw new ApiUnreachableException(
+                sprintf('Could not reach the OpenProject API: %s', $exception->getMessage()),
+                previous: $exception,
             );
         }
 
         $status = $response->getStatusCode();
         if ($status < 200 || $status >= 300) {
-            throw new OpenProjectException(
-                sprintf('The OpenProject API responded with HTTP status %d.', $status),
-                $status,
-            );
+            throw $this->mapErrorResponse($status, (string) $response->getBody());
         }
 
         try {
@@ -91,5 +91,53 @@ final class Transport
 
         /** @var array<string, mixed> $decoded */
         return $decoded;
+    }
+
+    /**
+     * Maps a non-2xx response to the matching exception.
+     */
+    private function mapErrorResponse(int $status, string $body): OpenProjectException
+    {
+        [$identifier, $apiMessage] = $this->parseErrorBody($body);
+        $message = sprintf(
+            'The OpenProject API responded with HTTP status %d%s',
+            $status,
+            $apiMessage !== null ? ': ' . $apiMessage : '.',
+        );
+
+        return match (true) {
+            $status === 401 => new AuthenticationException($message, $status, $identifier),
+            $status === 403 => new ForbiddenException($message, $status, $identifier),
+            $status === 404 => new NotFoundException($message, $status, $identifier),
+            $status >= 500 => new ApiUnreachableException($message, $status),
+            default => new ApiErrorException($message, $status, $identifier),
+        };
+    }
+
+    /**
+     * Extracts `errorIdentifier` and `message` from a HAL Error body.
+     *
+     * @return array{0: ?string, 1: ?string}
+     *   The error identifier and message, each null when absent (including
+     *   when the body is not a JSON object).
+     */
+    private function parseErrorBody(string $body): array
+    {
+        try {
+            $decoded = json_decode($body, true, flags: JSON_THROW_ON_ERROR);
+        } catch (\JsonException) {
+            return [null, null];
+        }
+        if (!is_array($decoded)) {
+            return [null, null];
+        }
+
+        $identifier = $decoded['errorIdentifier'] ?? null;
+        $message = $decoded['message'] ?? null;
+
+        return [
+            is_string($identifier) ? $identifier : null,
+            is_string($message) ? $message : null,
+        ];
     }
 }

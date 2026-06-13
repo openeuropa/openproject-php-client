@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace OpenEuropa\OpenProjectClient\Tests\Support;
 
 use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
+use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestInterface;
@@ -59,6 +61,16 @@ trait MockClientTrait
     private function queueFixtureResponse(string $fixture, int $status = 200): void
     {
         $this->queueJsonResponse($this->loadFixture($fixture), $status);
+    }
+
+    /**
+     * Queues a transport-level failure (no HTTP response reaches the client).
+     */
+    private function queueConnectionFailure(string $message = 'Connection refused'): void
+    {
+        $this->mockHandler->append(
+            new ConnectException($message, new Request('GET', 'http://example.test/api/v3/')),
+        );
     }
 
     /**

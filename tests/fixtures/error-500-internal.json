@@ -1,0 +1,5 @@
+{
+    "_type": "Error",
+    "errorIdentifier": "urn:openproject-org:api:v3:errors:InternalServerError",
+    "message": "An internal server error occurred. This is not your fault."
+}
