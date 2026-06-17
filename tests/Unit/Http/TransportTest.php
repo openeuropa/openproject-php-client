@@ -94,6 +94,17 @@ final class TransportTest extends TestCase
         $transport->get();
     }
 
+    public function testThrowsWhenTheJsonBodyIsNotAnObject(): void
+    {
+        $transport = $this->createTransport('http://example.test');
+        $this->queueJsonResponse('42');
+
+        $this->expectException(OpenProjectException::class);
+        $this->expectExceptionMessage('non-object JSON body');
+
+        $transport->get();
+    }
+
     public function testMapsUnauthenticatedResponseToAuthenticationException(): void
     {
         $transport = $this->createTransport('http://example.test');
@@ -186,6 +197,34 @@ final class TransportTest extends TestCase
         } catch (ApiUnreachableException $exception) {
             self::assertNull($exception->httpStatus);
             self::assertInstanceOf(ClientExceptionInterface::class, $exception->getPrevious());
+        }
+    }
+
+    public function testMapsAnErrorWithANonJsonBodyAndLeavesTheIdentifierNull(): void
+    {
+        $transport = $this->createTransport('http://example.test');
+        $this->queueJsonResponse('<html>Gateway error</html>', 404);
+
+        try {
+            $transport->get();
+            self::fail('Expected a NotFoundException.');
+        } catch (NotFoundException $exception) {
+            self::assertSame(404, $exception->httpStatus);
+            self::assertNull($exception->errorIdentifier);
+        }
+    }
+
+    public function testMapsAnErrorWithANonObjectJsonBodyAndLeavesTheIdentifierNull(): void
+    {
+        $transport = $this->createTransport('http://example.test');
+        $this->queueJsonResponse('"just a string"', 403);
+
+        try {
+            $transport->get();
+            self::fail('Expected a ForbiddenException.');
+        } catch (ForbiddenException $exception) {
+            self::assertSame(403, $exception->httpStatus);
+            self::assertNull($exception->errorIdentifier);
         }
     }
 
