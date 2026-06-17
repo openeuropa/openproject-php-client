@@ -56,6 +56,27 @@ final class HalResourceTest extends TestCase
         self::assertNull($hal->getInt('count'));
     }
 
+    public function testGetBoolReturnsBoolValue(): void
+    {
+        $hal = new HalResource(['isClosed' => true]);
+
+        self::assertSame(true, $hal->getBool('isClosed'));
+    }
+
+    public function testGetBoolReturnsNullWhenAbsent(): void
+    {
+        $hal = new HalResource([]);
+
+        self::assertNull($hal->getBool('isClosed'));
+    }
+
+    public function testGetBoolReturnsNullWhenNotABool(): void
+    {
+        $hal = new HalResource(['isClosed' => 1]);
+
+        self::assertNull($hal->getBool('isClosed'));
+    }
+
     public function testGetArrayReturnsArrayValue(): void
     {
         $hal = new HalResource(['items' => [1, 2, 3]]);

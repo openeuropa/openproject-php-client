@@ -1,0 +1,14 @@
+{
+    "_type": "Collection",
+    "count": 4,
+    "total": 4,
+    "_embedded": {
+        "elements": [
+            {"_type": "Priority", "id": 1, "name": "Low", "position": 1, "isDefault": false, "isActive": true, "_links": {"self": {"href": "/api/v3/priorities/1", "title": "Low"}}},
+            {"_type": "Priority", "id": 2, "name": "Normal", "position": 2, "isDefault": true, "isActive": true, "_links": {"self": {"href": "/api/v3/priorities/2", "title": "Normal"}}},
+            {"_type": "Priority", "id": 3, "name": "High", "position": 3, "isDefault": false, "isActive": true, "_links": {"self": {"href": "/api/v3/priorities/3", "title": "High"}}},
+            {"_type": "Priority", "id": 4, "name": "Immediate", "position": 5, "isDefault": false, "isActive": true, "_links": {"self": {"href": "/api/v3/priorities/4", "title": "Immediate"}}}
+        ]
+    },
+    "_links": {"self": {"href": "/api/v3/priorities"}}
+}

@@ -6,6 +6,9 @@ namespace OpenEuropa\OpenProjectClient;
 
 use OpenEuropa\OpenProjectClient\Authentication\AuthenticationInterface;
 use OpenEuropa\OpenProjectClient\Endpoint\ConfigurationEndpoint;
+use OpenEuropa\OpenProjectClient\Endpoint\PrioritiesEndpoint;
+use OpenEuropa\OpenProjectClient\Endpoint\StatusesEndpoint;
+use OpenEuropa\OpenProjectClient\Endpoint\TypesEndpoint;
 use OpenEuropa\OpenProjectClient\Http\Transport;
 use OpenEuropa\OpenProjectClient\Model\InstanceInfo;
 use Psr\Http\Client\ClientInterface;
@@ -67,5 +70,29 @@ final class Client
     public function configuration(): ConfigurationEndpoint
     {
         return new ConfigurationEndpoint($this->transport);
+    }
+
+    /**
+     * Returns the statuses endpoint for GET /api/v3/statuses.
+     */
+    public function statuses(): StatusesEndpoint
+    {
+        return new StatusesEndpoint($this->transport);
+    }
+
+    /**
+     * Returns the types endpoint for GET /api/v3/types.
+     */
+    public function types(): TypesEndpoint
+    {
+        return new TypesEndpoint($this->transport);
+    }
+
+    /**
+     * Returns the priorities endpoint for GET /api/v3/priorities.
+     */
+    public function priorities(): PrioritiesEndpoint
+    {
+        return new PrioritiesEndpoint($this->transport);
     }
 }

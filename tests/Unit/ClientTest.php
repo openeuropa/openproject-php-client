@@ -9,6 +9,9 @@ use OpenEuropa\OpenProjectClient\Authentication\ApiKeyAuthentication;
 use OpenEuropa\OpenProjectClient\Client;
 use OpenEuropa\OpenProjectClient\Endpoint\AbstractEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\ConfigurationEndpoint;
+use OpenEuropa\OpenProjectClient\Endpoint\PrioritiesEndpoint;
+use OpenEuropa\OpenProjectClient\Endpoint\StatusesEndpoint;
+use OpenEuropa\OpenProjectClient\Endpoint\TypesEndpoint;
 use OpenEuropa\OpenProjectClient\Http\Transport;
 use OpenEuropa\OpenProjectClient\Model\InstanceInfo;
 use OpenEuropa\OpenProjectClient\Tests\Support\MockClientTrait;
@@ -21,6 +24,9 @@ use PHPUnit\Framework\TestCase;
 #[UsesClass(ApiKeyAuthentication::class)]
 #[UsesClass(InstanceInfo::class)]
 #[UsesClass(ConfigurationEndpoint::class)]
+#[UsesClass(StatusesEndpoint::class)]
+#[UsesClass(TypesEndpoint::class)]
+#[UsesClass(PrioritiesEndpoint::class)]
 #[UsesClass(AbstractEndpoint::class)]
 final class ClientTest extends TestCase
 {
@@ -42,6 +48,27 @@ final class ClientTest extends TestCase
         $client = $this->createClient('http://example.test');
 
         self::assertInstanceOf(ConfigurationEndpoint::class, $client->configuration());
+    }
+
+    public function testStatusesReturnsAStatusesEndpoint(): void
+    {
+        $client = $this->createClient('http://example.test');
+
+        self::assertInstanceOf(StatusesEndpoint::class, $client->statuses());
+    }
+
+    public function testTypesReturnsATypesEndpoint(): void
+    {
+        $client = $this->createClient('http://example.test');
+
+        self::assertInstanceOf(TypesEndpoint::class, $client->types());
+    }
+
+    public function testPrioritiesReturnsAPrioritiesEndpoint(): void
+    {
+        $client = $this->createClient('http://example.test');
+
+        self::assertInstanceOf(PrioritiesEndpoint::class, $client->priorities());
     }
 
     private function createClient(string $baseUrl): Client

@@ -20,7 +20,7 @@ final class HalResource
     }
 
     /**
-     * Returns the string value at $key, or null when absent or not a string.
+     * Returns the string value for the given key, or null when absent or not a string.
      */
     public function getString(string $key): ?string
     {
@@ -30,7 +30,7 @@ final class HalResource
     }
 
     /**
-     * Returns the int value at $key, or null when absent or not an int.
+     * Returns the int value for the given key, or null when absent or not an int.
      */
     public function getInt(string $key): ?int
     {
@@ -40,7 +40,17 @@ final class HalResource
     }
 
     /**
-     * Returns the array value at $key, or an empty array when absent or not an array.
+     * Returns the bool value for the given key, or null when absent or not a bool.
+     */
+    public function getBool(string $key): ?bool
+    {
+        $value = $this->data[$key] ?? null;
+
+        return is_bool($value) ? $value : null;
+    }
+
+    /**
+     * Returns the array value for the given key, or an empty array when absent or not an array.
      *
      * @return array<int|string, mixed>
      */
