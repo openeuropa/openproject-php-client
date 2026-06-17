@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace OpenEuropa\OpenProjectClient;
 
 use OpenEuropa\OpenProjectClient\Authentication\AuthenticationInterface;
+use OpenEuropa\OpenProjectClient\Endpoint\ConfigurationEndpoint;
 use OpenEuropa\OpenProjectClient\Http\Transport;
 use OpenEuropa\OpenProjectClient\Model\InstanceInfo;
 use Psr\Http\Client\ClientInterface;
@@ -58,5 +59,13 @@ final class Client
     public function info(): InstanceInfo
     {
         return InstanceInfo::fromApiResponse($this->transport->get());
+    }
+
+    /**
+     * Returns the configuration endpoint for GET /api/v3/configuration.
+     */
+    public function configuration(): ConfigurationEndpoint
+    {
+        return new ConfigurationEndpoint($this->transport);
     }
 }

@@ -7,6 +7,8 @@ namespace OpenEuropa\OpenProjectClient\Tests\Unit;
 use GuzzleHttp\Psr7\HttpFactory;
 use OpenEuropa\OpenProjectClient\Authentication\ApiKeyAuthentication;
 use OpenEuropa\OpenProjectClient\Client;
+use OpenEuropa\OpenProjectClient\Endpoint\AbstractEndpoint;
+use OpenEuropa\OpenProjectClient\Endpoint\ConfigurationEndpoint;
 use OpenEuropa\OpenProjectClient\Http\Transport;
 use OpenEuropa\OpenProjectClient\Model\InstanceInfo;
 use OpenEuropa\OpenProjectClient\Tests\Support\MockClientTrait;
@@ -18,6 +20,8 @@ use PHPUnit\Framework\TestCase;
 #[UsesClass(Transport::class)]
 #[UsesClass(ApiKeyAuthentication::class)]
 #[UsesClass(InstanceInfo::class)]
+#[UsesClass(ConfigurationEndpoint::class)]
+#[UsesClass(AbstractEndpoint::class)]
 final class ClientTest extends TestCase
 {
     use MockClientTrait;
@@ -31,6 +35,13 @@ final class ClientTest extends TestCase
 
         self::assertSame('OpenProject', $info->instanceName);
         self::assertSame('17.5.0', $info->coreVersion);
+    }
+
+    public function testConfigurationReturnsAConfigurationEndpoint(): void
+    {
+        $client = $this->createClient('http://example.test');
+
+        self::assertInstanceOf(ConfigurationEndpoint::class, $client->configuration());
     }
 
     private function createClient(string $baseUrl): Client
