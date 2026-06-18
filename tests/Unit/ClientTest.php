@@ -13,6 +13,7 @@ use OpenEuropa\OpenProjectClient\Endpoint\PrioritiesEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\ProjectsEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\StatusesEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\TypesEndpoint;
+use OpenEuropa\OpenProjectClient\Endpoint\WorkPackagesEndpoint;
 use OpenEuropa\OpenProjectClient\Http\Transport;
 use OpenEuropa\OpenProjectClient\Model\InstanceInfo;
 use OpenEuropa\OpenProjectClient\Tests\Support\MockClientTrait;
@@ -29,6 +30,7 @@ use PHPUnit\Framework\TestCase;
 #[UsesClass(TypesEndpoint::class)]
 #[UsesClass(PrioritiesEndpoint::class)]
 #[UsesClass(ProjectsEndpoint::class)]
+#[UsesClass(WorkPackagesEndpoint::class)]
 #[UsesClass(AbstractEndpoint::class)]
 final class ClientTest extends TestCase
 {
@@ -78,6 +80,13 @@ final class ClientTest extends TestCase
         $client = $this->createClient('http://example.test');
 
         self::assertInstanceOf(ProjectsEndpoint::class, $client->projects());
+    }
+
+    public function testWorkPackagesReturnsAWorkPackagesEndpoint(): void
+    {
+        $client = $this->createClient('http://example.test');
+
+        self::assertInstanceOf(WorkPackagesEndpoint::class, $client->workPackages());
     }
 
     private function createClient(string $baseUrl): Client
