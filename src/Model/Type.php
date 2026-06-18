@@ -12,14 +12,14 @@ use OpenEuropa\OpenProjectClient\Http\HalResource;
 final readonly class Type
 {
     public function __construct(
-        public ?int $id,
-        public ?string $name,
-        public ?string $color,
-        public ?int $position,
-        public ?bool $isDefault,
-        public ?bool $isMilestone,
-        public ?string $createdAt,
-        public ?string $updatedAt,
+        public int $id,
+        public string $name,
+        public string $color,
+        public int $position,
+        public bool $isDefault,
+        public bool $isMilestone,
+        public string $createdAt,
+        public string $updatedAt,
     ) {
     }
 
@@ -34,14 +34,14 @@ final readonly class Type
         $hal = new HalResource($data);
 
         return new self(
-            $hal->getInt('id'),
-            $hal->getString('name'),
-            $hal->getString('color'),
-            $hal->getInt('position'),
-            $hal->getBool('isDefault'),
-            $hal->getBool('isMilestone'),
-            $hal->getString('createdAt'),
-            $hal->getString('updatedAt'),
+            $hal->requireInt('id'),
+            $hal->requireString('name'),
+            $hal->requireString('color'),
+            $hal->requireInt('position'),
+            $hal->requireBool('isDefault'),
+            $hal->requireBool('isMilestone'),
+            $hal->requireString('createdAt'),
+            $hal->requireString('updatedAt'),
         );
     }
 }

@@ -22,7 +22,7 @@ final class WorkPackagesTest extends IntegrationTestCase
         }
 
         self::assertSame(2, $workPackage->id);
-        self::assertNotNull($workPackage->subject);
+        self::assertNotEmpty($workPackage->subject);
     }
 
     public function testListPageReturnsNonNegativeTotal(): void
@@ -41,7 +41,7 @@ final class WorkPackagesTest extends IntegrationTestCase
         }
 
         self::assertNotNull($results->elements[0]->id);
-        self::assertNotNull($results->elements[0]->subject);
+        self::assertNotEmpty($results->elements[0]->subject);
     }
 
     public function testAllYieldsWorkPackagesWithIdAndSubject(): void
@@ -57,7 +57,7 @@ final class WorkPackagesTest extends IntegrationTestCase
         }
 
         self::assertNotNull($first->id);
-        self::assertNotNull($first->subject);
+        self::assertNotEmpty($first->subject);
     }
 
     public function testListByProjectYieldsWorkPackagesWithIdAndSubject(): void
@@ -82,6 +82,6 @@ final class WorkPackagesTest extends IntegrationTestCase
         }
 
         self::assertNotNull($first->id);
-        self::assertNotNull($first->subject);
+        self::assertNotEmpty($first->subject);
     }
 }

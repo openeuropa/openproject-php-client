@@ -104,6 +104,29 @@ final class HalResourceTest extends TestCase
         $hal->requireString('name');
     }
 
+    public function testRequireBoolReturnsBoolValue(): void
+    {
+        $hal = new HalResource(['isDefault' => true]);
+
+        self::assertSame(true, $hal->requireBool('isDefault'));
+    }
+
+    public function testRequireBoolThrowsWhenAbsent(): void
+    {
+        $hal = new HalResource([]);
+
+        $this->expectException(UnexpectedResponseException::class);
+        $hal->requireBool('isDefault');
+    }
+
+    public function testRequireBoolThrowsWhenNotABool(): void
+    {
+        $hal = new HalResource(['isDefault' => 1]);
+
+        $this->expectException(UnexpectedResponseException::class);
+        $hal->requireBool('isDefault');
+    }
+
     public function testGetBoolReturnsBoolValue(): void
     {
         $hal = new HalResource(['isClosed' => true]);

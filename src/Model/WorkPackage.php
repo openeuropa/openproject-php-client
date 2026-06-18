@@ -14,7 +14,7 @@ final readonly class WorkPackage
     public function __construct(
         public ?int $id,
         public ?int $lockVersion,
-        public ?string $subject,
+        public string $subject,
         public ?string $startDate,
         public ?string $dueDate,
         public ?string $date,
@@ -56,7 +56,7 @@ final readonly class WorkPackage
         return new self(
             $hal->getInt('id'),
             $hal->getInt('lockVersion'),
-            $hal->getString('subject'),
+            $hal->requireString('subject'),
             $hal->getString('startDate'),
             $hal->getString('dueDate'),
             $hal->getString('date'),

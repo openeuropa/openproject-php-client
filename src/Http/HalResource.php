@@ -75,6 +75,23 @@ final class HalResource
     }
 
     /**
+     * Returns the bool value for a spec-required key, throwing when it is absent or not a bool.
+     *
+     * @throws \OpenEuropa\OpenProjectClient\Exception\UnexpectedResponseException
+     */
+    public function requireBool(string $key): bool
+    {
+        $value = $this->data[$key] ?? null;
+        if (!is_bool($value)) {
+            throw new UnexpectedResponseException(
+                sprintf('Expected required boolean field "%s" in API response.', $key),
+            );
+        }
+
+        return $value;
+    }
+
+    /**
      * Returns the bool value for the given key, or null when absent or not a bool.
      */
     public function getBool(string $key): ?bool

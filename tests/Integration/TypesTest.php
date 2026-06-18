@@ -15,16 +15,14 @@ final class TypesTest extends IntegrationTestCase
 
         self::assertGreaterThan(0, $results->count);
         self::assertNotEmpty($results->elements);
-        self::assertNotNull($results->elements[0]->id);
-        self::assertNotNull($results->elements[0]->name);
+        self::assertGreaterThan(0, $results->elements[0]->id);
+        self::assertNotEmpty($results->elements[0]->name);
     }
 
     public function testGetReturnsSingleType(): void
     {
         $results = $this->client->types()->all();
         $firstId = $results->elements[0]->id;
-
-        self::assertNotNull($firstId);
 
         $type = $this->client->types()->get($firstId);
 

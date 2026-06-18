@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace OpenEuropa\OpenProjectClient\Tests\Unit\Model;
 
+use OpenEuropa\OpenProjectClient\Exception\UnexpectedResponseException;
 use OpenEuropa\OpenProjectClient\Http\HalResource;
 use OpenEuropa\OpenProjectClient\Model\Formattable;
 use OpenEuropa\OpenProjectClient\Model\Link;
@@ -14,6 +15,7 @@ use PHPUnit\Framework\TestCase;
 
 #[CoversClass(WorkPackage::class)]
 #[UsesClass(HalResource::class)]
+#[UsesClass(UnexpectedResponseException::class)]
 #[UsesClass(Formattable::class)]
 #[UsesClass(Link::class)]
 final class WorkPackageTest extends TestCase
@@ -67,5 +69,11 @@ final class WorkPackageTest extends TestCase
         self::assertNull($workPackage->status);
         self::assertNull($workPackage->type);
         self::assertNull($workPackage->assignee);
+    }
+
+    public function testThrowsWhenRequiredSubjectMissing(): void
+    {
+        $this->expectException(UnexpectedResponseException::class);
+        WorkPackage::fromApiResponse(['id' => 9]);
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace OpenEuropa\OpenProjectClient\Tests\Unit\Model;
 
+use OpenEuropa\OpenProjectClient\Exception\UnexpectedResponseException;
 use OpenEuropa\OpenProjectClient\Http\HalResource;
 use OpenEuropa\OpenProjectClient\Model\Type;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -12,8 +13,28 @@ use PHPUnit\Framework\TestCase;
 
 #[CoversClass(Type::class)]
 #[UsesClass(HalResource::class)]
+#[UsesClass(UnexpectedResponseException::class)]
 final class TypeTest extends TestCase
 {
+    /**
+     * A complete valid base array matching the type fixture.
+     *
+     * @return array<string, mixed>
+     */
+    private static function baseData(): array
+    {
+        return [
+            'id' => 1,
+            'name' => 'Bug',
+            'color' => '#ff0000',
+            'position' => 1,
+            'isDefault' => true,
+            'isMilestone' => false,
+            'createdAt' => '2014-05-21T08:51:20.396Z',
+            'updatedAt' => '2014-05-21T08:51:20.396Z',
+        ];
+    }
+
     public function testMapsAllFieldsFromFixture(): void
     {
         $path = __DIR__ . '/../../fixtures/type.json';
@@ -32,17 +53,75 @@ final class TypeTest extends TestCase
         self::assertSame('2014-05-21T08:51:20.396Z', $type->updatedAt);
     }
 
-    public function testMissingFieldsProduceAllNulls(): void
+    public function testThrowsWhenRequiredIdMissing(): void
     {
-        $type = Type::fromApiResponse(['_type' => 'Type']);
+        $data = self::baseData();
+        unset($data['id']);
 
-        self::assertNull($type->id);
-        self::assertNull($type->name);
-        self::assertNull($type->color);
-        self::assertNull($type->position);
-        self::assertNull($type->isDefault);
-        self::assertNull($type->isMilestone);
-        self::assertNull($type->createdAt);
-        self::assertNull($type->updatedAt);
+        $this->expectException(UnexpectedResponseException::class);
+        Type::fromApiResponse($data);
+    }
+
+    public function testThrowsWhenRequiredNameMissing(): void
+    {
+        $data = self::baseData();
+        unset($data['name']);
+
+        $this->expectException(UnexpectedResponseException::class);
+        Type::fromApiResponse($data);
+    }
+
+    public function testThrowsWhenRequiredColorMissing(): void
+    {
+        $data = self::baseData();
+        unset($data['color']);
+
+        $this->expectException(UnexpectedResponseException::class);
+        Type::fromApiResponse($data);
+    }
+
+    public function testThrowsWhenRequiredPositionMissing(): void
+    {
+        $data = self::baseData();
+        unset($data['position']);
+
+        $this->expectException(UnexpectedResponseException::class);
+        Type::fromApiResponse($data);
+    }
+
+    public function testThrowsWhenRequiredIsDefaultMissing(): void
+    {
+        $data = self::baseData();
+        unset($data['isDefault']);
+
+        $this->expectException(UnexpectedResponseException::class);
+        Type::fromApiResponse($data);
+    }
+
+    public function testThrowsWhenRequiredIsMilestoneMissing(): void
+    {
+        $data = self::baseData();
+        unset($data['isMilestone']);
+
+        $this->expectException(UnexpectedResponseException::class);
+        Type::fromApiResponse($data);
+    }
+
+    public function testThrowsWhenRequiredCreatedAtMissing(): void
+    {
+        $data = self::baseData();
+        unset($data['createdAt']);
+
+        $this->expectException(UnexpectedResponseException::class);
+        Type::fromApiResponse($data);
+    }
+
+    public function testThrowsWhenRequiredUpdatedAtMissing(): void
+    {
+        $data = self::baseData();
+        unset($data['updatedAt']);
+
+        $this->expectException(UnexpectedResponseException::class);
+        Type::fromApiResponse($data);
     }
 }
