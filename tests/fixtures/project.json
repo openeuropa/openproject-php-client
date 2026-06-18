@@ -1,0 +1,35 @@
+{
+    "_type": "Project",
+    "id": 1,
+    "identifier": "project_example",
+    "name": "Project example",
+    "active": true,
+    "public": false,
+    "favorited": false,
+    "description": {
+        "format": "markdown",
+        "raw": "Lorem **ipsum**",
+        "html": "<p>Lorem <strong>ipsum</strong></p>"
+    },
+    "statusExplanation": {
+        "format": "markdown",
+        "raw": "Everything **fine**",
+        "html": "<p>Everything <strong>fine</strong></p>"
+    },
+    "createdAt": "2014-05-21T08:51:20.396Z",
+    "updatedAt": "2014-05-21T08:51:20.396Z",
+    "_links": {
+        "self": {
+            "href": "/api/v3/projects/1",
+            "title": "Project example"
+        },
+        "parent": {
+            "href": null,
+            "title": null
+        },
+        "status": {
+            "href": "/api/v3/project_statuses/on_track",
+            "title": "On track"
+        }
+    }
+}

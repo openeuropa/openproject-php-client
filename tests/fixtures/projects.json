@@ -1,0 +1,53 @@
+{
+    "_type": "Collection",
+    "total": 3,
+    "count": 2,
+    "pageSize": 2,
+    "offset": 1,
+    "_embedded": {
+        "elements": [
+            {
+                "_type": "Project",
+                "id": 1,
+                "identifier": "alpha-project",
+                "name": "Alpha Project",
+                "active": true,
+                "public": false,
+                "favorited": false,
+                "description": {
+                    "format": "markdown",
+                    "raw": "Alpha description",
+                    "html": "<p>Alpha description</p>"
+                },
+                "createdAt": "2024-01-01T10:00:00.000Z",
+                "updatedAt": "2024-01-15T12:00:00.000Z",
+                "_links": {
+                    "self": {"href": "/api/v3/projects/1", "title": "Alpha Project"}
+                }
+            },
+            {
+                "_type": "Project",
+                "id": 2,
+                "identifier": "beta-project",
+                "name": "Beta Project",
+                "active": true,
+                "public": true,
+                "favorited": false,
+                "description": {
+                    "format": "markdown",
+                    "raw": "Beta description",
+                    "html": "<p>Beta description</p>"
+                },
+                "createdAt": "2024-02-01T10:00:00.000Z",
+                "updatedAt": "2024-02-10T12:00:00.000Z",
+                "_links": {
+                    "self": {"href": "/api/v3/projects/2", "title": "Beta Project"}
+                }
+            }
+        ]
+    },
+    "_links": {
+        "self": {"href": "/api/v3/projects?offset=1&pageSize=2"},
+        "nextByOffset": {"href": "/api/v3/projects?offset=2&pageSize=2"}
+    }
+}

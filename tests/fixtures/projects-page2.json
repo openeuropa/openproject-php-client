@@ -1,0 +1,33 @@
+{
+    "_type": "Collection",
+    "total": 3,
+    "count": 1,
+    "pageSize": 2,
+    "offset": 2,
+    "_embedded": {
+        "elements": [
+            {
+                "_type": "Project",
+                "id": 3,
+                "identifier": "gamma-project",
+                "name": "Gamma Project",
+                "active": false,
+                "public": false,
+                "favorited": true,
+                "description": {
+                    "format": "markdown",
+                    "raw": "Gamma description",
+                    "html": "<p>Gamma description</p>"
+                },
+                "createdAt": "2024-03-01T10:00:00.000Z",
+                "updatedAt": "2024-03-05T12:00:00.000Z",
+                "_links": {
+                    "self": {"href": "/api/v3/projects/3", "title": "Gamma Project"}
+                }
+            }
+        ]
+    },
+    "_links": {
+        "self": {"href": "/api/v3/projects?offset=2&pageSize=2"}
+    }
+}

@@ -21,6 +21,9 @@ final readonly class PageResults implements \IteratorAggregate
         public int $total,
         public int $count,
         public array $elements,
+        public ?int $pageSize = null,
+        public ?int $offset = null,
+        public ?string $nextByOffset = null,
     ) {
     }
 
@@ -63,6 +66,9 @@ final readonly class PageResults implements \IteratorAggregate
             $hal->getInt('total') ?? 0,
             $hal->getInt('count') ?? 0,
             $elements,
+            $hal->getInt('pageSize'),
+            $hal->getInt('offset'),
+            $hal->link('nextByOffset')?->href,
         );
     }
 }

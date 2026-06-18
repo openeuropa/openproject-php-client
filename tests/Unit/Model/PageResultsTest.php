@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace OpenEuropa\OpenProjectClient\Tests\Unit\Model;
 
 use OpenEuropa\OpenProjectClient\Http\HalResource;
+use OpenEuropa\OpenProjectClient\Model\Link;
 use OpenEuropa\OpenProjectClient\Model\PageResults;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\UsesClass;
@@ -12,6 +13,7 @@ use PHPUnit\Framework\TestCase;
 
 #[CoversClass(PageResults::class)]
 #[UsesClass(HalResource::class)]
+#[UsesClass(Link::class)]
 final class PageResultsTest extends TestCase
 {
     public function testDecodesCollectionFixture(): void
@@ -68,5 +70,27 @@ final class PageResultsTest extends TestCase
         self::assertSame(0, $results->total);
         self::assertSame(0, $results->count);
         self::assertCount(0, $results->elements);
+    }
+
+    public function testPaginationMetadataIsDecodedFromCollectionFixture(): void
+    {
+        $path = __DIR__ . '/../../fixtures/projects.json';
+        $data = json_decode((string) file_get_contents($path), true);
+
+        /** @var array<string, mixed> $data */
+        $results = PageResults::fromApiResponse($data, static fn (array $e): array => $e);
+
+        self::assertSame(2, $results->pageSize);
+        self::assertSame(1, $results->offset);
+        self::assertSame('/api/v3/projects?offset=2&pageSize=2', $results->nextByOffset);
+    }
+
+    public function testPaginationMetadataIsNullWhenAbsent(): void
+    {
+        $results = PageResults::fromApiResponse([], static fn (array $e): array => $e);
+
+        self::assertNull($results->pageSize);
+        self::assertNull($results->offset);
+        self::assertNull($results->nextByOffset);
     }
 }

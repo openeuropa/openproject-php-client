@@ -7,6 +7,7 @@ namespace OpenEuropa\OpenProjectClient;
 use OpenEuropa\OpenProjectClient\Authentication\AuthenticationInterface;
 use OpenEuropa\OpenProjectClient\Endpoint\ConfigurationEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\PrioritiesEndpoint;
+use OpenEuropa\OpenProjectClient\Endpoint\ProjectsEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\StatusesEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\TypesEndpoint;
 use OpenEuropa\OpenProjectClient\Http\Transport;
@@ -94,5 +95,13 @@ final class Client
     public function priorities(): PrioritiesEndpoint
     {
         return new PrioritiesEndpoint($this->transport);
+    }
+
+    /**
+     * Returns the projects endpoint for GET /api/v3/projects.
+     */
+    public function projects(): ProjectsEndpoint
+    {
+        return new ProjectsEndpoint($this->transport);
     }
 }

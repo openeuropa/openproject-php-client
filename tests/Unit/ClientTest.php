@@ -10,6 +10,7 @@ use OpenEuropa\OpenProjectClient\Client;
 use OpenEuropa\OpenProjectClient\Endpoint\AbstractEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\ConfigurationEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\PrioritiesEndpoint;
+use OpenEuropa\OpenProjectClient\Endpoint\ProjectsEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\StatusesEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\TypesEndpoint;
 use OpenEuropa\OpenProjectClient\Http\Transport;
@@ -27,6 +28,7 @@ use PHPUnit\Framework\TestCase;
 #[UsesClass(StatusesEndpoint::class)]
 #[UsesClass(TypesEndpoint::class)]
 #[UsesClass(PrioritiesEndpoint::class)]
+#[UsesClass(ProjectsEndpoint::class)]
 #[UsesClass(AbstractEndpoint::class)]
 final class ClientTest extends TestCase
 {
@@ -69,6 +71,13 @@ final class ClientTest extends TestCase
         $client = $this->createClient('http://example.test');
 
         self::assertInstanceOf(PrioritiesEndpoint::class, $client->priorities());
+    }
+
+    public function testProjectsReturnsAProjectsEndpoint(): void
+    {
+        $client = $this->createClient('http://example.test');
+
+        self::assertInstanceOf(ProjectsEndpoint::class, $client->projects());
     }
 
     private function createClient(string $baseUrl): Client
