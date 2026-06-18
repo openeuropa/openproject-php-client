@@ -87,6 +87,36 @@ final class WorkPackagesEndpointTest extends TestCase
         self::assertSame(2, $results->count);
     }
 
+    public function testAllGeneratorPaginatesAcrossTwoPagesAndTerminates(): void
+    {
+        $endpoint = $this->createEndpoint();
+        $this->queueFixtureResponse('work-packages.json');
+        $this->queueFixtureResponse('work-packages-page2.json');
+
+        $workPackages = iterator_to_array($endpoint->all());
+
+        self::assertCount(3, $workPackages);
+        self::assertInstanceOf(WorkPackage::class, $workPackages[0]);
+        self::assertSame(1, $workPackages[0]->id);
+        self::assertSame(3, $workPackages[2]->id);
+
+        $lastUri = (string) $this->lastRequest()->getUri();
+        self::assertStringContainsString('offset=2', $lastUri);
+    }
+
+    public function testAllWithNoArgsSendsExplicitEmptyFiltersToBypassOpenOnlyDefault(): void
+    {
+        $endpoint = $this->createEndpoint();
+        $this->queueFixtureResponse('work-packages.json');
+        $this->queueFixtureResponse('work-packages-page2.json');
+
+        iterator_to_array($endpoint->all());
+
+        $lastUri = (string) $this->lastRequest()->getUri();
+        self::assertStringContainsString('filters=%5B%5D', $lastUri);
+        self::assertStringContainsString('offset=2', $lastUri);
+    }
+
     public function testListPageWithFiltersAndParamsSendsQueryString(): void
     {
         $endpoint = $this->createEndpoint();
@@ -102,5 +132,36 @@ final class WorkPackagesEndpointTest extends TestCase
         self::assertStringContainsString('pageSize=2', $uri);
         self::assertStringContainsString('sortBy=', $uri);
         self::assertInstanceOf(PageResults::class, $results);
+    }
+
+    public function testListByProjectGeneratorPaginatesAcrossTwoPagesAndTerminates(): void
+    {
+        $endpoint = $this->createEndpoint();
+        $this->queueFixtureResponse('work-packages.json');
+        $this->queueFixtureResponse('work-packages-page2.json');
+
+        $workPackages = iterator_to_array($endpoint->listByProject(7));
+
+        self::assertCount(3, $workPackages);
+        self::assertInstanceOf(WorkPackage::class, $workPackages[0]);
+        self::assertSame(1, $workPackages[0]->id);
+        self::assertSame(3, $workPackages[2]->id);
+
+        $lastUri = (string) $this->lastRequest()->getUri();
+        self::assertStringContainsString('projects/7/work_packages', $lastUri);
+        self::assertStringContainsString('offset=2', $lastUri);
+    }
+
+    public function testListByProjectWithNoArgsSendsExplicitEmptyFiltersToBypassOpenOnlyDefault(): void
+    {
+        $endpoint = $this->createEndpoint();
+        $this->queueFixtureResponse('work-packages.json');
+        $this->queueFixtureResponse('work-packages-page2.json');
+
+        iterator_to_array($endpoint->listByProject(7));
+
+        $lastUri = (string) $this->lastRequest()->getUri();
+        self::assertStringContainsString('filters=%5B%5D', $lastUri);
+        self::assertStringContainsString('offset=2', $lastUri);
     }
 }

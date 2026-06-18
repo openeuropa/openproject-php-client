@@ -11,6 +11,10 @@ use OpenEuropa\OpenProjectClient\Query\FilterSet;
 
 /**
  * Endpoint for reading work packages from the OpenProject API.
+ *
+ * In OpenProject, the `work_packages` endpoint returns only open work packages by
+ * default when no filters are passed. We purposely pass an empty FilterSet, which
+ * forces the API to return all results.
  */
 final class WorkPackagesEndpoint extends AbstractEndpoint
 {
@@ -25,10 +29,24 @@ final class WorkPackagesEndpoint extends AbstractEndpoint
     }
 
     /**
-     * Returns one page of work packages as a PageResults object.
+     * Returns a generator that yields all work packages, paginating automatically.
      *
-     * When no filters are given, an empty FilterSet is sent explicitly so the
-     * server returns all work packages instead of applying its open-only default.
+     * @return \Generator<int, WorkPackage>
+     *
+     * @throws \OpenEuropa\OpenProjectClient\Exception\OpenProjectException
+     */
+    public function all(?FilterSet $filters = null, ?CollectionParams $params = null): \Generator
+    {
+        return $this->paginate(
+            'work_packages',
+            WorkPackage::fromApiResponse(...),
+            $filters ?? new FilterSet(),
+            $params,
+        );
+    }
+
+    /**
+     * Returns one page of work packages as a PageResults object.
      *
      * @return PageResults<WorkPackage>
      *
@@ -38,6 +56,26 @@ final class WorkPackagesEndpoint extends AbstractEndpoint
     {
         return $this->getCollectionPage(
             'work_packages',
+            WorkPackage::fromApiResponse(...),
+            $filters ?? new FilterSet(),
+            $params,
+        );
+    }
+
+    /**
+     * Returns a generator that yields all work packages in a project, paginating automatically.
+     *
+     * @return \Generator<int, WorkPackage>
+     *
+     * @throws \OpenEuropa\OpenProjectClient\Exception\OpenProjectException
+     */
+    public function listByProject(
+        int $projectId,
+        ?FilterSet $filters = null,
+        ?CollectionParams $params = null,
+    ): \Generator {
+        return $this->paginate(
+            'projects/' . $projectId . '/work_packages',
             WorkPackage::fromApiResponse(...),
             $filters ?? new FilterSet(),
             $params,

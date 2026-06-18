@@ -43,4 +43,45 @@ final class WorkPackagesTest extends IntegrationTestCase
         self::assertNotNull($results->elements[0]->id);
         self::assertNotNull($results->elements[0]->subject);
     }
+
+    public function testAllYieldsWorkPackagesWithIdAndSubject(): void
+    {
+        $first = null;
+        foreach ($this->client->workPackages()->all() as $workPackage) {
+            $first = $workPackage;
+            break;
+        }
+
+        if ($first === null) {
+            self::markTestSkipped('No work packages found in the instance.');
+        }
+
+        self::assertNotNull($first->id);
+        self::assertNotNull($first->subject);
+    }
+
+    public function testListByProjectYieldsWorkPackagesWithIdAndSubject(): void
+    {
+        $projects = $this->client->projects()->listPage();
+
+        if (empty($projects->elements)) {
+            self::markTestSkipped('No projects found in the instance.');
+        }
+
+        $projectId = $projects->elements[0]->id;
+        self::assertNotNull($projectId);
+
+        $first = null;
+        foreach ($this->client->workPackages()->listByProject($projectId) as $workPackage) {
+            $first = $workPackage;
+            break;
+        }
+
+        if ($first === null) {
+            self::markTestSkipped('No work packages found in the project.');
+        }
+
+        self::assertNotNull($first->id);
+        self::assertNotNull($first->subject);
+    }
 }
