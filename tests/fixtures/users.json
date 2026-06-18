@@ -1,0 +1,65 @@
+{
+    "_type": "Collection",
+    "total": 3,
+    "count": 2,
+    "pageSize": 2,
+    "offset": 1,
+    "_embedded": {
+        "elements": [
+            {
+                "_type": "User",
+                "id": 1,
+                "name": "John Sheppard",
+                "login": "j.sheppard",
+                "firstName": "John",
+                "lastName": "Sheppard",
+                "email": "shep@mail.com",
+                "admin": true,
+                "avatar": "https://example.org/users/1/avatar",
+                "status": "active",
+                "language": "en",
+                "createdAt": "2014-05-21T08:51:20.396Z",
+                "updatedAt": "2014-05-21T08:51:20.396Z",
+                "_links": {
+                    "self": {
+                        "href": "/api/v3/users/1",
+                        "title": "John Sheppard - j.sheppard"
+                    },
+                    "showUser": {
+                        "href": "/users/1",
+                        "type": "text/html"
+                    }
+                }
+            },
+            {
+                "_type": "User",
+                "id": 2,
+                "name": "Elizabeth Weir",
+                "login": "e.weir",
+                "firstName": "Elizabeth",
+                "lastName": "Weir",
+                "email": "weir@mail.com",
+                "admin": false,
+                "avatar": "https://example.org/users/2/avatar",
+                "status": "active",
+                "language": "en",
+                "createdAt": "2014-06-01T09:00:00.000Z",
+                "updatedAt": "2014-06-15T11:30:00.000Z",
+                "_links": {
+                    "self": {
+                        "href": "/api/v3/users/2",
+                        "title": "Elizabeth Weir - e.weir"
+                    },
+                    "showUser": {
+                        "href": "/users/2",
+                        "type": "text/html"
+                    }
+                }
+            }
+        ]
+    },
+    "_links": {
+        "self": {"href": "/api/v3/users?offset=1&pageSize=2"},
+        "nextByOffset": {"href": "/api/v3/users?offset=2&pageSize=2"}
+    }
+}

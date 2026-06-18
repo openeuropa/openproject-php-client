@@ -12,9 +12,6 @@ final class UsersTest extends IntegrationTestCase
 {
     public function testGetReturnsUserWithMatchingId(): void
     {
-        // There is no list method yet (T08b), so the seeded admin user at id 1
-        // is used. A missing id skips rather than fails, so the test stays
-        // valid against an instance where that user does not exist.
         try {
             $user = $this->client->users()->get(1);
         } catch (NotFoundException) {
@@ -22,6 +19,20 @@ final class UsersTest extends IntegrationTestCase
         }
 
         self::assertSame(1, $user->id);
+        self::assertNotSame('', $user->name);
+    }
+
+    public function testListPageYieldsUsersWithIds(): void
+    {
+        $results = $this->client->users()->listPage();
+
+        if (empty($results->elements)) {
+            self::markTestSkipped('No users found in the instance.');
+        }
+
+        $user = $results->elements[0];
+
+        self::assertGreaterThan(0, $user->id);
         self::assertNotSame('', $user->name);
     }
 }
