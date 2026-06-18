@@ -1,0 +1,49 @@
+{
+    "_type": "Collection",
+    "total": 3,
+    "count": 2,
+    "pageSize": 2,
+    "offset": 1,
+    "_embedded": {
+        "elements": [
+            {
+                "_type": "WorkPackage",
+                "id": 1,
+                "lockVersion": 0,
+                "subject": "Set date and location of conference",
+                "description": {
+                    "format": "markdown",
+                    "raw": "Decide on date and venue.",
+                    "html": "<p>Decide on date and venue.</p>"
+                },
+                "_links": {
+                    "self": {"href": "/api/v3/work_packages/1", "title": "Set date and location of conference"},
+                    "status": {"href": "/api/v3/statuses/1", "title": "New"},
+                    "type": {"href": "/api/v3/types/1", "title": "Task"},
+                    "project": {"href": "/api/v3/projects/1", "title": "Demo project"}
+                }
+            },
+            {
+                "_type": "WorkPackage",
+                "id": 2,
+                "lockVersion": 0,
+                "subject": "Organize open source conference",
+                "description": {
+                    "format": "markdown",
+                    "raw": "",
+                    "html": ""
+                },
+                "_links": {
+                    "self": {"href": "/api/v3/work_packages/2", "title": "Organize open source conference"},
+                    "status": {"href": "/api/v3/statuses/7", "title": "In progress"},
+                    "type": {"href": "/api/v3/types/3", "title": "Summary task"},
+                    "project": {"href": "/api/v3/projects/1", "title": "Demo project"}
+                }
+            }
+        ]
+    },
+    "_links": {
+        "self": {"href": "/api/v3/work_packages?offset=1&pageSize=2"},
+        "nextByOffset": {"href": "/api/v3/work_packages?offset=2&pageSize=2"}
+    }
+}

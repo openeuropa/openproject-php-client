@@ -24,4 +24,23 @@ final class WorkPackagesTest extends IntegrationTestCase
         self::assertSame(2, $workPackage->id);
         self::assertNotNull($workPackage->subject);
     }
+
+    public function testListPageReturnsNonNegativeTotal(): void
+    {
+        $results = $this->client->workPackages()->listPage();
+
+        self::assertGreaterThanOrEqual(0, $results->total);
+    }
+
+    public function testListPageElementsHaveIdAndSubject(): void
+    {
+        $results = $this->client->workPackages()->listPage();
+
+        if (empty($results->elements)) {
+            self::markTestSkipped('No work packages found in the instance.');
+        }
+
+        self::assertNotNull($results->elements[0]->id);
+        self::assertNotNull($results->elements[0]->subject);
+    }
 }
