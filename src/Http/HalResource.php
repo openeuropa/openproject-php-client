@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace OpenEuropa\OpenProjectClient\Http;
 
+use OpenEuropa\OpenProjectClient\Exception\UnexpectedResponseException;
 use OpenEuropa\OpenProjectClient\Model\Link;
 
 /**
@@ -37,6 +38,40 @@ final class HalResource
         $value = $this->data[$key] ?? null;
 
         return is_int($value) ? $value : null;
+    }
+
+    /**
+     * Returns the int value for a spec-required key, throwing when it is absent or not an int.
+     *
+     * @throws \OpenEuropa\OpenProjectClient\Exception\UnexpectedResponseException
+     */
+    public function requireInt(string $key): int
+    {
+        $value = $this->data[$key] ?? null;
+        if (!is_int($value)) {
+            throw new UnexpectedResponseException(
+                sprintf('Expected required integer field "%s" in API response.', $key),
+            );
+        }
+
+        return $value;
+    }
+
+    /**
+     * Returns the string value for a spec-required key, throwing when it is absent or not a string.
+     *
+     * @throws \OpenEuropa\OpenProjectClient\Exception\UnexpectedResponseException
+     */
+    public function requireString(string $key): string
+    {
+        $value = $this->data[$key] ?? null;
+        if (!is_string($value)) {
+            throw new UnexpectedResponseException(
+                sprintf('Expected required string field "%s" in API response.', $key),
+            );
+        }
+
+        return $value;
     }
 
     /**

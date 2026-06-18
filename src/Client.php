@@ -10,6 +10,7 @@ use OpenEuropa\OpenProjectClient\Endpoint\PrioritiesEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\ProjectsEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\StatusesEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\TypesEndpoint;
+use OpenEuropa\OpenProjectClient\Endpoint\UsersEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\WorkPackagesEndpoint;
 use OpenEuropa\OpenProjectClient\Http\Transport;
 use OpenEuropa\OpenProjectClient\Model\InstanceInfo;
@@ -104,6 +105,14 @@ final class Client
     public function projects(): ProjectsEndpoint
     {
         return new ProjectsEndpoint($this->transport);
+    }
+
+    /**
+     * Returns the users endpoint for GET /api/v3/users.
+     */
+    public function users(): UsersEndpoint
+    {
+        return new UsersEndpoint($this->transport);
     }
 
     /**

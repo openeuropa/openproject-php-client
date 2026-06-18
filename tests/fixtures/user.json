@@ -1,0 +1,25 @@
+{
+    "_type": "User",
+    "id": 1,
+    "name": "John Sheppard",
+    "login": "j.sheppard",
+    "firstName": "John",
+    "lastName": "Sheppard",
+    "email": "shep@mail.com",
+    "admin": true,
+    "avatar": "https://example.org/users/1/avatar",
+    "status": "active",
+    "language": "en",
+    "createdAt": "2014-05-21T08:51:20.396Z",
+    "updatedAt": "2014-05-21T08:51:20.396Z",
+    "_links": {
+        "self": {
+            "href": "/api/v3/users/1",
+            "title": "John Sheppard - j.sheppard"
+        },
+        "showUser": {
+            "href": "/users/1",
+            "type": "text/html"
+        }
+    }
+}

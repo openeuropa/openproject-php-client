@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace OpenEuropa\OpenProjectClient\Tests\Unit\Http;
 
+use OpenEuropa\OpenProjectClient\Exception\UnexpectedResponseException;
 use OpenEuropa\OpenProjectClient\Http\HalResource;
 use OpenEuropa\OpenProjectClient\Model\Link;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -12,6 +13,7 @@ use PHPUnit\Framework\TestCase;
 
 #[CoversClass(HalResource::class)]
 #[UsesClass(Link::class)]
+#[UsesClass(UnexpectedResponseException::class)]
 final class HalResourceTest extends TestCase
 {
     public function testGetStringReturnsStringValue(): void
@@ -54,6 +56,52 @@ final class HalResourceTest extends TestCase
         $hal = new HalResource(['count' => '10']);
 
         self::assertNull($hal->getInt('count'));
+    }
+
+    public function testRequireIntReturnsIntValue(): void
+    {
+        $hal = new HalResource(['id' => 7]);
+
+        self::assertSame(7, $hal->requireInt('id'));
+    }
+
+    public function testRequireIntThrowsWhenAbsent(): void
+    {
+        $hal = new HalResource([]);
+
+        $this->expectException(UnexpectedResponseException::class);
+        $hal->requireInt('id');
+    }
+
+    public function testRequireIntThrowsWhenNotAnInt(): void
+    {
+        $hal = new HalResource(['id' => '7']);
+
+        $this->expectException(UnexpectedResponseException::class);
+        $hal->requireInt('id');
+    }
+
+    public function testRequireStringReturnsStringValue(): void
+    {
+        $hal = new HalResource(['name' => 'hello']);
+
+        self::assertSame('hello', $hal->requireString('name'));
+    }
+
+    public function testRequireStringThrowsWhenAbsent(): void
+    {
+        $hal = new HalResource([]);
+
+        $this->expectException(UnexpectedResponseException::class);
+        $hal->requireString('name');
+    }
+
+    public function testRequireStringThrowsWhenNotAString(): void
+    {
+        $hal = new HalResource(['name' => 42]);
+
+        $this->expectException(UnexpectedResponseException::class);
+        $hal->requireString('name');
     }
 
     public function testGetBoolReturnsBoolValue(): void

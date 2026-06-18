@@ -13,6 +13,7 @@ use OpenEuropa\OpenProjectClient\Endpoint\PrioritiesEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\ProjectsEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\StatusesEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\TypesEndpoint;
+use OpenEuropa\OpenProjectClient\Endpoint\UsersEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\WorkPackagesEndpoint;
 use OpenEuropa\OpenProjectClient\Http\Transport;
 use OpenEuropa\OpenProjectClient\Model\InstanceInfo;
@@ -30,6 +31,7 @@ use PHPUnit\Framework\TestCase;
 #[UsesClass(TypesEndpoint::class)]
 #[UsesClass(PrioritiesEndpoint::class)]
 #[UsesClass(ProjectsEndpoint::class)]
+#[UsesClass(UsersEndpoint::class)]
 #[UsesClass(WorkPackagesEndpoint::class)]
 #[UsesClass(AbstractEndpoint::class)]
 final class ClientTest extends TestCase
@@ -80,6 +82,13 @@ final class ClientTest extends TestCase
         $client = $this->createClient('http://example.test');
 
         self::assertInstanceOf(ProjectsEndpoint::class, $client->projects());
+    }
+
+    public function testUsersReturnsAUsersEndpoint(): void
+    {
+        $client = $this->createClient('http://example.test');
+
+        self::assertInstanceOf(UsersEndpoint::class, $client->users());
     }
 
     public function testWorkPackagesReturnsAWorkPackagesEndpoint(): void
