@@ -106,4 +106,21 @@ final class UsersEndpointTest extends TestCase
         self::assertStringContainsString('sortBy=', $uri);
         self::assertInstanceOf(PageResults::class, $results);
     }
+
+    public function testAllGeneratorPaginatesAcrossTwoPagesAndTerminates(): void
+    {
+        $endpoint = $this->createEndpoint();
+        $this->queueFixtureResponse('users.json');
+        $this->queueFixtureResponse('users-page2.json');
+
+        $users = iterator_to_array($endpoint->all());
+
+        self::assertCount(3, $users);
+        self::assertInstanceOf(User::class, $users[0]);
+        self::assertSame(1, $users[0]->id);
+        self::assertSame(3, $users[2]->id);
+
+        $lastUri = (string) $this->lastRequest()->getUri();
+        self::assertStringContainsString('offset=2', $lastUri);
+    }
 }

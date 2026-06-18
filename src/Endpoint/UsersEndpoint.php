@@ -25,6 +25,18 @@ final class UsersEndpoint extends AbstractEndpoint
     }
 
     /**
+     * Returns a generator that yields all users, paginating automatically.
+     *
+     * @return \Generator<int, User>
+     *
+     * @throws \OpenEuropa\OpenProjectClient\Exception\OpenProjectException
+     */
+    public function all(?FilterSet $filters = null, ?CollectionParams $params = null): \Generator
+    {
+        return $this->paginate('users', User::fromApiResponse(...), $filters, $params);
+    }
+
+    /**
      * Returns one page of users as a PageResults object.
      *
      * @return PageResults<User>

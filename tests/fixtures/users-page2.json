@@ -1,0 +1,35 @@
+{
+    "_type": "Collection",
+    "total": 3,
+    "count": 1,
+    "pageSize": 2,
+    "offset": 2,
+    "_embedded": {
+        "elements": [
+            {
+                "_type": "User",
+                "id": 3,
+                "name": "Rodney McKay",
+                "login": "r.mckay",
+                "firstName": "Rodney",
+                "lastName": "McKay",
+                "email": "mckay@mail.com",
+                "admin": false,
+                "avatar": "https://example.org/users/3/avatar",
+                "status": "active",
+                "language": "en",
+                "createdAt": "2014-07-10T10:00:00.000Z",
+                "updatedAt": "2014-07-10T10:00:00.000Z",
+                "_links": {
+                    "self": {
+                        "href": "/api/v3/users/3",
+                        "title": "Rodney McKay - r.mckay"
+                    }
+                }
+            }
+        ]
+    },
+    "_links": {
+        "self": {"href": "/api/v3/users?offset=2&pageSize=2"}
+    }
+}

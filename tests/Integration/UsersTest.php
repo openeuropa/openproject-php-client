@@ -35,4 +35,21 @@ final class UsersTest extends IntegrationTestCase
         self::assertGreaterThan(0, $user->id);
         self::assertNotSame('', $user->name);
     }
+
+    public function testAllGeneratorReturnsIterable(): void
+    {
+        $user = null;
+
+        foreach ($this->client->users()->all() as $item) {
+            $user = $item;
+            break;
+        }
+
+        if ($user === null) {
+            self::markTestSkipped('No users found in the instance.');
+        }
+
+        self::assertGreaterThan(0, $user->id);
+        self::assertNotSame('', $user->name);
+    }
 }
