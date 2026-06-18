@@ -55,9 +55,10 @@ abstract class AbstractEndpoint
         ?FilterSet $filters = null,
         ?CollectionParams $params = null,
     ): PageResults {
-        $query = $this->buildQuery($filters, $params);
-
-        return PageResults::fromApiResponse($this->transport->get($path . $query), $mapper);
+        return PageResults::fromApiResponse(
+            $this->transport->get($path, $this->buildQuery($filters, $params)),
+            $mapper,
+        );
     }
 
     /**
@@ -102,9 +103,11 @@ abstract class AbstractEndpoint
     }
 
     /**
-     * Builds a query string from optional filters and collection parameters.
+     * Builds the query parameter map from optional filters and collection parameters.
+     *
+     * @return array<string, string>
      */
-    private function buildQuery(?FilterSet $filters, ?CollectionParams $params): string
+    private function buildQuery(?FilterSet $filters, ?CollectionParams $params): array
     {
         $query = [];
 
@@ -116,10 +119,6 @@ abstract class AbstractEndpoint
             $query = array_merge($query, $params->toQueryParams());
         }
 
-        if ($query === []) {
-            return '';
-        }
-
-        return '?' . http_build_query($query);
+        return $query;
     }
 }

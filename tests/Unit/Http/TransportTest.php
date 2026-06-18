@@ -75,6 +75,21 @@ final class TransportTest extends TestCase
         );
     }
 
+    public function testAppendsQueryParametersEncodedPerRfc3986(): void
+    {
+        $transport = $this->createTransport('http://example.test');
+        $this->queueJsonResponse('{}');
+
+        $transport->get('projects', ['filters' => '[{"name":{"operator":"~","values":["a b"]}}]', 'offset' => '2']);
+
+        $uri = (string) $this->lastRequest()->getUri();
+        self::assertStringStartsWith('http://example.test/api/v3/projects?', $uri);
+        self::assertStringContainsString('offset=2', $uri);
+        // RFC 3986 encodes a space as %20, never as the "+" of the default mode.
+        self::assertStringContainsString('a%20b', $uri);
+        self::assertStringNotContainsString('+', $uri);
+    }
+
     public function testDecodesTheJsonBody(): void
     {
         $transport = $this->createTransport('http://example.test');

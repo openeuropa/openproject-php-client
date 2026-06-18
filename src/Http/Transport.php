@@ -48,6 +48,8 @@ final class Transport
      * @param string $path
      *   Resource path relative to the API root, e.g. "work_packages/42". An
      *   empty string addresses the API root itself.
+     * @param array<string, string> $query
+     *   Query parameters to append to the request.
      *
      * @return array<string, mixed>
      *   The decoded response body.
@@ -55,11 +57,16 @@ final class Transport
      * @throws \OpenEuropa\OpenProjectClient\Exception\OpenProjectException
      *   On a network failure, a non-2xx response, or an invalid JSON body.
      */
-    public function get(string $path = ''): array
+    public function get(string $path = '', array $query = []): array
     {
         $request = $this->requestFactory
             ->createRequest('GET', $this->apiRoot . ltrim($path, '/'))
             ->withHeader('Accept', 'application/hal+json');
+        if ($query !== []) {
+            $request = $request->withUri(
+                $request->getUri()->withQuery(http_build_query($query, '', '&', PHP_QUERY_RFC3986)),
+            );
+        }
         $request = $this->authentication->authenticate($request);
 
         try {
