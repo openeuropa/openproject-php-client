@@ -144,13 +144,16 @@ final class SchemaPropertyTest extends TestCase
         SchemaProperty::fromApiResponse($data);
     }
 
-    public function testThrowsWhenRequiredHasDefaultMissing(): void
+    public function testHasDefaultIsNullWhenAbsent(): void
     {
+        // The spec marks hasDefault required, but OpenProject omits it on some
+        // properties (for example "subject"), so it is read leniently.
         $data = self::baseData();
         unset($data['hasDefault']);
 
-        $this->expectException(UnexpectedResponseException::class);
-        SchemaProperty::fromApiResponse($data);
+        $prop = SchemaProperty::fromApiResponse($data);
+
+        self::assertNull($prop->hasDefault);
     }
 
     public function testThrowsWhenRequiredWritableMissing(): void
