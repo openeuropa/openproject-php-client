@@ -22,7 +22,7 @@ use Psr\Http\Message\StreamFactoryInterface;
  * Entry point to the OpenProject API v3.
  *
  * Construct it with the instance base URL (subpath-hosted instances are
- * supported, e.g. "https://example.org/openproject" — without "/api/v3"),
+ * supported, e.g. "https://example.org/openproject" without "/api/v3"),
  * an authentication strategy, and explicit PSR-18/PSR-17 implementations:
  *
  * @code

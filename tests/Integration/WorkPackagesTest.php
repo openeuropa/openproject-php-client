@@ -13,9 +13,9 @@ final class WorkPackagesTest extends IntegrationTestCase
 {
     public function testGetReturnsWorkPackageWithMatchingId(): void
     {
-        // There is no list method yet (T07b), so a known seeded work package
-        // id is used. A missing id skips rather than fails, so the test stays
-        // valid against an instance without that work package.
+        // A known seeded work package id is used. A missing id skips rather
+        // than fails, so the test stays valid against an instance without that
+        // work package.
         try {
             $workPackage = $this->client->workPackages()->get(2);
         } catch (NotFoundException) {
