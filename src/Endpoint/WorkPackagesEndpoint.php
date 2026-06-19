@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace OpenEuropa\OpenProjectClient\Endpoint;
 
+use OpenEuropa\OpenProjectClient\Model\Form\Form;
 use OpenEuropa\OpenProjectClient\Model\PageResults;
 use OpenEuropa\OpenProjectClient\Model\WorkPackage;
 use OpenEuropa\OpenProjectClient\Query\CollectionParams;
 use OpenEuropa\OpenProjectClient\Query\FilterSet;
 
 /**
- * Endpoint for reading work packages from the OpenProject API.
+ * Endpoint for reading and writing work packages via the OpenProject API.
  *
  * In OpenProject, the `work_packages` endpoint returns only open work packages by
  * default when no filters are passed. We purposely pass an empty FilterSet, which
@@ -80,5 +81,27 @@ final class WorkPackagesEndpoint extends AbstractEndpoint
             $filters ?? new FilterSet(),
             $params,
         );
+    }
+
+    /**
+     * Returns the work-package create form, optionally scoped to a project.
+     *
+     * The API returns HTTP 200 even when the payload has validation errors;
+     * check the returned Form's validationErrors for field-level problems.
+     *
+     * @param array<string, mixed> $payload
+     *   The work-package attributes to pre-populate and validate.
+     * @param int|null $projectId
+     *   When provided, the form is scoped to this project.
+     *
+     * @throws \OpenEuropa\OpenProjectClient\Exception\OpenProjectException
+     */
+    public function createForm(array $payload = [], ?int $projectId = null): Form
+    {
+        $path = $projectId !== null
+            ? 'projects/' . $projectId . '/work_packages/form'
+            : 'work_packages/form';
+
+        return Form::fromApiResponse($this->transport->post($path, $payload));
     }
 }

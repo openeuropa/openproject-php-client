@@ -11,9 +11,12 @@ use OpenEuropa\OpenProjectClient\Endpoint\WorkPackagesEndpoint;
 use OpenEuropa\OpenProjectClient\Http\HalResource;
 use OpenEuropa\OpenProjectClient\Http\Transport;
 use OpenEuropa\OpenProjectClient\Model\CustomFields;
+use OpenEuropa\OpenProjectClient\Model\Form\Form;
+use OpenEuropa\OpenProjectClient\Model\Form\SchemaProperty;
 use OpenEuropa\OpenProjectClient\Model\Formattable;
 use OpenEuropa\OpenProjectClient\Model\Link;
 use OpenEuropa\OpenProjectClient\Model\PageResults;
+use OpenEuropa\OpenProjectClient\Model\ValidationError;
 use OpenEuropa\OpenProjectClient\Model\WorkPackage;
 use OpenEuropa\OpenProjectClient\Query\CollectionParams;
 use OpenEuropa\OpenProjectClient\Query\Filter;
@@ -32,6 +35,9 @@ use PHPUnit\Framework\TestCase;
 #[UsesClass(HalResource::class)]
 #[UsesClass(CustomFields::class)]
 #[UsesClass(Formattable::class)]
+#[UsesClass(Form::class)]
+#[UsesClass(SchemaProperty::class)]
+#[UsesClass(ValidationError::class)]
 #[UsesClass(Link::class)]
 #[UsesClass(ApiKeyAuthentication::class)]
 #[UsesClass(FilterSet::class)]
@@ -165,5 +171,46 @@ final class WorkPackagesEndpointTest extends TestCase
         $lastUri = (string) $this->lastRequest()->getUri();
         self::assertStringContainsString('filters=%5B%5D', $lastUri);
         self::assertStringContainsString('offset=2', $lastUri);
+    }
+
+    public function testCreateFormWithNoProjectSendsPostToGlobalFormUri(): void
+    {
+        $endpoint = $this->createEndpoint();
+        $this->queueFixtureResponse('form.json');
+
+        $form = $endpoint->createForm();
+
+        self::assertSame('POST', $this->lastRequest()->getMethod());
+        self::assertSame(
+            'http://example.test/api/v3/work_packages/form',
+            (string) $this->lastRequest()->getUri(),
+        );
+        self::assertInstanceOf(Form::class, $form);
+        self::assertTrue($form->hasErrors());
+    }
+
+    public function testCreateFormWithProjectIdSendsPostToProjectScopedUri(): void
+    {
+        $endpoint = $this->createEndpoint();
+        $this->queueFixtureResponse('form.json');
+
+        $endpoint->createForm([], 6);
+
+        self::assertSame(
+            'http://example.test/api/v3/projects/6/work_packages/form',
+            (string) $this->lastRequest()->getUri(),
+        );
+    }
+
+    public function testCreateFormWithPayloadSendsJsonBodyAndContentTypeHeader(): void
+    {
+        $endpoint = $this->createEndpoint();
+        $this->queueFixtureResponse('form.json');
+
+        $endpoint->createForm(['subject' => 'My work package']);
+
+        $request = $this->lastRequest();
+        self::assertStringContainsString('"subject":"My work package"', (string) $request->getBody());
+        self::assertSame('application/json', $request->getHeaderLine('Content-Type'));
     }
 }

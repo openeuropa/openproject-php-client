@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace OpenEuropa\OpenProjectClient\Tests\Integration;
 
 use OpenEuropa\OpenProjectClient\Exception\NotFoundException;
+use OpenEuropa\OpenProjectClient\Model\Form\Form;
 use PHPUnit\Framework\Attributes\CoversNothing;
 
 #[CoversNothing]
@@ -83,5 +84,13 @@ final class WorkPackagesTest extends IntegrationTestCase
 
         self::assertNotNull($first->id);
         self::assertNotEmpty($first->subject);
+    }
+
+    public function testCreateFormReturnsFormWithSchema(): void
+    {
+        $form = $this->client->workPackages()->createForm();
+
+        self::assertInstanceOf(Form::class, $form);
+        self::assertNotEmpty($form->schema);
     }
 }
