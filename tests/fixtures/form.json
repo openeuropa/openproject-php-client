@@ -1,0 +1,66 @@
+{
+    "_type": "Form",
+    "_embedded": {
+        "payload": {
+            "_links": {
+                "status": { "href": "/api/v3/statuses/1" }
+            },
+            "_type": "WorkPackage",
+            "lockVersion": 5,
+            "subject": "An example title"
+        },
+        "schema": {
+            "_type": "Schema",
+            "_dependencies": [],
+            "_links": {
+                "self": { "href": "/api/v3/example/schema" }
+            },
+            "lockVersion": {
+                "type": "Integer",
+                "name": "Resource Version",
+                "required": true,
+                "hasDefault": false,
+                "writable": false
+            },
+            "subject": {
+                "type": "String",
+                "name": "Subject",
+                "required": true,
+                "hasDefault": false,
+                "writable": true,
+                "minLength": 1,
+                "maxLength": 255
+            },
+            "status": {
+                "type": "Status",
+                "name": "Status",
+                "required": true,
+                "hasDefault": true,
+                "writable": true,
+                "location": "_links",
+                "_links": {
+                    "allowedValues": [
+                        { "href": "/api/v3/statuses/1", "title": "New" },
+                        { "href": "/api/v3/statuses/2", "title": "Closed" }
+                    ]
+                }
+            }
+        },
+        "validationErrors": {
+            "subject": {
+                "_type": "Error",
+                "errorIdentifier": "urn:openproject-org:api:v3:errors:PropertyConstraintViolation",
+                "message": "Subject can't be blank.",
+                "_embedded": {
+                    "details": { "attribute": "subject" }
+                }
+            }
+        }
+    },
+    "_links": {
+        "self": { "href": "/api/v3/work_packages/form" },
+        "validate": { "href": "/api/v3/work_packages/form", "method": "POST" },
+        "previewMarkup": { "href": "/api/v3/render/markdown", "method": "POST" },
+        "commit": { "href": "/api/v3/work_packages", "method": "POST" }
+    }
+}
