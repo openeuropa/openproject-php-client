@@ -312,6 +312,9 @@
     "derivedPercentageDone": null,
     "createdAt": "2026-06-18T09:44:04.846Z",
     "updatedAt": "2026-06-18T09:44:04.846Z",
+    "customField35": "Text custom field value",
+    "customField34": true,
+    "customField30": 42,
     "_links": {
         "attachments": {
             "href": "/api/v3/work_packages/2/attachments"
@@ -379,6 +382,10 @@
             "href": "/projects/demo-project/settings/custom_fields",
             "type": "text/html",
             "title": "Custom fields"
+        },
+        "customField26": {
+            "href": "/api/v3/users/4",
+            "title": "OpenProject Admin"
         },
         "configureForm": {
             "href": "/types/3/form_configuration/edit",

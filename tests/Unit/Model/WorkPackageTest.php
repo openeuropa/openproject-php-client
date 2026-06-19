@@ -6,6 +6,7 @@ namespace OpenEuropa\OpenProjectClient\Tests\Unit\Model;
 
 use OpenEuropa\OpenProjectClient\Exception\UnexpectedResponseException;
 use OpenEuropa\OpenProjectClient\Http\HalResource;
+use OpenEuropa\OpenProjectClient\Model\CustomFields;
 use OpenEuropa\OpenProjectClient\Model\Formattable;
 use OpenEuropa\OpenProjectClient\Model\Link;
 use OpenEuropa\OpenProjectClient\Model\WorkPackage;
@@ -18,6 +19,7 @@ use PHPUnit\Framework\TestCase;
 #[UsesClass(UnexpectedResponseException::class)]
 #[UsesClass(Formattable::class)]
 #[UsesClass(Link::class)]
+#[UsesClass(CustomFields::class)]
 final class WorkPackageTest extends TestCase
 {
     public function testDecodesWorkPackageFixture(): void
@@ -50,6 +52,19 @@ final class WorkPackageTest extends TestCase
         self::assertSame('Demo project', $workPackage->project?->title);
         self::assertSame('OpenProject Admin', $workPackage->author?->title);
         self::assertSame('OpenProject Admin', $workPackage->assignee?->title);
+
+        // Top-level simple custom fields.
+        self::assertSame('Text custom field value', $workPackage->customFields->values['customField35']);
+        self::assertTrue($workPackage->customFields->values['customField34']);
+        self::assertSame(42, $workPackage->customFields->values['customField30']);
+
+        // Reference custom field under _links.
+        self::assertCount(1, $workPackage->customFields->links['customField26']);
+        self::assertSame('/api/v3/users/4', $workPackage->customFields->links['customField26'][0]->href);
+        self::assertSame('OpenProject Admin', $workPackage->customFields->links['customField26'][0]->title);
+
+        // The _links.customFields HTML settings link (plural, no digit) must NOT appear in the bag.
+        self::assertArrayNotHasKey('customFields', $workPackage->customFields->links);
     }
 
     public function testAbsentOptionalFieldsAreNull(): void
@@ -69,6 +84,8 @@ final class WorkPackageTest extends TestCase
         self::assertNull($workPackage->status);
         self::assertNull($workPackage->type);
         self::assertNull($workPackage->assignee);
+        self::assertSame([], $workPackage->customFields->values);
+        self::assertSame([], $workPackage->customFields->links);
     }
 
     public function testThrowsWhenRequiredSubjectMissing(): void

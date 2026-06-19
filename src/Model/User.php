@@ -24,6 +24,7 @@ final readonly class User
         public ?string $avatar,
         public ?string $createdAt,
         public ?string $updatedAt,
+        public CustomFields $customFields,
     ) {
     }
 
@@ -50,6 +51,7 @@ final readonly class User
             $hal->getString('avatar'),
             $hal->getString('createdAt'),
             $hal->getString('updatedAt'),
+            CustomFields::fromApiResponse($data),
         );
     }
 }

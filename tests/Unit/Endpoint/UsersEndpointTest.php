@@ -10,6 +10,7 @@ use OpenEuropa\OpenProjectClient\Endpoint\AbstractEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\UsersEndpoint;
 use OpenEuropa\OpenProjectClient\Http\HalResource;
 use OpenEuropa\OpenProjectClient\Http\Transport;
+use OpenEuropa\OpenProjectClient\Model\CustomFields;
 use OpenEuropa\OpenProjectClient\Model\Formattable;
 use OpenEuropa\OpenProjectClient\Model\Link;
 use OpenEuropa\OpenProjectClient\Model\PageResults;
@@ -29,6 +30,7 @@ use PHPUnit\Framework\TestCase;
 #[UsesClass(User::class)]
 #[UsesClass(PageResults::class)]
 #[UsesClass(HalResource::class)]
+#[UsesClass(CustomFields::class)]
 #[UsesClass(Formattable::class)]
 #[UsesClass(Link::class)]
 #[UsesClass(ApiKeyAuthentication::class)]

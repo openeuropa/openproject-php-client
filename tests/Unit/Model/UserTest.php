@@ -6,6 +6,8 @@ namespace OpenEuropa\OpenProjectClient\Tests\Unit\Model;
 
 use OpenEuropa\OpenProjectClient\Exception\UnexpectedResponseException;
 use OpenEuropa\OpenProjectClient\Http\HalResource;
+use OpenEuropa\OpenProjectClient\Model\CustomFields;
+use OpenEuropa\OpenProjectClient\Model\Link;
 use OpenEuropa\OpenProjectClient\Model\User;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\UsesClass;
@@ -14,6 +16,8 @@ use PHPUnit\Framework\TestCase;
 #[CoversClass(User::class)]
 #[UsesClass(HalResource::class)]
 #[UsesClass(UnexpectedResponseException::class)]
+#[UsesClass(CustomFields::class)]
+#[UsesClass(Link::class)]
 final class UserTest extends TestCase
 {
     public function testDecodesUserFixture(): void
@@ -36,6 +40,11 @@ final class UserTest extends TestCase
         self::assertSame('https://example.org/users/1/avatar', $user->avatar);
         self::assertSame('2014-05-21T08:51:20.396Z', $user->createdAt);
         self::assertSame('2014-05-21T08:51:20.396Z', $user->updatedAt);
+
+        self::assertSame('User String CF value', $user->customFields->values['customField1']);
+        self::assertCount(1, $user->customFields->links['customField2']);
+        self::assertSame('/api/v3/custom_options/1', $user->customFields->links['customField2'][0]->href);
+        self::assertSame('Option A', $user->customFields->links['customField2'][0]->title);
     }
 
     public function testPermissionGatedFieldsAreNullWhenAbsent(): void
@@ -56,6 +65,8 @@ final class UserTest extends TestCase
         self::assertNull($user->avatar);
         self::assertNull($user->createdAt);
         self::assertNull($user->updatedAt);
+        self::assertSame([], $user->customFields->values);
+        self::assertSame([], $user->customFields->links);
     }
 
     public function testThrowsWhenRequiredIdMissing(): void

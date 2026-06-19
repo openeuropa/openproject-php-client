@@ -12,6 +12,7 @@
     "language": "en",
     "createdAt": "2014-05-21T08:51:20.396Z",
     "updatedAt": "2014-05-21T08:51:20.396Z",
+    "customField1": "User String CF value",
     "_links": {
         "self": {
             "href": "/api/v3/users/1",
@@ -20,6 +21,10 @@
         "showUser": {
             "href": "/users/1",
             "type": "text/html"
+        },
+        "customField2": {
+            "href": "/api/v3/custom_options/1",
+            "title": "Option A"
         }
     }
 }

@@ -33,6 +33,7 @@ final readonly class WorkPackage
         public ?Link $project,
         public ?Link $author,
         public ?Link $assignee,
+        public CustomFields $customFields,
     ) {
     }
 
@@ -75,6 +76,7 @@ final readonly class WorkPackage
             $hal->link('project'),
             $hal->link('author'),
             $hal->link('assignee'),
+            CustomFields::fromApiResponse($data),
         );
     }
 }
