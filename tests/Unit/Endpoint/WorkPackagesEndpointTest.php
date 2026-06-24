@@ -278,4 +278,43 @@ final class WorkPackagesEndpointTest extends TestCase
         self::assertStringContainsString('"subject":"Test work package"', (string) $request->getBody());
         self::assertSame('application/json', $request->getHeaderLine('Content-Type'));
     }
+
+    public function testUpdateWithDefaultNotifySendsPatchToWorkPackageUri(): void
+    {
+        $endpoint = $this->createEndpoint();
+        $this->queueFixtureResponse('work-package.json');
+
+        $workPackage = $endpoint->update(42, ['subject' => 'Updated subject'], 3);
+
+        $request = $this->lastRequest();
+        self::assertSame('PATCH', $request->getMethod());
+        self::assertSame('/api/v3/work_packages/42', $request->getUri()->getPath());
+        self::assertStringContainsString('notify=true', (string) $request->getUri());
+        self::assertInstanceOf(WorkPackage::class, $workPackage);
+        self::assertSame(2, $workPackage->id);
+        self::assertSame('Organize open source conference', $workPackage->subject);
+    }
+
+    public function testUpdateWithNotifyFalseSendsNotifyFalseQueryParam(): void
+    {
+        $endpoint = $this->createEndpoint();
+        $this->queueFixtureResponse('work-package.json');
+
+        $endpoint->update(42, ['subject' => 'Updated subject'], 3, notify: false);
+
+        self::assertStringContainsString('notify=false', (string) $this->lastRequest()->getUri());
+    }
+
+    public function testUpdateSendsLockVersionAndPayloadInJsonBody(): void
+    {
+        $endpoint = $this->createEndpoint();
+        $this->queueFixtureResponse('work-package.json');
+
+        $endpoint->update(42, ['subject' => 'Updated subject'], 3);
+
+        $request = $this->lastRequest();
+        self::assertStringContainsString('"lockVersion":3', (string) $request->getBody());
+        self::assertStringContainsString('"subject":"Updated subject"', (string) $request->getBody());
+        self::assertSame('application/json', $request->getHeaderLine('Content-Type'));
+    }
 }

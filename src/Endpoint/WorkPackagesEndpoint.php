@@ -133,4 +133,27 @@ final class WorkPackagesEndpoint extends AbstractEndpoint
             $this->transport->post('work_packages', $payload, ['notify' => $notify ? 'true' : 'false']),
         );
     }
+
+    /**
+     * Updates a work package and returns the updated resource.
+     *
+     * @param array<string, mixed> $payload
+     *   The work-package attributes to update.
+     * @param int $lockVersion
+     *   The current lock version of the work package, echoed back for optimistic locking.
+     * @param bool $notify
+     *   Whether to send notifications to involved users.
+     *
+     * @throws \OpenEuropa\OpenProjectClient\Exception\OpenProjectException
+     */
+    public function update(int $id, array $payload, int $lockVersion, bool $notify = true): WorkPackage
+    {
+        return WorkPackage::fromApiResponse(
+            $this->transport->patch(
+                'work_packages/' . $id,
+                ['lockVersion' => $lockVersion] + $payload,
+                ['notify' => $notify ? 'true' : 'false'],
+            ),
+        );
+    }
 }

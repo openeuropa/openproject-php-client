@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace OpenEuropa\OpenProjectClient\Tests\Integration;
 
+use OpenEuropa\OpenProjectClient\Exception\ConflictException;
 use OpenEuropa\OpenProjectClient\Exception\NotFoundException;
+use OpenEuropa\OpenProjectClient\Exception\ValidationException;
 use OpenEuropa\OpenProjectClient\Model\Form\Form;
+use OpenEuropa\OpenProjectClient\Model\WorkPackage;
 use PHPUnit\Framework\Attributes\CoversNothing;
 
 #[CoversNothing]
@@ -138,5 +141,76 @@ final class WorkPackagesTest extends IntegrationTestCase
 
         $fetched = $this->client->workPackages()->get($created->id);
         self::assertSame($subject, $fetched->subject);
+    }
+
+    public function testUpdateChangesSubjectAndCanBeReadBack(): void
+    {
+        $wp = $this->createWorkPackage();
+
+        $newSubject = 'phpclient-updated-' . uniqid();
+        self::assertNotNull($wp->id);
+        self::assertNotNull($wp->lockVersion);
+
+        $updated = $this->client->workPackages()->update($wp->id, ['subject' => $newSubject], $wp->lockVersion);
+
+        self::assertSame($newSubject, $updated->subject);
+
+        $fetched = $this->client->workPackages()->get($wp->id);
+        self::assertSame($newSubject, $fetched->subject);
+    }
+
+    public function testUpdateWithStaleLockVersionThrowsConflictException(): void
+    {
+        $wp = $this->createWorkPackage();
+
+        self::assertNotNull($wp->id);
+        self::assertNotNull($wp->lockVersion);
+
+        $originalLockVersion = $wp->lockVersion;
+
+        // Advance the lock version with a successful update.
+        $this->client->workPackages()->update(
+            $wp->id,
+            ['subject' => 'phpclient-conflict-' . uniqid()],
+            $originalLockVersion,
+        );
+
+        $this->expectException(ConflictException::class);
+        $this->client->workPackages()->update(
+            $wp->id,
+            ['subject' => 'phpclient-stale-' . uniqid()],
+            $originalLockVersion,
+        );
+    }
+
+    public function testUpdateWithInvalidPayloadThrowsValidationException(): void
+    {
+        $wp = $this->createWorkPackage();
+
+        self::assertNotNull($wp->id);
+        self::assertNotNull($wp->lockVersion);
+
+        $this->expectException(ValidationException::class);
+        $this->client->workPackages()->update($wp->id, ['subject' => ''], $wp->lockVersion);
+    }
+
+    private function createWorkPackage(): WorkPackage
+    {
+        $projects = $this->client->projects()->listPage();
+        self::assertNotEmpty($projects->elements, 'The instance must have at least one project.');
+        $projectId = $projects->elements[0]->id;
+        self::assertNotNull($projectId);
+
+        $types = $this->client->types()->allByProject($projectId);
+        self::assertNotEmpty($types->elements, 'The project must have at least one type.');
+        $typeId = $types->elements[0]->id;
+
+        return $this->client->workPackages()->create([
+            'subject' => 'phpclient-' . uniqid(),
+            '_links' => [
+                'project' => ['href' => '/api/v3/projects/' . $projectId],
+                'type' => ['href' => '/api/v3/types/' . $typeId],
+            ],
+        ]);
     }
 }
