@@ -114,4 +114,31 @@ final class WorkPackagesTest extends IntegrationTestCase
         self::assertInstanceOf(Form::class, $form);
         self::assertNotEmpty($form->schema);
     }
+
+    public function testCreatePersistsWorkPackageAndCanBeReadBack(): void
+    {
+        $projects = $this->client->projects()->listPage();
+        self::assertNotEmpty($projects->elements, 'The instance must have at least one project.');
+        $projectId = $projects->elements[0]->id;
+        self::assertNotNull($projectId);
+
+        $types = $this->client->types()->allByProject($projectId);
+        self::assertNotEmpty($types->elements, 'The project must have at least one type.');
+        $typeId = $types->elements[0]->id;
+
+        $subject = 'phpclient-' . uniqid();
+        $created = $this->client->workPackages()->create([
+            'subject' => $subject,
+            '_links' => [
+                'project' => ['href' => '/api/v3/projects/' . $projectId],
+                'type' => ['href' => '/api/v3/types/' . $typeId],
+            ],
+        ]);
+
+        self::assertNotNull($created->id);
+        self::assertSame($subject, $created->subject);
+
+        $fetched = $this->client->workPackages()->get($created->id);
+        self::assertSame($subject, $fetched->subject);
+    }
 }

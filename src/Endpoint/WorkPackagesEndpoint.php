@@ -116,4 +116,21 @@ final class WorkPackagesEndpoint extends AbstractEndpoint
     {
         return Form::fromApiResponse($this->transport->post('work_packages/' . $id . '/form', $payload));
     }
+
+    /**
+     * Creates a work package and returns the created resource.
+     *
+     * @param array<string, mixed> $payload
+     *   The work-package attributes to create, including required links.
+     * @param bool $notify
+     *   Whether to send notifications to involved users.
+     *
+     * @throws \OpenEuropa\OpenProjectClient\Exception\OpenProjectException
+     */
+    public function create(array $payload, bool $notify = true): WorkPackage
+    {
+        return WorkPackage::fromApiResponse(
+            $this->transport->post('work_packages', $payload, ['notify' => $notify ? 'true' : 'false']),
+        );
+    }
 }
