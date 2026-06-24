@@ -20,9 +20,7 @@ final class ProjectsTest extends IntegrationTestCase
     {
         $results = $this->client->projects()->listPage();
 
-        if (empty($results->elements)) {
-            self::markTestSkipped('No projects found in the instance.');
-        }
+        self::assertNotEmpty($results->elements, 'The instance must have at least one project.');
 
         self::assertNotNull($results->elements[0]->id);
         self::assertNotNull($results->elements[0]->name);
@@ -32,9 +30,7 @@ final class ProjectsTest extends IntegrationTestCase
     {
         $projects = iterator_to_array($this->client->projects()->all());
 
-        if (empty($projects)) {
-            self::markTestSkipped('No projects found in the instance.');
-        }
+        self::assertNotEmpty($projects, 'The instance must have at least one project.');
 
         self::assertNotNull($projects[0]->id);
         self::assertNotNull($projects[0]->name);
@@ -44,9 +40,7 @@ final class ProjectsTest extends IntegrationTestCase
     {
         $results = $this->client->projects()->listPage();
 
-        if (empty($results->elements)) {
-            self::markTestSkipped('No projects found in the instance.');
-        }
+        self::assertNotEmpty($results->elements, 'The instance must have at least one project.');
 
         $firstId = $results->elements[0]->id;
         self::assertNotNull($firstId);

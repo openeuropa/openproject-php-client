@@ -65,9 +65,7 @@ final class WorkPackagesTest extends IntegrationTestCase
     {
         $projects = $this->client->projects()->listPage();
 
-        if (empty($projects->elements)) {
-            self::markTestSkipped('No projects found in the instance.');
-        }
+        self::assertNotEmpty($projects->elements, 'The instance must have at least one project.');
 
         $projectId = $projects->elements[0]->id;
         self::assertNotNull($projectId);

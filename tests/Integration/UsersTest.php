@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace OpenEuropa\OpenProjectClient\Tests\Integration;
 
-use OpenEuropa\OpenProjectClient\Exception\NotFoundException;
 use PHPUnit\Framework\Attributes\CoversNothing;
 
 #[CoversNothing]
@@ -12,11 +11,7 @@ final class UsersTest extends IntegrationTestCase
 {
     public function testGetReturnsUserWithMatchingId(): void
     {
-        try {
-            $user = $this->client->users()->get(1);
-        } catch (NotFoundException) {
-            self::markTestSkipped('User 1 not found in the instance.');
-        }
+        $user = $this->client->users()->get(1);
 
         self::assertSame(1, $user->id);
         self::assertNotSame('', $user->name);
@@ -26,9 +21,7 @@ final class UsersTest extends IntegrationTestCase
     {
         $results = $this->client->users()->listPage();
 
-        if (empty($results->elements)) {
-            self::markTestSkipped('No users found in the instance.');
-        }
+        self::assertNotEmpty($results->elements, 'The instance must have at least one user.');
 
         $user = $results->elements[0];
 
@@ -45,9 +38,7 @@ final class UsersTest extends IntegrationTestCase
             break;
         }
 
-        if ($user === null) {
-            self::markTestSkipped('No users found in the instance.');
-        }
+        self::assertNotNull($user, 'The instance must have at least one user.');
 
         self::assertGreaterThan(0, $user->id);
         self::assertNotSame('', $user->name);
