@@ -93,4 +93,25 @@ final class WorkPackagesTest extends IntegrationTestCase
         self::assertInstanceOf(Form::class, $form);
         self::assertNotEmpty($form->schema);
     }
+
+    public function testUpdateFormReturnsFormWithSchema(): void
+    {
+        try {
+            $workPackage = $this->client->workPackages()->get(2);
+        } catch (NotFoundException) {
+            self::markTestSkipped('Work package 2 not found in the instance.');
+        }
+
+        if ($workPackage->id === null) {
+            self::markTestSkipped('Work package has no ID.');
+        }
+
+        $form = $this->client->workPackages()->updateForm($workPackage->id, [
+            'subject' => 'phpclient updated subject',
+            'lockVersion' => $workPackage->lockVersion,
+        ]);
+
+        self::assertInstanceOf(Form::class, $form);
+        self::assertNotEmpty($form->schema);
+    }
 }

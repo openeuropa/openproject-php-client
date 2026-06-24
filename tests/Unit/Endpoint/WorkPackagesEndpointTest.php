@@ -213,4 +213,31 @@ final class WorkPackagesEndpointTest extends TestCase
         self::assertStringContainsString('"subject":"My work package"', (string) $request->getBody());
         self::assertSame('application/json', $request->getHeaderLine('Content-Type'));
     }
+
+    public function testUpdateFormSendsPostToWorkPackageFormUri(): void
+    {
+        $endpoint = $this->createEndpoint();
+        $this->queueFixtureResponse('form.json');
+
+        $form = $endpoint->updateForm(42, ['subject' => 'Updated subject']);
+
+        self::assertSame('POST', $this->lastRequest()->getMethod());
+        self::assertSame(
+            'http://example.test/api/v3/work_packages/42/form',
+            (string) $this->lastRequest()->getUri(),
+        );
+        self::assertInstanceOf(Form::class, $form);
+    }
+
+    public function testUpdateFormWithPayloadSendsJsonBodyAndContentTypeHeader(): void
+    {
+        $endpoint = $this->createEndpoint();
+        $this->queueFixtureResponse('form.json');
+
+        $endpoint->updateForm(42, ['subject' => 'Updated subject']);
+
+        $request = $this->lastRequest();
+        self::assertStringContainsString('"subject":"Updated subject"', (string) $request->getBody());
+        self::assertSame('application/json', $request->getHeaderLine('Content-Type'));
+    }
 }

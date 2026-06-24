@@ -9,6 +9,10 @@ use OpenEuropa\OpenProjectClient\Model\ValidationError;
 
 /**
  * A form response containing the writable payload, schema, and validation errors.
+ *
+ * The form endpoints return HTTP 200 even when the payload has validation
+ * errors, so callers must check the validation errors (or hasErrors()) rather
+ * than relying on the status code.
  */
 final readonly class Form
 {

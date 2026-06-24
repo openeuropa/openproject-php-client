@@ -86,9 +86,6 @@ final class WorkPackagesEndpoint extends AbstractEndpoint
     /**
      * Returns the work-package create form, optionally scoped to a project.
      *
-     * The API returns HTTP 200 even when the payload has validation errors;
-     * check the returned Form's validationErrors for field-level problems.
-     *
      * @param array<string, mixed> $payload
      *   The work-package attributes to pre-populate and validate.
      * @param int|null $projectId
@@ -103,5 +100,20 @@ final class WorkPackagesEndpoint extends AbstractEndpoint
             : 'work_packages/form';
 
         return Form::fromApiResponse($this->transport->post($path, $payload));
+    }
+
+    /**
+     * Returns the work-package edit form for an existing work package.
+     *
+     * @param int $id
+     *   The ID of the work package to validate the payload against.
+     * @param array<string, mixed> $payload
+     *   The work-package attributes to validate.
+     *
+     * @throws \OpenEuropa\OpenProjectClient\Exception\OpenProjectException
+     */
+    public function updateForm(int $id, array $payload): Form
+    {
+        return Form::fromApiResponse($this->transport->post('work_packages/' . $id . '/form', $payload));
     }
 }
