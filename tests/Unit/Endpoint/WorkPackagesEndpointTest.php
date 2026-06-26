@@ -317,4 +317,19 @@ final class WorkPackagesEndpointTest extends TestCase
         self::assertStringContainsString('"subject":"Updated subject"', (string) $request->getBody());
         self::assertSame('application/json', $request->getHeaderLine('Content-Type'));
     }
+
+    public function testDeleteSendsDeleteToWorkPackageUri(): void
+    {
+        $endpoint = $this->createEndpoint();
+        $this->queueJsonResponse('', 204);
+
+        $endpoint->delete(42);
+
+        $request = $this->lastRequest();
+        self::assertSame('DELETE', $request->getMethod());
+        self::assertSame(
+            'http://example.test/api/v3/work_packages/42',
+            (string) $request->getUri(),
+        );
+    }
 }

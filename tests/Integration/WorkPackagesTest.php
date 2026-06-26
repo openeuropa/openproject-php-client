@@ -14,19 +14,35 @@ use PHPUnit\Framework\Attributes\CoversNothing;
 #[CoversNothing]
 final class WorkPackagesTest extends IntegrationTestCase
 {
+    /**
+     * IDs of work packages created during a test run, deleted in tearDown.
+     *
+     * @var list<int>
+     */
+    private array $createdWorkPackageIds = [];
+
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+
+        foreach ($this->createdWorkPackageIds as $id) {
+            try {
+                $this->client->workPackages()->delete($id);
+            } catch (NotFoundException) {
+                // Already deleted; nothing to clean up.
+            }
+        }
+    }
+
     public function testGetReturnsWorkPackageWithMatchingId(): void
     {
-        // A known seeded work package id is used. A missing id skips rather
-        // than fails, so the test stays valid against an instance without that
-        // work package.
-        try {
-            $workPackage = $this->client->workPackages()->get(2);
-        } catch (NotFoundException) {
-            self::markTestSkipped('Work package 2 not found in the instance.');
-        }
+        $wp = $this->createWorkPackage();
+        $id = $wp->id;
+        self::assertNotNull($id);
 
-        self::assertSame(2, $workPackage->id);
-        self::assertNotEmpty($workPackage->subject);
+        $fetched = $this->client->workPackages()->get($id);
+        self::assertSame($id, $fetched->id);
+        self::assertNotEmpty($fetched->subject);
     }
 
     public function testListPageReturnsNonNegativeTotal(): void
@@ -97,19 +113,13 @@ final class WorkPackagesTest extends IntegrationTestCase
 
     public function testUpdateFormReturnsFormWithSchema(): void
     {
-        try {
-            $workPackage = $this->client->workPackages()->get(2);
-        } catch (NotFoundException) {
-            self::markTestSkipped('Work package 2 not found in the instance.');
-        }
+        $wp = $this->createWorkPackage();
+        $id = $wp->id;
+        self::assertNotNull($id);
 
-        if ($workPackage->id === null) {
-            self::markTestSkipped('Work package has no ID.');
-        }
-
-        $form = $this->client->workPackages()->updateForm($workPackage->id, [
+        $form = $this->client->workPackages()->updateForm($id, [
             'subject' => 'phpclient updated subject',
-            'lockVersion' => $workPackage->lockVersion,
+            'lockVersion' => $wp->lockVersion,
         ]);
 
         self::assertInstanceOf(Form::class, $form);
@@ -137,10 +147,23 @@ final class WorkPackagesTest extends IntegrationTestCase
         ]);
 
         self::assertNotNull($created->id);
+        $this->createdWorkPackageIds[] = $created->id;
         self::assertSame($subject, $created->subject);
 
         $fetched = $this->client->workPackages()->get($created->id);
         self::assertSame($subject, $fetched->subject);
+    }
+
+    public function testDeleteRemovesWorkPackage(): void
+    {
+        $wp = $this->createWorkPackage();
+        $id = $wp->id;
+        self::assertNotNull($id);
+
+        $this->client->workPackages()->delete($id);
+
+        $this->expectException(NotFoundException::class);
+        $this->client->workPackages()->get($id);
     }
 
     public function testUpdateChangesSubjectAndCanBeReadBack(): void
@@ -205,12 +228,18 @@ final class WorkPackagesTest extends IntegrationTestCase
         self::assertNotEmpty($types->elements, 'The project must have at least one type.');
         $typeId = $types->elements[0]->id;
 
-        return $this->client->workPackages()->create([
+        $wp = $this->client->workPackages()->create([
             'subject' => 'phpclient-' . uniqid(),
             '_links' => [
                 'project' => ['href' => '/api/v3/projects/' . $projectId],
                 'type' => ['href' => '/api/v3/types/' . $typeId],
             ],
         ]);
+
+        $id = $wp->id;
+        self::assertNotNull($id);
+        $this->createdWorkPackageIds[] = $id;
+
+        return $wp;
     }
 }

@@ -156,4 +156,14 @@ final class WorkPackagesEndpoint extends AbstractEndpoint
             ),
         );
     }
+
+    /**
+     * Deletes a work package by ID.
+     *
+     * @throws \OpenEuropa\OpenProjectClient\Exception\OpenProjectException
+     */
+    public function delete(int $id): void
+    {
+        $this->transport->delete('work_packages/' . $id);
+    }
 }
