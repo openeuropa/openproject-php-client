@@ -7,6 +7,7 @@ namespace OpenEuropa\OpenProjectClient\Endpoint;
 use OpenEuropa\OpenProjectClient\Model\Form\Form;
 use OpenEuropa\OpenProjectClient\Model\PageResults;
 use OpenEuropa\OpenProjectClient\Model\WorkPackage;
+use OpenEuropa\OpenProjectClient\Model\WorkPackageInput;
 use OpenEuropa\OpenProjectClient\Query\CollectionParams;
 use OpenEuropa\OpenProjectClient\Query\FilterSet;
 
@@ -120,24 +121,26 @@ final class WorkPackagesEndpoint extends AbstractEndpoint
     /**
      * Creates a work package and returns the created resource.
      *
-     * @param array<string, mixed> $payload
+     * @param array<string, mixed>|WorkPackageInput $payload
      *   The work-package attributes to create, including required links.
      * @param bool $notify
      *   Whether to send notifications to involved users.
      *
      * @throws \OpenEuropa\OpenProjectClient\Exception\OpenProjectException
      */
-    public function create(array $payload, bool $notify = true): WorkPackage
+    public function create(WorkPackageInput|array $payload, bool $notify = true): WorkPackage
     {
+        $body = $payload instanceof WorkPackageInput ? $payload->toArray() : $payload;
+
         return WorkPackage::fromApiResponse(
-            $this->transport->post('work_packages', $payload, ['notify' => $notify ? 'true' : 'false']),
+            $this->transport->post('work_packages', $body, ['notify' => $notify ? 'true' : 'false']),
         );
     }
 
     /**
      * Updates a work package and returns the updated resource.
      *
-     * @param array<string, mixed> $payload
+     * @param array<string, mixed>|WorkPackageInput $payload
      *   The work-package attributes to update.
      * @param int $lockVersion
      *   The current lock version of the work package, echoed back for optimistic locking.
@@ -146,12 +149,14 @@ final class WorkPackagesEndpoint extends AbstractEndpoint
      *
      * @throws \OpenEuropa\OpenProjectClient\Exception\OpenProjectException
      */
-    public function update(int $id, array $payload, int $lockVersion, bool $notify = true): WorkPackage
+    public function update(int $id, WorkPackageInput|array $payload, int $lockVersion, bool $notify = true): WorkPackage
     {
+        $body = $payload instanceof WorkPackageInput ? $payload->toArray() : $payload;
+
         return WorkPackage::fromApiResponse(
             $this->transport->patch(
                 'work_packages/' . $id,
-                ['lockVersion' => $lockVersion] + $payload,
+                ['lockVersion' => $lockVersion] + $body,
                 ['notify' => $notify ? 'true' : 'false'],
             ),
         );

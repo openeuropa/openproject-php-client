@@ -18,6 +18,7 @@ use OpenEuropa\OpenProjectClient\Model\Link;
 use OpenEuropa\OpenProjectClient\Model\PageResults;
 use OpenEuropa\OpenProjectClient\Model\ValidationError;
 use OpenEuropa\OpenProjectClient\Model\WorkPackage;
+use OpenEuropa\OpenProjectClient\Model\WorkPackageInput;
 use OpenEuropa\OpenProjectClient\Query\CollectionParams;
 use OpenEuropa\OpenProjectClient\Query\Filter;
 use OpenEuropa\OpenProjectClient\Query\FilterOperator;
@@ -44,6 +45,7 @@ use PHPUnit\Framework\TestCase;
 #[UsesClass(Filter::class)]
 #[UsesClass(FilterOperator::class)]
 #[UsesClass(CollectionParams::class)]
+#[UsesClass(WorkPackageInput::class)]
 final class WorkPackagesEndpointTest extends TestCase
 {
     use MockClientTrait;
@@ -331,5 +333,35 @@ final class WorkPackagesEndpointTest extends TestCase
             'http://example.test/api/v3/work_packages/42',
             (string) $request->getUri(),
         );
+    }
+
+    public function testCreateWithInputSendsExpectedJsonBody(): void
+    {
+        $endpoint = $this->createEndpoint();
+        $this->queueFixtureResponse('work-package.json', 201);
+
+        $input = (new WorkPackageInput())->subject('Input task')->type(1);
+        $result = $endpoint->create($input);
+
+        $body = (string) $this->lastRequest()->getBody();
+        self::assertStringContainsString('"subject":"Input task"', $body);
+        self::assertStringContainsString('"type"', $body);
+        self::assertStringContainsString('types', $body);
+        self::assertInstanceOf(WorkPackage::class, $result);
+    }
+
+    public function testUpdateWithInputSendsLockVersionAndInputFields(): void
+    {
+        $endpoint = $this->createEndpoint();
+        $this->queueFixtureResponse('work-package.json');
+
+        $input = (new WorkPackageInput())->subject('Updated via input')->status(2);
+        $result = $endpoint->update(42, $input, 3);
+
+        $body = (string) $this->lastRequest()->getBody();
+        self::assertStringContainsString('"lockVersion":3', $body);
+        self::assertStringContainsString('"subject":"Updated via input"', $body);
+        self::assertStringContainsString('statuses', $body);
+        self::assertInstanceOf(WorkPackage::class, $result);
     }
 }
