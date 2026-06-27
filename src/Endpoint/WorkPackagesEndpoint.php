@@ -87,20 +87,23 @@ final class WorkPackagesEndpoint extends AbstractEndpoint
     /**
      * Returns the work-package create form, optionally scoped to a project.
      *
-     * @param array<string, mixed> $payload
+     * @param WorkPackageInput|null $payload
      *   The work-package attributes to pre-populate and validate.
+     *   Pass null (or omit) to request a blank form.
      * @param int|null $projectId
      *   When provided, the form is scoped to this project.
      *
      * @throws \OpenEuropa\OpenProjectClient\Exception\OpenProjectException
      */
-    public function createForm(array $payload = [], ?int $projectId = null): Form
+    public function createForm(?WorkPackageInput $payload = null, ?int $projectId = null): Form
     {
         $path = $projectId !== null
             ? 'projects/' . $projectId . '/work_packages/form'
             : 'work_packages/form';
 
-        return Form::fromApiResponse($this->transport->post($path, $payload));
+        $body = $payload?->toArray() ?? [];
+
+        return Form::fromApiResponse($this->transport->post($path, $body));
     }
 
     /**
@@ -108,39 +111,37 @@ final class WorkPackagesEndpoint extends AbstractEndpoint
      *
      * @param int $id
      *   The ID of the work package to validate the payload against.
-     * @param array<string, mixed> $payload
+     * @param WorkPackageInput $payload
      *   The work-package attributes to validate.
      *
      * @throws \OpenEuropa\OpenProjectClient\Exception\OpenProjectException
      */
-    public function updateForm(int $id, array $payload): Form
+    public function updateForm(int $id, WorkPackageInput $payload): Form
     {
-        return Form::fromApiResponse($this->transport->post('work_packages/' . $id . '/form', $payload));
+        return Form::fromApiResponse($this->transport->post('work_packages/' . $id . '/form', $payload->toArray()));
     }
 
     /**
      * Creates a work package and returns the created resource.
      *
-     * @param array<string, mixed>|WorkPackageInput $payload
+     * @param WorkPackageInput $payload
      *   The work-package attributes to create, including required links.
      * @param bool $notify
      *   Whether to send notifications to involved users.
      *
      * @throws \OpenEuropa\OpenProjectClient\Exception\OpenProjectException
      */
-    public function create(WorkPackageInput|array $payload, bool $notify = true): WorkPackage
+    public function create(WorkPackageInput $payload, bool $notify = true): WorkPackage
     {
-        $body = $payload instanceof WorkPackageInput ? $payload->toArray() : $payload;
-
         return WorkPackage::fromApiResponse(
-            $this->transport->post('work_packages', $body, ['notify' => $notify ? 'true' : 'false']),
+            $this->transport->post('work_packages', $payload->toArray(), ['notify' => $notify ? 'true' : 'false']),
         );
     }
 
     /**
      * Updates a work package and returns the updated resource.
      *
-     * @param array<string, mixed>|WorkPackageInput $payload
+     * @param WorkPackageInput $payload
      *   The work-package attributes to update.
      * @param int $lockVersion
      *   The current lock version of the work package, echoed back for optimistic locking.
@@ -149,14 +150,12 @@ final class WorkPackagesEndpoint extends AbstractEndpoint
      *
      * @throws \OpenEuropa\OpenProjectClient\Exception\OpenProjectException
      */
-    public function update(int $id, WorkPackageInput|array $payload, int $lockVersion, bool $notify = true): WorkPackage
+    public function update(int $id, WorkPackageInput $payload, int $lockVersion, bool $notify = true): WorkPackage
     {
-        $body = $payload instanceof WorkPackageInput ? $payload->toArray() : $payload;
-
         return WorkPackage::fromApiResponse(
             $this->transport->patch(
                 'work_packages/' . $id,
-                ['lockVersion' => $lockVersion] + $body,
+                ['lockVersion' => $lockVersion] + $payload->toArray(),
                 ['notify' => $notify ? 'true' : 'false'],
             ),
         );

@@ -9,6 +9,7 @@ use OpenEuropa\OpenProjectClient\Exception\NotFoundException;
 use OpenEuropa\OpenProjectClient\Exception\ValidationException;
 use OpenEuropa\OpenProjectClient\Model\Form\Form;
 use OpenEuropa\OpenProjectClient\Model\WorkPackage;
+use OpenEuropa\OpenProjectClient\Model\WorkPackageInput;
 use PHPUnit\Framework\Attributes\CoversNothing;
 
 #[CoversNothing]
@@ -117,10 +118,10 @@ final class WorkPackagesTest extends IntegrationTestCase
         $id = $wp->id;
         self::assertNotNull($id);
 
-        $form = $this->client->workPackages()->updateForm($id, [
-            'subject' => 'phpclient updated subject',
-            'lockVersion' => $wp->lockVersion,
-        ]);
+        $form = $this->client->workPackages()->updateForm(
+            $id,
+            (new WorkPackageInput())->subject('phpclient updated subject')->set('lockVersion', $wp->lockVersion),
+        );
 
         self::assertInstanceOf(Form::class, $form);
         self::assertNotEmpty($form->schema);
@@ -138,13 +139,9 @@ final class WorkPackagesTest extends IntegrationTestCase
         $typeId = $types->elements[0]->id;
 
         $subject = 'phpclient-' . uniqid();
-        $created = $this->client->workPackages()->create([
-            'subject' => $subject,
-            '_links' => [
-                'project' => ['href' => '/api/v3/projects/' . $projectId],
-                'type' => ['href' => '/api/v3/types/' . $typeId],
-            ],
-        ]);
+        $created = $this->client->workPackages()->create(
+            (new WorkPackageInput())->subject($subject)->project($projectId)->type($typeId),
+        );
 
         self::assertNotNull($created->id);
         $this->createdWorkPackageIds[] = $created->id;
@@ -174,7 +171,11 @@ final class WorkPackagesTest extends IntegrationTestCase
         self::assertNotNull($wp->id);
         self::assertNotNull($wp->lockVersion);
 
-        $updated = $this->client->workPackages()->update($wp->id, ['subject' => $newSubject], $wp->lockVersion);
+        $updated = $this->client->workPackages()->update(
+            $wp->id,
+            (new WorkPackageInput())->subject($newSubject),
+            $wp->lockVersion,
+        );
 
         self::assertSame($newSubject, $updated->subject);
 
@@ -194,14 +195,14 @@ final class WorkPackagesTest extends IntegrationTestCase
         // Advance the lock version with a successful update.
         $this->client->workPackages()->update(
             $wp->id,
-            ['subject' => 'phpclient-conflict-' . uniqid()],
+            (new WorkPackageInput())->subject('phpclient-conflict-' . uniqid()),
             $originalLockVersion,
         );
 
         $this->expectException(ConflictException::class);
         $this->client->workPackages()->update(
             $wp->id,
-            ['subject' => 'phpclient-stale-' . uniqid()],
+            (new WorkPackageInput())->subject('phpclient-stale-' . uniqid()),
             $originalLockVersion,
         );
     }
@@ -214,7 +215,7 @@ final class WorkPackagesTest extends IntegrationTestCase
         self::assertNotNull($wp->lockVersion);
 
         $this->expectException(ValidationException::class);
-        $this->client->workPackages()->update($wp->id, ['subject' => ''], $wp->lockVersion);
+        $this->client->workPackages()->update($wp->id, (new WorkPackageInput())->subject(''), $wp->lockVersion);
     }
 
     private function createWorkPackage(): WorkPackage
@@ -228,13 +229,9 @@ final class WorkPackagesTest extends IntegrationTestCase
         self::assertNotEmpty($types->elements, 'The project must have at least one type.');
         $typeId = $types->elements[0]->id;
 
-        $wp = $this->client->workPackages()->create([
-            'subject' => 'phpclient-' . uniqid(),
-            '_links' => [
-                'project' => ['href' => '/api/v3/projects/' . $projectId],
-                'type' => ['href' => '/api/v3/types/' . $typeId],
-            ],
-        ]);
+        $wp = $this->client->workPackages()->create(
+            (new WorkPackageInput())->subject('phpclient-' . uniqid())->project($projectId)->type($typeId),
+        );
 
         $id = $wp->id;
         self::assertNotNull($id);

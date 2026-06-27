@@ -196,7 +196,7 @@ final class WorkPackagesEndpointTest extends TestCase
         $endpoint = $this->createEndpoint();
         $this->queueFixtureResponse('form.json');
 
-        $endpoint->createForm([], 6);
+        $endpoint->createForm(null, 6);
 
         self::assertSame(
             'http://example.test/api/v3/projects/6/work_packages/form',
@@ -209,7 +209,7 @@ final class WorkPackagesEndpointTest extends TestCase
         $endpoint = $this->createEndpoint();
         $this->queueFixtureResponse('form.json');
 
-        $endpoint->createForm(['subject' => 'My work package']);
+        $endpoint->createForm((new WorkPackageInput())->subject('My work package'));
 
         $request = $this->lastRequest();
         self::assertStringContainsString('"subject":"My work package"', (string) $request->getBody());
@@ -221,7 +221,7 @@ final class WorkPackagesEndpointTest extends TestCase
         $endpoint = $this->createEndpoint();
         $this->queueFixtureResponse('form.json');
 
-        $form = $endpoint->updateForm(42, ['subject' => 'Updated subject']);
+        $form = $endpoint->updateForm(42, (new WorkPackageInput())->subject('Updated subject'));
 
         self::assertSame('POST', $this->lastRequest()->getMethod());
         self::assertSame(
@@ -236,7 +236,7 @@ final class WorkPackagesEndpointTest extends TestCase
         $endpoint = $this->createEndpoint();
         $this->queueFixtureResponse('form.json');
 
-        $endpoint->updateForm(42, ['subject' => 'Updated subject']);
+        $endpoint->updateForm(42, (new WorkPackageInput())->subject('Updated subject'));
 
         $request = $this->lastRequest();
         self::assertStringContainsString('"subject":"Updated subject"', (string) $request->getBody());
@@ -248,7 +248,7 @@ final class WorkPackagesEndpointTest extends TestCase
         $endpoint = $this->createEndpoint();
         $this->queueFixtureResponse('work-package.json', 201);
 
-        $workPackage = $endpoint->create(['subject' => 'Test work package']);
+        $workPackage = $endpoint->create((new WorkPackageInput())->subject('Test work package'));
 
         $request = $this->lastRequest();
         self::assertSame('POST', $request->getMethod());
@@ -264,7 +264,7 @@ final class WorkPackagesEndpointTest extends TestCase
         $endpoint = $this->createEndpoint();
         $this->queueFixtureResponse('work-package.json', 201);
 
-        $endpoint->create(['subject' => 'Test work package'], false);
+        $endpoint->create((new WorkPackageInput())->subject('Test work package'), false);
 
         self::assertStringContainsString('notify=false', (string) $this->lastRequest()->getUri());
     }
@@ -274,7 +274,7 @@ final class WorkPackagesEndpointTest extends TestCase
         $endpoint = $this->createEndpoint();
         $this->queueFixtureResponse('work-package.json', 201);
 
-        $endpoint->create(['subject' => 'Test work package']);
+        $endpoint->create((new WorkPackageInput())->subject('Test work package'));
 
         $request = $this->lastRequest();
         self::assertStringContainsString('"subject":"Test work package"', (string) $request->getBody());
@@ -286,7 +286,7 @@ final class WorkPackagesEndpointTest extends TestCase
         $endpoint = $this->createEndpoint();
         $this->queueFixtureResponse('work-package.json');
 
-        $workPackage = $endpoint->update(42, ['subject' => 'Updated subject'], 3);
+        $workPackage = $endpoint->update(42, (new WorkPackageInput())->subject('Updated subject'), 3);
 
         $request = $this->lastRequest();
         self::assertSame('PATCH', $request->getMethod());
@@ -302,7 +302,7 @@ final class WorkPackagesEndpointTest extends TestCase
         $endpoint = $this->createEndpoint();
         $this->queueFixtureResponse('work-package.json');
 
-        $endpoint->update(42, ['subject' => 'Updated subject'], 3, notify: false);
+        $endpoint->update(42, (new WorkPackageInput())->subject('Updated subject'), 3, notify: false);
 
         self::assertStringContainsString('notify=false', (string) $this->lastRequest()->getUri());
     }
@@ -312,7 +312,7 @@ final class WorkPackagesEndpointTest extends TestCase
         $endpoint = $this->createEndpoint();
         $this->queueFixtureResponse('work-package.json');
 
-        $endpoint->update(42, ['subject' => 'Updated subject'], 3);
+        $endpoint->update(42, (new WorkPackageInput())->subject('Updated subject'), 3);
 
         $request = $this->lastRequest();
         self::assertStringContainsString('"lockVersion":3', (string) $request->getBody());
