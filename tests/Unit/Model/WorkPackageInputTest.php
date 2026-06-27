@@ -182,10 +182,13 @@ final class WorkPackageInputTest extends TestCase
         ], $input->toArray());
     }
 
-    public function testManualLinksPreservedWhenRelationshipSetterAlsoUsed(): void
+    public function testTypedRelationshipSetterWinsOverManualLinksOnCollision(): void
     {
         $input = (new WorkPackageInput())
-            ->set('_links', ['customRel' => ['href' => '/api/v3/foo/1']])
+            ->set('_links', [
+                'customRel' => ['href' => '/api/v3/foo/1'],
+                'type' => ['href' => '/api/v3/types/99'],
+            ])
             ->type(2);
 
         $payload = $input->toArray();

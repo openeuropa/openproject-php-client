@@ -230,7 +230,7 @@ final class WorkPackageInput
 
         if ($this->links !== []) {
             $existing = isset($payload['_links']) && is_array($payload['_links']) ? $payload['_links'] : [];
-            $payload['_links'] = $existing + $this->links;
+            $payload['_links'] = $this->links + $existing;
         }
 
         return $payload;
