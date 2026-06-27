@@ -196,4 +196,35 @@ final class WorkPackageInputTest extends TestCase
         self::assertSame('/api/v3/foo/1', $links['customRel']['href']);
         self::assertSame('/api/v3/types/2', $links['type']['href']);
     }
+
+    public function testFromArrayRoundTrips(): void
+    {
+        $data = [
+            'subject' => 'Seeded task',
+            'percentageDone' => 50,
+            '_links' => [
+                'type' => ['href' => '/api/v3/types/1'],
+                'status' => ['href' => '/api/v3/statuses/3'],
+            ],
+        ];
+
+        self::assertSame($data, WorkPackageInput::fromArray($data)->toArray());
+    }
+
+    public function testFromArrayScalarOverride(): void
+    {
+        self::assertSame(
+            ['subject' => 'Override'],
+            WorkPackageInput::fromArray(['subject' => 'Seeded'])->subject('Override')->toArray()
+        );
+    }
+
+    public function testFromArrayTypedLinkOverridesSeededLink(): void
+    {
+        $result = WorkPackageInput::fromArray([
+            '_links' => ['type' => ['href' => '/api/v3/types/1']],
+        ])->type(2)->toArray();
+
+        self::assertSame(['_links' => ['type' => ['href' => '/api/v3/types/2']]], $result);
+    }
 }
