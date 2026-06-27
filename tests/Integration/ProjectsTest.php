@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace OpenEuropa\OpenProjectClient\Tests\Integration;
 
+use OpenEuropa\OpenProjectClient\Model\Form\Form;
 use PHPUnit\Framework\Attributes\CoversNothing;
 
 #[CoversNothing]
@@ -48,5 +49,12 @@ final class ProjectsTest extends IntegrationTestCase
         $project = $this->client->projects()->get($firstId);
 
         self::assertSame($firstId, $project->id);
+    }
+
+    public function testCreateFormReturnsFormWithSchema(): void
+    {
+        $form = $this->client->projects()->createForm();
+        self::assertInstanceOf(Form::class, $form);
+        self::assertNotEmpty($form->schema);
     }
 }

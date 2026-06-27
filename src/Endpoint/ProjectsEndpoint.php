@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace OpenEuropa\OpenProjectClient\Endpoint;
 
+use OpenEuropa\OpenProjectClient\Model\Form\Form;
 use OpenEuropa\OpenProjectClient\Model\PageResults;
 use OpenEuropa\OpenProjectClient\Model\Project;
+use OpenEuropa\OpenProjectClient\Model\ProjectInput;
 use OpenEuropa\OpenProjectClient\Query\CollectionParams;
 use OpenEuropa\OpenProjectClient\Query\FilterSet;
 
@@ -46,5 +48,21 @@ final class ProjectsEndpoint extends AbstractEndpoint
     public function listPage(?FilterSet $filters = null, ?CollectionParams $params = null): PageResults
     {
         return $this->getCollectionPage('projects', Project::fromApiResponse(...), $filters, $params);
+    }
+
+    /**
+     * Returns the project create form, optionally pre-populated with a payload.
+     *
+     * @param ProjectInput|null $payload
+     *   The project attributes to pre-populate and validate.
+     *   Pass null (or omit) to request a blank form.
+     *
+     * @throws \OpenEuropa\OpenProjectClient\Exception\OpenProjectException
+     */
+    public function createForm(?ProjectInput $payload = null): Form
+    {
+        $body = $payload?->toArray() ?? [];
+
+        return Form::fromApiResponse($this->transport->post('projects/form', $body));
     }
 }
