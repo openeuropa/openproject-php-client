@@ -158,4 +158,20 @@ final class ProjectsEndpointTest extends TestCase
         self::assertStringContainsString('"name":"My project"', (string) $request->getBody());
         self::assertSame('application/json', $request->getHeaderLine('Content-Type'));
     }
+
+    public function testCreatePostsJsonPayloadToProjectsUriAndReturnsDecodedProject(): void
+    {
+        $endpoint = $this->createEndpoint();
+        $this->queueFixtureResponse('project.json', 201);
+
+        $project = $endpoint->create((new ProjectInput())->name('My project'));
+
+        $request = $this->lastRequest();
+        self::assertSame('POST', $request->getMethod());
+        self::assertSame('http://example.test/api/v3/projects', (string) $request->getUri());
+        self::assertStringContainsString('"name":"My project"', (string) $request->getBody());
+        self::assertSame('application/json', $request->getHeaderLine('Content-Type'));
+        self::assertSame(1, $project->id);
+        self::assertSame('Project example', $project->name);
+    }
 }

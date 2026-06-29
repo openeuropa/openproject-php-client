@@ -12,7 +12,7 @@ use OpenEuropa\OpenProjectClient\Query\CollectionParams;
 use OpenEuropa\OpenProjectClient\Query\FilterSet;
 
 /**
- * Endpoint for reading projects from the OpenProject API.
+ * Endpoint for reading and writing projects via the OpenProject API.
  */
 final class ProjectsEndpoint extends AbstractEndpoint
 {
@@ -64,5 +64,18 @@ final class ProjectsEndpoint extends AbstractEndpoint
         $body = $payload?->toArray() ?? [];
 
         return Form::fromApiResponse($this->transport->post('projects/form', $body));
+    }
+
+    /**
+     * Creates a project and returns the created resource.
+     *
+     * @param ProjectInput $payload
+     *   The project attributes to create.
+     *
+     * @throws \OpenEuropa\OpenProjectClient\Exception\OpenProjectException
+     */
+    public function create(ProjectInput $payload): Project
+    {
+        return Project::fromApiResponse($this->transport->post('projects', $payload->toArray()));
     }
 }
