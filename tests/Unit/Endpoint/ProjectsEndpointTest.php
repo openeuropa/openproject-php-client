@@ -174,4 +174,22 @@ final class ProjectsEndpointTest extends TestCase
         self::assertSame(1, $project->id);
         self::assertSame('Project example', $project->name);
     }
+
+    public function testUpdateFormPostsToProjectFormUriAndReturnsForm(): void
+    {
+        $endpoint = $this->createEndpoint();
+        $this->queueFixtureResponse('form.json');
+
+        $form = $endpoint->updateForm(42, (new ProjectInput())->name('My project'));
+
+        $request = $this->lastRequest();
+        self::assertSame('POST', $request->getMethod());
+        self::assertSame(
+            'http://example.test/api/v3/projects/42/form',
+            (string) $request->getUri(),
+        );
+        self::assertStringContainsString('"name":"My project"', (string) $request->getBody());
+        self::assertSame('application/json', $request->getHeaderLine('Content-Type'));
+        self::assertTrue($form->hasErrors());
+    }
 }

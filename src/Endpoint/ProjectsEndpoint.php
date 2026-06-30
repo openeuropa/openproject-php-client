@@ -78,4 +78,19 @@ final class ProjectsEndpoint extends AbstractEndpoint
     {
         return Project::fromApiResponse($this->transport->post('projects', $payload->toArray()));
     }
+
+    /**
+     * Returns the project edit form for an existing project.
+     *
+     * @param int $id
+     *   The ID of the project to validate the payload against.
+     * @param ProjectInput $payload
+     *   The project attributes to validate.
+     *
+     * @throws \OpenEuropa\OpenProjectClient\Exception\OpenProjectException
+     */
+    public function updateForm(int $id, ProjectInput $payload): Form
+    {
+        return Form::fromApiResponse($this->transport->post('projects/' . $id . '/form', $payload->toArray()));
+    }
 }

@@ -83,4 +83,25 @@ final class ProjectsTest extends IntegrationTestCase
         self::assertInstanceOf(Form::class, $form);
         self::assertNotEmpty($form->schema);
     }
+
+    public function testUpdateFormReturnsFormWithSchema(): void
+    {
+        $suffix = uniqid();
+        $name = 'phpclient project ' . $suffix;
+        $identifier = 'phpclient-' . $suffix;
+
+        $created = $this->client->projects()->create(
+            (new ProjectInput())->name($name)->identifier($identifier),
+        );
+
+        self::assertNotNull($created->id);
+
+        $form = $this->client->projects()->updateForm(
+            $created->id,
+            (new ProjectInput())->name('phpclient updated ' . $suffix),
+        );
+
+        self::assertInstanceOf(Form::class, $form);
+        self::assertNotEmpty($form->schema);
+    }
 }
