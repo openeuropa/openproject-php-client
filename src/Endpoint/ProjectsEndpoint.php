@@ -93,4 +93,17 @@ final class ProjectsEndpoint extends AbstractEndpoint
     {
         return Form::fromApiResponse($this->transport->post('projects/' . $id . '/form', $payload->toArray()));
     }
+
+    /**
+     * Updates a project and returns the updated resource.
+     *
+     * @param ProjectInput $payload
+     *   The project attributes to update.
+     *
+     * @throws \OpenEuropa\OpenProjectClient\Exception\OpenProjectException
+     */
+    public function update(int $id, ProjectInput $payload): Project
+    {
+        return Project::fromApiResponse($this->transport->patch('projects/' . $id, $payload->toArray()));
+    }
 }

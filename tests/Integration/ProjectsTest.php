@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace OpenEuropa\OpenProjectClient\Tests\Integration;
 
+use OpenEuropa\OpenProjectClient\Exception\ValidationException;
 use OpenEuropa\OpenProjectClient\Model\Form\Form;
 use OpenEuropa\OpenProjectClient\Model\ProjectInput;
 use PHPUnit\Framework\Attributes\CoversNothing;
@@ -103,5 +104,45 @@ final class ProjectsTest extends IntegrationTestCase
 
         self::assertInstanceOf(Form::class, $form);
         self::assertNotEmpty($form->schema);
+    }
+
+    public function testUpdateChangesNameAndCanBeReadBack(): void
+    {
+        $suffix = uniqid();
+        $name = 'phpclient-' . $suffix;
+        $identifier = 'phpclient-' . $suffix;
+
+        $created = $this->client->projects()->create(
+            (new ProjectInput())->name($name)->identifier($identifier),
+        );
+
+        self::assertNotNull($created->id);
+
+        $newName = 'phpclient-updated-' . $suffix;
+        $updated = $this->client->projects()->update(
+            $created->id,
+            (new ProjectInput())->name($newName),
+        );
+
+        self::assertSame($newName, $updated->name);
+
+        $fetched = $this->client->projects()->get($created->id);
+        self::assertSame($newName, $fetched->name);
+    }
+
+    public function testUpdateWithInvalidPayloadThrowsValidationException(): void
+    {
+        $suffix = uniqid();
+        $name = 'phpclient-' . $suffix;
+        $identifier = 'phpclient-' . $suffix;
+
+        $created = $this->client->projects()->create(
+            (new ProjectInput())->name($name)->identifier($identifier),
+        );
+
+        self::assertNotNull($created->id);
+
+        $this->expectException(ValidationException::class);
+        $this->client->projects()->update($created->id, (new ProjectInput())->name(''));
     }
 }
