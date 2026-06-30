@@ -216,34 +216,25 @@ final class WorkPackagesEndpointTest extends TestCase
         self::assertSame('application/json', $request->getHeaderLine('Content-Type'));
     }
 
-    public function testUpdateFormSendsPostToWorkPackageFormUri(): void
+    public function testUpdateFormPostsToFormUriAndReturnsForm(): void
     {
         $endpoint = $this->createEndpoint();
         $this->queueFixtureResponse('form.json');
 
         $form = $endpoint->updateForm(42, (new WorkPackageInput())->subject('Updated subject'));
 
-        self::assertSame('POST', $this->lastRequest()->getMethod());
+        $request = $this->lastRequest();
+        self::assertSame('POST', $request->getMethod());
         self::assertSame(
             'http://example.test/api/v3/work_packages/42/form',
-            (string) $this->lastRequest()->getUri(),
+            (string) $request->getUri(),
         );
-        self::assertInstanceOf(Form::class, $form);
-    }
-
-    public function testUpdateFormWithPayloadSendsJsonBodyAndContentTypeHeader(): void
-    {
-        $endpoint = $this->createEndpoint();
-        $this->queueFixtureResponse('form.json');
-
-        $endpoint->updateForm(42, (new WorkPackageInput())->subject('Updated subject'));
-
-        $request = $this->lastRequest();
         self::assertStringContainsString('"subject":"Updated subject"', (string) $request->getBody());
         self::assertSame('application/json', $request->getHeaderLine('Content-Type'));
+        self::assertTrue($form->hasErrors());
     }
 
-    public function testCreateWithDefaultNotifySendsPostToWorkPackagesUri(): void
+    public function testCreatePostsToWorkPackagesUriAndReturnsWorkPackage(): void
     {
         $endpoint = $this->createEndpoint();
         $this->queueFixtureResponse('work-package.json', 201);
@@ -254,7 +245,8 @@ final class WorkPackagesEndpointTest extends TestCase
         self::assertSame('POST', $request->getMethod());
         self::assertSame('/api/v3/work_packages', $request->getUri()->getPath());
         self::assertStringContainsString('notify=true', (string) $request->getUri());
-        self::assertInstanceOf(WorkPackage::class, $workPackage);
+        self::assertStringContainsString('"subject":"Test work package"', (string) $request->getBody());
+        self::assertSame('application/json', $request->getHeaderLine('Content-Type'));
         self::assertSame(2, $workPackage->id);
         self::assertSame('Organize open source conference', $workPackage->subject);
     }
@@ -269,19 +261,7 @@ final class WorkPackagesEndpointTest extends TestCase
         self::assertStringContainsString('notify=false', (string) $this->lastRequest()->getUri());
     }
 
-    public function testCreateSendsJsonBodyAndContentTypeHeader(): void
-    {
-        $endpoint = $this->createEndpoint();
-        $this->queueFixtureResponse('work-package.json', 201);
-
-        $endpoint->create((new WorkPackageInput())->subject('Test work package'));
-
-        $request = $this->lastRequest();
-        self::assertStringContainsString('"subject":"Test work package"', (string) $request->getBody());
-        self::assertSame('application/json', $request->getHeaderLine('Content-Type'));
-    }
-
-    public function testUpdateWithDefaultNotifySendsPatchToWorkPackageUri(): void
+    public function testUpdatePatchesToWorkPackageUriAndReturnsWorkPackage(): void
     {
         $endpoint = $this->createEndpoint();
         $this->queueFixtureResponse('work-package.json');
@@ -292,7 +272,9 @@ final class WorkPackagesEndpointTest extends TestCase
         self::assertSame('PATCH', $request->getMethod());
         self::assertSame('/api/v3/work_packages/42', $request->getUri()->getPath());
         self::assertStringContainsString('notify=true', (string) $request->getUri());
-        self::assertInstanceOf(WorkPackage::class, $workPackage);
+        self::assertStringContainsString('"lockVersion":3', (string) $request->getBody());
+        self::assertStringContainsString('"subject":"Updated subject"', (string) $request->getBody());
+        self::assertSame('application/json', $request->getHeaderLine('Content-Type'));
         self::assertSame(2, $workPackage->id);
         self::assertSame('Organize open source conference', $workPackage->subject);
     }
@@ -305,19 +287,6 @@ final class WorkPackagesEndpointTest extends TestCase
         $endpoint->update(42, (new WorkPackageInput())->subject('Updated subject'), 3, notify: false);
 
         self::assertStringContainsString('notify=false', (string) $this->lastRequest()->getUri());
-    }
-
-    public function testUpdateSendsLockVersionAndPayloadInJsonBody(): void
-    {
-        $endpoint = $this->createEndpoint();
-        $this->queueFixtureResponse('work-package.json');
-
-        $endpoint->update(42, (new WorkPackageInput())->subject('Updated subject'), 3);
-
-        $request = $this->lastRequest();
-        self::assertStringContainsString('"lockVersion":3', (string) $request->getBody());
-        self::assertStringContainsString('"subject":"Updated subject"', (string) $request->getBody());
-        self::assertSame('application/json', $request->getHeaderLine('Content-Type'));
     }
 
     public function testDeleteSendsDeleteToWorkPackageUri(): void

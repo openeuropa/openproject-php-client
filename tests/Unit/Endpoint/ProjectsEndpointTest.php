@@ -159,7 +159,7 @@ final class ProjectsEndpointTest extends TestCase
         self::assertSame('application/json', $request->getHeaderLine('Content-Type'));
     }
 
-    public function testCreatePostsJsonPayloadToProjectsUriAndReturnsDecodedProject(): void
+    public function testCreatePostsToProjectsUriAndReturnsProject(): void
     {
         $endpoint = $this->createEndpoint();
         $this->queueFixtureResponse('project.json', 201);
