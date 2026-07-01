@@ -1,0 +1,42 @@
+{
+    "_type": "Attachment",
+    "id": 3,
+    "fileName": "phpclient-test.txt",
+    "fileSize": 35,
+    "description": {
+        "format": "plain",
+        "raw": "A user provided description of the file",
+        "html": "<p>A user provided description of the file</p>"
+    },
+    "status": "uploaded",
+    "contentType": "text/plain",
+    "digest": {
+        "algorithm": "md5",
+        "hash": "0a8d2241310c47be0c9893f042556808"
+    },
+    "createdAt": "2026-07-01T17:02:16.648Z",
+    "_links": {
+        "self": {
+            "href": "/api/v3/attachments/3",
+            "title": "phpclient-test.txt"
+        },
+        "author": {
+            "href": "/api/v3/users/4",
+            "title": "OpenProject Admin"
+        },
+        "container": {
+            "href": "/api/v3/work_packages/1",
+            "title": "Organize open source conference"
+        },
+        "staticDownloadLocation": {
+            "href": "/api/v3/attachments/3/content"
+        },
+        "downloadLocation": {
+            "href": "/api/v3/attachments/3/content"
+        },
+        "delete": {
+            "href": "/api/v3/attachments/3",
+            "method": "delete"
+        }
+    }
+}

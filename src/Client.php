@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace OpenEuropa\OpenProjectClient;
 
 use OpenEuropa\OpenProjectClient\Authentication\AuthenticationInterface;
+use OpenEuropa\OpenProjectClient\Endpoint\AttachmentsEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\ConfigurationEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\PrioritiesEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\ProjectsEndpoint;
@@ -121,5 +122,13 @@ final class Client
     public function workPackages(): WorkPackagesEndpoint
     {
         return new WorkPackagesEndpoint($this->transport);
+    }
+
+    /**
+     * Returns the attachments endpoint for /api/v3/attachments.
+     */
+    public function attachments(): AttachmentsEndpoint
+    {
+        return new AttachmentsEndpoint($this->transport);
     }
 }

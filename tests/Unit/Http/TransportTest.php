@@ -307,6 +307,34 @@ final class TransportTest extends TestCase
         self::assertSame('Updated', $result['subject']);
     }
 
+    public function testPostMultipartSendsMultipartBodyAndReturnsDecodedResponse(): void
+    {
+        $transport = $this->createTransport('http://example.test');
+        $this->queueJsonResponse('{"id": 7}', 201);
+
+        $result = $transport->postMultipart('attachments', [
+            ['name' => 'metadata', 'contents' => '{"fileName":"a.txt"}', 'contentType' => 'application/json'],
+            ['name' => 'file', 'contents' => 'DATA', 'contentType' => 'text/plain', 'filename' => 'a.txt'],
+        ]);
+
+        $request = $this->lastRequest();
+        self::assertSame('POST', $request->getMethod());
+        self::assertSame('http://example.test/api/v3/attachments', (string) $request->getUri());
+        self::assertSame('application/hal+json', $request->getHeaderLine('Accept'));
+        self::assertStringStartsWith('multipart/form-data; boundary=', $request->getHeaderLine('Content-Type'));
+        self::assertSame(
+            'Basic ' . base64_encode('apikey:secret-token'),
+            $request->getHeaderLine('Authorization'),
+        );
+
+        $body = (string) $request->getBody();
+        self::assertStringContainsString('name="metadata"', $body);
+        self::assertStringContainsString('name="file"', $body);
+        self::assertStringContainsString('filename="a.txt"', $body);
+        self::assertStringContainsString('DATA', $body);
+        self::assertSame(7, $result['id']);
+    }
+
     public function testDeleteSendsCorrectMethodAndReturnsVoid(): void
     {
         $transport = $this->createTransport('http://example.test');

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace OpenEuropa\OpenProjectClient\Http;
 
+use Http\Message\MultipartStream\MultipartStreamBuilder;
 use OpenEuropa\OpenProjectClient\Authentication\AuthenticationInterface;
 use OpenEuropa\OpenProjectClient\Exception\ApiErrorException;
 use OpenEuropa\OpenProjectClient\Exception\ApiUnreachableException;
@@ -112,6 +113,43 @@ final class Transport
     public function patch(string $path, array $body = [], array $query = []): array
     {
         $request = $this->buildWriteRequest('PATCH', $path, $body, $query);
+
+        return $this->decodeBody($this->dispatch($request));
+    }
+
+    /**
+     * Performs an authenticated multipart/form-data POST and returns the decoded response.
+     *
+     * @param string $path
+     *   Resource path relative to the API root.
+     * @param list<array{name: string, contents: string, contentType: string, filename?: string}> $parts
+     *   The ordered multipart parts. Each part carries an explicit content type so
+     *   the builder never falls back to filename-based MIME detection.
+     *
+     * @return array<string, mixed>
+     *   The decoded response body.
+     *
+     * @throws \OpenEuropa\OpenProjectClient\Exception\OpenProjectException
+     *   On a network failure, a non-2xx response, or an invalid JSON body.
+     */
+    public function postMultipart(string $path, array $parts): array
+    {
+        $builder = new MultipartStreamBuilder($this->streamFactory);
+        foreach ($parts as $part) {
+            $options = ['headers' => ['Content-Type' => $part['contentType']]];
+            if (isset($part['filename'])) {
+                $options['filename'] = $part['filename'];
+            }
+            $builder->addResource($part['name'], $part['contents'], $options);
+        }
+        $stream = $builder->build();
+
+        $request = $this->requestFactory
+            ->createRequest('POST', $this->apiRoot . ltrim($path, '/'))
+            ->withHeader('Accept', 'application/hal+json')
+            ->withHeader('Content-Type', 'multipart/form-data; boundary=' . $builder->getBoundary())
+            ->withBody($stream);
+        $request = $this->authentication->authenticate($request);
 
         return $this->decodeBody($this->dispatch($request));
     }
