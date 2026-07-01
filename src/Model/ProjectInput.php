@@ -116,7 +116,7 @@ final class ProjectInput
     }
 
     /**
-     * Sets a custom field value by its number.
+     * Sets a simple custom field value by its number, as a top-level property.
      *
      * @param mixed $value
      *   The custom field value.
@@ -124,6 +124,23 @@ final class ProjectInput
     public function customField(int $number, mixed $value): self
     {
         $this->properties['customField' . $number] = $value;
+
+        return $this;
+    }
+
+    /**
+     * Sets a reference-type custom field by its number, as a link.
+     *
+     * Use this for custom fields whose value is a list option, user, or
+     * version, rather than a simple scalar.
+     *
+     * @param string $resource
+     *   The referenced resource path segment (e.g. `custom_options`, `users`,
+     *   `versions`).
+     */
+    public function customFieldLink(int $number, int $id, string $resource): self
+    {
+        $this->links = array_merge($this->links, WorkPackageLinks::customField($number, $id, $resource));
 
         return $this;
     }

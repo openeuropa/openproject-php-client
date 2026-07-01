@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace OpenEuropa\OpenProjectClient\Tests\Unit\Model;
 
 use OpenEuropa\OpenProjectClient\Model\ProjectInput;
+use OpenEuropa\OpenProjectClient\Model\WorkPackageLinks;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
 #[CoversClass(ProjectInput::class)]
+#[UsesClass(WorkPackageLinks::class)]
 final class ProjectInputTest extends TestCase
 {
     public function testEmptyInputProducesEmptyArray(): void
@@ -80,6 +83,30 @@ final class ProjectInputTest extends TestCase
         $input = (new ProjectInput())->customField(5, 'custom value');
 
         self::assertSame(['customField5' => 'custom value'], $input->toArray());
+    }
+
+    public function testCustomFieldLinkProducesReferenceUnderLinks(): void
+    {
+        $input = (new ProjectInput())->customFieldLink(26, 5, 'custom_options');
+
+        self::assertSame(
+            ['_links' => ['customField26' => ['href' => '/api/v3/custom_options/5']]],
+            $input->toArray()
+        );
+    }
+
+    public function testScalarAndLinkCustomFieldsCoexist(): void
+    {
+        $input = (new ProjectInput())
+            ->customField(1, 'plain value')
+            ->customFieldLink(2, 9, 'users');
+
+        self::assertSame([
+            'customField1' => 'plain value',
+            '_links' => [
+                'customField2' => ['href' => '/api/v3/users/9'],
+            ],
+        ], $input->toArray());
     }
 
     public function testSetSetsArbitraryTopLevelProperty(): void
