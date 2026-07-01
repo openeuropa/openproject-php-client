@@ -106,4 +106,14 @@ final class ProjectsEndpoint extends AbstractEndpoint
     {
         return Project::fromApiResponse($this->transport->patch('projects/' . $id, $payload->toArray()));
     }
+
+    /**
+     * Deletes a project by ID.
+     *
+     * @throws \OpenEuropa\OpenProjectClient\Exception\OpenProjectException
+     */
+    public function delete(int $id): void
+    {
+        $this->transport->delete('projects/' . $id);
+    }
 }

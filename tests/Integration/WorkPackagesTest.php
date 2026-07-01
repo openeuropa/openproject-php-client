@@ -10,6 +10,9 @@ use OpenEuropa\OpenProjectClient\Exception\ValidationException;
 use OpenEuropa\OpenProjectClient\Model\Form\Form;
 use OpenEuropa\OpenProjectClient\Model\WorkPackage;
 use OpenEuropa\OpenProjectClient\Model\WorkPackageInput;
+use OpenEuropa\OpenProjectClient\Query\Filter;
+use OpenEuropa\OpenProjectClient\Query\FilterOperator;
+use OpenEuropa\OpenProjectClient\Query\FilterSet;
 use PHPUnit\Framework\Attributes\CoversNothing;
 
 #[CoversNothing]
@@ -83,12 +86,7 @@ final class WorkPackagesTest extends IntegrationTestCase
 
     public function testListByProjectYieldsWorkPackagesWithIdAndSubject(): void
     {
-        $projects = $this->client->projects()->listPage();
-
-        self::assertNotEmpty($projects->elements, 'The instance must have at least one project.');
-
-        $projectId = $projects->elements[0]->id;
-        self::assertNotNull($projectId);
+        $projectId = $this->firstActiveProjectId();
 
         $first = null;
         foreach ($this->client->workPackages()->listByProject($projectId) as $workPackage) {
@@ -129,10 +127,7 @@ final class WorkPackagesTest extends IntegrationTestCase
 
     public function testCreatePersistsWorkPackageAndCanBeReadBack(): void
     {
-        $projects = $this->client->projects()->listPage();
-        self::assertNotEmpty($projects->elements, 'The instance must have at least one project.');
-        $projectId = $projects->elements[0]->id;
-        self::assertNotNull($projectId);
+        $projectId = $this->firstActiveProjectId();
 
         $types = $this->client->types()->allByProject($projectId);
         self::assertNotEmpty($types->elements, 'The project must have at least one type.');
@@ -218,12 +213,29 @@ final class WorkPackagesTest extends IntegrationTestCase
         $this->client->workPackages()->update($wp->id, (new WorkPackageInput())->subject(''), $wp->lockVersion);
     }
 
-    private function createWorkPackage(): WorkPackage
+    /**
+     * Returns the ID of the first active project on the instance.
+     *
+     * Deleting a project archives it (active becomes false) and removes it
+     * asynchronously, and the API rejects type and work-package lookups on an
+     * archived project, so the suite always works against an active one.
+     */
+    private function firstActiveProjectId(): int
     {
-        $projects = $this->client->projects()->listPage();
-        self::assertNotEmpty($projects->elements, 'The instance must have at least one project.');
+        $projects = $this->client->projects()->listPage(
+            new FilterSet(new Filter('active', FilterOperator::EQUAL, ['t'])),
+        );
+        self::assertNotEmpty($projects->elements, 'The instance must have at least one active project.');
+
         $projectId = $projects->elements[0]->id;
         self::assertNotNull($projectId);
+
+        return $projectId;
+    }
+
+    private function createWorkPackage(): WorkPackage
+    {
+        $projectId = $this->firstActiveProjectId();
 
         $types = $this->client->types()->allByProject($projectId);
         self::assertNotEmpty($types->elements, 'The project must have at least one type.');

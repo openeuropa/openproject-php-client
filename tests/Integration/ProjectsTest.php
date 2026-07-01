@@ -4,14 +4,39 @@ declare(strict_types=1);
 
 namespace OpenEuropa\OpenProjectClient\Tests\Integration;
 
+use OpenEuropa\OpenProjectClient\Exception\NotFoundException;
 use OpenEuropa\OpenProjectClient\Exception\ValidationException;
 use OpenEuropa\OpenProjectClient\Model\Form\Form;
+use OpenEuropa\OpenProjectClient\Model\Project;
 use OpenEuropa\OpenProjectClient\Model\ProjectInput;
+use OpenEuropa\OpenProjectClient\Query\Filter;
+use OpenEuropa\OpenProjectClient\Query\FilterOperator;
+use OpenEuropa\OpenProjectClient\Query\FilterSet;
 use PHPUnit\Framework\Attributes\CoversNothing;
 
 #[CoversNothing]
 final class ProjectsTest extends IntegrationTestCase
 {
+    /**
+     * IDs of projects created during a test run, deleted in tearDown.
+     *
+     * @var list<int>
+     */
+    private array $createdProjectIds = [];
+
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+
+        foreach ($this->createdProjectIds as $id) {
+            try {
+                $this->client->projects()->delete($id);
+            } catch (NotFoundException) {
+                // Already deleted; nothing to clean up.
+            }
+        }
+    }
+
     public function testCreatePersistsProjectAndCanBeReadBack(): void
     {
         $suffix = uniqid();
@@ -23,6 +48,7 @@ final class ProjectsTest extends IntegrationTestCase
         );
 
         self::assertNotNull($created->id);
+        $this->createdProjectIds[] = $created->id;
         self::assertSame($name, $created->name);
 
         $fetched = $this->client->projects()->get($created->id);
@@ -35,9 +61,12 @@ final class ProjectsTest extends IntegrationTestCase
         $name = 'phpclient project ' . $suffix;
         $identifier = 'phpclient-' . $suffix;
 
-        $this->client->projects()->create(
+        $created = $this->client->projects()->create(
             (new ProjectInput())->name($name)->identifier($identifier),
         );
+
+        self::assertNotNull($created->id);
+        $this->createdProjectIds[] = $created->id;
 
         $results = $this->client->projects()->listPage();
 
@@ -66,9 +95,13 @@ final class ProjectsTest extends IntegrationTestCase
 
     public function testGetReturnsProjectWithMatchingId(): void
     {
-        $results = $this->client->projects()->listPage();
+        // Archived projects are removed asynchronously and sort first, so select
+        // an active project to avoid racing a project's deletion.
+        $results = $this->client->projects()->listPage(
+            new FilterSet(new Filter('active', FilterOperator::EQUAL, ['t'])),
+        );
 
-        self::assertNotEmpty($results->elements, 'The instance must have at least one project.');
+        self::assertNotEmpty($results->elements, 'The instance must have at least one active project.');
 
         $firstId = $results->elements[0]->id;
         self::assertNotNull($firstId);
@@ -87,19 +120,12 @@ final class ProjectsTest extends IntegrationTestCase
 
     public function testUpdateFormReturnsFormWithSchema(): void
     {
-        $suffix = uniqid();
-        $name = 'phpclient project ' . $suffix;
-        $identifier = 'phpclient-' . $suffix;
-
-        $created = $this->client->projects()->create(
-            (new ProjectInput())->name($name)->identifier($identifier),
-        );
-
+        $created = $this->createProject();
         self::assertNotNull($created->id);
 
         $form = $this->client->projects()->updateForm(
             $created->id,
-            (new ProjectInput())->name('phpclient updated ' . $suffix),
+            (new ProjectInput())->name('phpclient updated ' . uniqid()),
         );
 
         self::assertInstanceOf(Form::class, $form);
@@ -108,17 +134,10 @@ final class ProjectsTest extends IntegrationTestCase
 
     public function testUpdateChangesNameAndCanBeReadBack(): void
     {
-        $suffix = uniqid();
-        $name = 'phpclient-' . $suffix;
-        $identifier = 'phpclient-' . $suffix;
-
-        $created = $this->client->projects()->create(
-            (new ProjectInput())->name($name)->identifier($identifier),
-        );
-
+        $created = $this->createProject();
         self::assertNotNull($created->id);
 
-        $newName = 'phpclient-updated-' . $suffix;
+        $newName = 'phpclient-updated-' . uniqid();
         $updated = $this->client->projects()->update(
             $created->id,
             (new ProjectInput())->name($newName),
@@ -132,17 +151,40 @@ final class ProjectsTest extends IntegrationTestCase
 
     public function testUpdateWithInvalidPayloadThrowsValidationException(): void
     {
-        $suffix = uniqid();
-        $name = 'phpclient-' . $suffix;
-        $identifier = 'phpclient-' . $suffix;
-
-        $created = $this->client->projects()->create(
-            (new ProjectInput())->name($name)->identifier($identifier),
-        );
-
+        $created = $this->createProject();
         self::assertNotNull($created->id);
 
         $this->expectException(ValidationException::class);
         $this->client->projects()->update($created->id, (new ProjectInput())->name(''));
+    }
+
+    public function testDeleteArchivesProjectForAsynchronousRemoval(): void
+    {
+        $created = $this->createProject();
+        $id = $created->id;
+        self::assertNotNull($id);
+        self::assertTrue($created->active);
+
+        $this->client->projects()->delete($id);
+
+        // Project deletion runs asynchronously: the project is archived at once
+        // and removed later, so it is still readable here but no longer active.
+        $archived = $this->client->projects()->get($id);
+        self::assertFalse($archived->active);
+    }
+
+    private function createProject(): Project
+    {
+        $suffix = uniqid();
+
+        $project = $this->client->projects()->create(
+            (new ProjectInput())->name('phpclient project ' . $suffix)->identifier('phpclient-' . $suffix),
+        );
+
+        $id = $project->id;
+        self::assertNotNull($id);
+        $this->createdProjectIds[] = $id;
+
+        return $project;
     }
 }

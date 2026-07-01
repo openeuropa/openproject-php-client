@@ -211,4 +211,19 @@ final class ProjectsEndpointTest extends TestCase
         self::assertSame(1, $project->id);
         self::assertSame('Project example', $project->name);
     }
+
+    public function testDeleteSendsDeleteToProjectUri(): void
+    {
+        $endpoint = $this->createEndpoint();
+        $this->queueJsonResponse('', 204);
+
+        $endpoint->delete(42);
+
+        $request = $this->lastRequest();
+        self::assertSame('DELETE', $request->getMethod());
+        self::assertSame(
+            'http://example.test/api/v3/projects/42',
+            (string) $request->getUri(),
+        );
+    }
 }
