@@ -19,6 +19,7 @@ use OpenEuropa\OpenProjectClient\Model\PageResults;
 use OpenEuropa\OpenProjectClient\Model\ValidationError;
 use OpenEuropa\OpenProjectClient\Model\WorkPackage;
 use OpenEuropa\OpenProjectClient\Model\WorkPackageInput;
+use OpenEuropa\OpenProjectClient\Model\WorkPackageLinks;
 use OpenEuropa\OpenProjectClient\Query\CollectionParams;
 use OpenEuropa\OpenProjectClient\Query\Filter;
 use OpenEuropa\OpenProjectClient\Query\FilterOperator;
@@ -46,6 +47,7 @@ use PHPUnit\Framework\TestCase;
 #[UsesClass(FilterOperator::class)]
 #[UsesClass(CollectionParams::class)]
 #[UsesClass(WorkPackageInput::class)]
+#[UsesClass(WorkPackageLinks::class)]
 final class WorkPackagesEndpointTest extends TestCase
 {
     use MockClientTrait;

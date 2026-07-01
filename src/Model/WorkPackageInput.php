@@ -108,7 +108,7 @@ final class WorkPackageInput
      */
     public function type(int $id): self
     {
-        $this->links['type'] = ['href' => '/api/v3/types/' . $id];
+        $this->links = array_merge($this->links, WorkPackageLinks::type($id));
 
         return $this;
     }
@@ -118,7 +118,7 @@ final class WorkPackageInput
      */
     public function status(int $id): self
     {
-        $this->links['status'] = ['href' => '/api/v3/statuses/' . $id];
+        $this->links = array_merge($this->links, WorkPackageLinks::status($id));
 
         return $this;
     }
@@ -128,7 +128,7 @@ final class WorkPackageInput
      */
     public function priority(int $id): self
     {
-        $this->links['priority'] = ['href' => '/api/v3/priorities/' . $id];
+        $this->links = array_merge($this->links, WorkPackageLinks::priority($id));
 
         return $this;
     }
@@ -138,7 +138,7 @@ final class WorkPackageInput
      */
     public function project(int $id): self
     {
-        $this->links['project'] = ['href' => '/api/v3/projects/' . $id];
+        $this->links = array_merge($this->links, WorkPackageLinks::project($id));
 
         return $this;
     }
@@ -148,7 +148,7 @@ final class WorkPackageInput
      */
     public function assignee(int $id): self
     {
-        $this->links['assignee'] = ['href' => '/api/v3/users/' . $id];
+        $this->links = array_merge($this->links, WorkPackageLinks::assignee($id));
 
         return $this;
     }
@@ -158,7 +158,7 @@ final class WorkPackageInput
      */
     public function responsible(int $id): self
     {
-        $this->links['responsible'] = ['href' => '/api/v3/users/' . $id];
+        $this->links = array_merge($this->links, WorkPackageLinks::responsible($id));
 
         return $this;
     }
@@ -168,7 +168,7 @@ final class WorkPackageInput
      */
     public function parent(int $id): self
     {
-        $this->links['parent'] = ['href' => '/api/v3/work_packages/' . $id];
+        $this->links = array_merge($this->links, WorkPackageLinks::parent($id));
 
         return $this;
     }
@@ -178,7 +178,7 @@ final class WorkPackageInput
      */
     public function version(int $id): self
     {
-        $this->links['version'] = ['href' => '/api/v3/versions/' . $id];
+        $this->links = array_merge($this->links, WorkPackageLinks::version($id));
 
         return $this;
     }
@@ -188,13 +188,13 @@ final class WorkPackageInput
      */
     public function category(int $id): self
     {
-        $this->links['category'] = ['href' => '/api/v3/categories/' . $id];
+        $this->links = array_merge($this->links, WorkPackageLinks::category($id));
 
         return $this;
     }
 
     /**
-     * Sets a custom field value by its number.
+     * Sets a simple custom field value by its number, as a top-level property.
      *
      * @param mixed $value
      *   The custom field value.
@@ -202,6 +202,23 @@ final class WorkPackageInput
     public function customField(int $number, mixed $value): self
     {
         $this->properties['customField' . $number] = $value;
+
+        return $this;
+    }
+
+    /**
+     * Sets a reference-type custom field by its number, as a link.
+     *
+     * Use this for custom fields whose value is a list option, user, or
+     * version, rather than a simple scalar.
+     *
+     * @param string $resource
+     *   The referenced resource path segment (e.g. `custom_options`, `users`,
+     *   `versions`).
+     */
+    public function customFieldLink(int $number, int $id, string $resource): self
+    {
+        $this->links = array_merge($this->links, WorkPackageLinks::customField($number, $id, $resource));
 
         return $this;
     }
