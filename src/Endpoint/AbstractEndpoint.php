@@ -64,10 +64,6 @@ abstract class AbstractEndpoint
     /**
      * Returns a generator that yields DTOs from all pages of a collection.
      *
-     * Pagination advances by incrementing the offset. The generator stops
-     * when the response page has no "nextByOffset" link, which is the API's
-     * clean signal that no further pages exist.
-     *
      * @template T
      * @param string $path
      *   Collection path relative to the API root.
@@ -94,6 +90,8 @@ abstract class AbstractEndpoint
                 yield $element;
             }
 
+            // A page without this link is the API's signal that no further
+            // pages exist.
             if ($page->nextByOffset === null) {
                 return;
             }

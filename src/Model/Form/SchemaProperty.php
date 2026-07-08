@@ -13,12 +13,16 @@ use OpenEuropa\OpenProjectClient\Model\Link;
 final readonly class SchemaProperty
 {
     /**
-     * Class constructor.
-     *
-     * The spec marks hasDefault as required, but OpenProject omits it on some
-     * properties (for example "subject"), so it is read leniently and is null
-     * when absent.
-     *
+     * @param string $type
+     *   The API type name of the property, for example "String" or "Status".
+     * @param string $name
+     *   The human-readable label of the property.
+     * @param bool|null $hasDefault
+     *   Whether the property has a default value. Null when the API omitted the
+     *   field, which is not the same as false.
+     * @param string|null $location
+     *   Where the value belongs in the payload: "_links" when the property is
+     *   set as a link, null when it is a plain attribute.
      * @param list<Link> $allowedValues
      *   The list of allowed value links for this property, empty when unconstrained.
      */
@@ -62,6 +66,8 @@ final readonly class SchemaProperty
             $hal->requireString('type'),
             $hal->requireString('name'),
             $hal->requireBool('required'),
+            // The spec marks hasDefault as required, but OpenProject omits it
+            // on some properties (for example "subject"), so read it leniently.
             $hal->getBool('hasDefault'),
             $hal->requireBool('writable'),
             $hal->getString('location'),

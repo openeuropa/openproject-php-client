@@ -157,8 +157,6 @@ final class Transport
     /**
      * Performs an authenticated DELETE and returns nothing.
      *
-     * OpenProject responds with 204 No Content; the body is not decoded.
-     *
      * @param string $path
      *   Resource path relative to the API root.
      *
@@ -172,6 +170,7 @@ final class Transport
             ->withHeader('Accept', 'application/hal+json');
         $request = $this->authentication->authenticate($request);
 
+        // OpenProject answers with 204 No Content, so there is nothing to decode.
         $this->dispatch($request);
     }
 
@@ -319,8 +318,6 @@ final class Transport
     /**
      * Parses the validation errors from a 422 response body.
      *
-     * Never throws: the error path must not mask the real API error.
-     *
      * @return list<ValidationError>
      */
     private function parseValidationErrors(string $body): array
@@ -328,6 +325,8 @@ final class Transport
         try {
             $decoded = json_decode($body, true, flags: JSON_THROW_ON_ERROR);
         } catch (\JsonException) {
+            // An unparsable body yields no errors rather than an exception:
+            // throwing here would mask the API error being reported.
             return [];
         }
         if (!is_array($decoded)) {

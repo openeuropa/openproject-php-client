@@ -33,6 +33,13 @@ final class WorkPackagesEndpoint extends AbstractEndpoint
     /**
      * Returns a generator that yields all work packages, paginating automatically.
      *
+     * @param FilterSet|null $filters
+     *   The filters to apply. Null sends an empty filter set, which returns all
+     *   work packages rather than only the open ones.
+     * @param CollectionParams|null $params
+     *   The paging, sorting, and grouping parameters. Iteration starts at the
+     *   offset when one is set, and at the first page otherwise.
+     *
      * @return \Generator<int, WorkPackage>
      *
      * @throws \OpenEuropa\OpenProjectClient\Exception\OpenProjectException
@@ -50,6 +57,10 @@ final class WorkPackagesEndpoint extends AbstractEndpoint
     /**
      * Returns one page of work packages as a PageResults object.
      *
+     * @param FilterSet|null $filters
+     *   The filters to apply. Null sends an empty filter set, which returns all
+     *   work packages rather than only the open ones.
+     *
      * @return PageResults<WorkPackage>
      *
      * @throws \OpenEuropa\OpenProjectClient\Exception\OpenProjectException
@@ -66,6 +77,13 @@ final class WorkPackagesEndpoint extends AbstractEndpoint
 
     /**
      * Returns a generator that yields all work packages in a project, paginating automatically.
+     *
+     * @param FilterSet|null $filters
+     *   The filters to apply. Null sends an empty filter set, which returns all
+     *   work packages rather than only the open ones.
+     * @param CollectionParams|null $params
+     *   The paging, sorting, and grouping parameters. Iteration starts at the
+     *   offset when one is set, and at the first page otherwise.
      *
      * @return \Generator<int, WorkPackage>
      *
@@ -141,8 +159,6 @@ final class WorkPackagesEndpoint extends AbstractEndpoint
     /**
      * Updates a work package and returns the updated resource.
      *
-     * @param WorkPackageInput $payload
-     *   The work-package attributes to update.
      * @param int $lockVersion
      *   The current lock version of the work package, echoed back for optimistic locking.
      * @param bool $notify
