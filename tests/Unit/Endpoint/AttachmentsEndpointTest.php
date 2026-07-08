@@ -47,6 +47,23 @@ final class AttachmentsEndpointTest extends TestCase
         );
     }
 
+    public function testGetReturnsAttachmentAndSendsToCorrectUri(): void
+    {
+        $endpoint = $this->createEndpoint();
+        $this->queueFixtureResponse('attachment.json');
+
+        $attachment = $endpoint->get(3);
+
+        self::assertSame(
+            'http://example.test/api/v3/attachments/3',
+            (string) $this->lastRequest()->getUri(),
+        );
+        self::assertInstanceOf(Attachment::class, $attachment);
+        self::assertSame(3, $attachment->id);
+        self::assertSame('phpclient-test.txt', $attachment->fileName);
+        self::assertSame('text/plain', $attachment->contentType);
+    }
+
     public function testUploadPostsMultipartBodyAndReturnsAttachment(): void
     {
         $endpoint = $this->createEndpoint();

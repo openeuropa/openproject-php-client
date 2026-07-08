@@ -12,6 +12,16 @@ use OpenEuropa\OpenProjectClient\Model\Attachment;
 final class AttachmentsEndpoint extends AbstractEndpoint
 {
     /**
+     * Returns a single attachment by ID.
+     *
+     * @throws \OpenEuropa\OpenProjectClient\Exception\OpenProjectException
+     */
+    public function get(int $id): Attachment
+    {
+        return Attachment::fromApiResponse($this->transport->get('attachments/' . $id));
+    }
+
+    /**
      * Uploads a file as a containerless attachment and returns the created resource.
      *
      * @param string $contents
