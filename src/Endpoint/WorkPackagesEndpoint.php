@@ -129,8 +129,6 @@ final class WorkPackagesEndpoint extends AbstractEndpoint
      *
      * @param int $id
      *   The ID of the work package to validate the payload against.
-     * @param WorkPackageInput $payload
-     *   The work-package attributes to validate.
      *
      * @throws \OpenEuropa\OpenProjectClient\Exception\OpenProjectException
      */

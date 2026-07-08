@@ -20,8 +20,7 @@ final readonly class FilterSet
     /**
      * Returns the filters as a JSON-encoded array for the "filters" query param.
      *
-     * An empty set serializes to "[]", which explicitly requests all records
-     * (bypassing any server-side default filter).
+     * An empty set serializes to "[]".
      */
     public function toJson(): string
     {

@@ -69,9 +69,6 @@ final class ProjectsEndpoint extends AbstractEndpoint
     /**
      * Creates a project and returns the created resource.
      *
-     * @param ProjectInput $payload
-     *   The project attributes to create.
-     *
      * @throws \OpenEuropa\OpenProjectClient\Exception\OpenProjectException
      */
     public function create(ProjectInput $payload): Project
@@ -84,8 +81,6 @@ final class ProjectsEndpoint extends AbstractEndpoint
      *
      * @param int $id
      *   The ID of the project to validate the payload against.
-     * @param ProjectInput $payload
-     *   The project attributes to validate.
      *
      * @throws \OpenEuropa\OpenProjectClient\Exception\OpenProjectException
      */
@@ -96,9 +91,6 @@ final class ProjectsEndpoint extends AbstractEndpoint
 
     /**
      * Updates a project and returns the updated resource.
-     *
-     * @param ProjectInput $payload
-     *   The project attributes to update.
      *
      * @throws \OpenEuropa\OpenProjectClient\Exception\OpenProjectException
      */

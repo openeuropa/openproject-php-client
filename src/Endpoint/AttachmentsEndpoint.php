@@ -30,8 +30,6 @@ final class AttachmentsEndpoint extends AbstractEndpoint
      *   The name to store the file under.
      * @param string $contentType
      *   The MIME type of the file.
-     * @param string|null $description
-     *   An optional description of the file.
      *
      * @throws \OpenEuropa\OpenProjectClient\Exception\OpenProjectException
      */
@@ -49,16 +47,12 @@ final class AttachmentsEndpoint extends AbstractEndpoint
     /**
      * Uploads a file as an attachment to a work package and returns the created resource.
      *
-     * @param int $workPackageId
-     *   ID of the work package to attach the file to.
      * @param string $contents
      *   The raw file bytes.
      * @param string $fileName
      *   The name to store the file under.
      * @param string $contentType
      *   The MIME type of the file.
-     * @param string|null $description
-     *   An optional description of the file.
      *
      * @throws \OpenEuropa\OpenProjectClient\Exception\OpenProjectException
      */
