@@ -12,6 +12,11 @@ PHP client for the [OpenProject API v3](https://www.openproject.org/docs/api/).
   [PSR-17](https://www.php-fig.org/psr/psr-17/) factories of your choice
   (e.g. [Guzzle 7](https://github.com/guzzle/guzzle)). The library does not
   depend on a concrete HTTP client implementation.
+- The PSR-18 client should be configured to follow HTTP redirects: some
+  functionality, such as attachment downloads, relies on them. It should also
+  strip the `Authorization` header when a redirect points to a different host,
+  so your API token is never forwarded to a third party. Guzzle 7 and Symfony's
+  HttpClient both do this by default.
 
 ## Installation
 

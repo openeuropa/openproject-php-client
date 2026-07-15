@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace OpenEuropa\OpenProjectClient\Endpoint;
 
 use OpenEuropa\OpenProjectClient\Model\Attachment;
+use Psr\Http\Message\StreamInterface;
 
 /**
  * Endpoint for uploading and reading attachments via the OpenProject API.
@@ -19,6 +20,16 @@ final class AttachmentsEndpoint extends AbstractEndpoint
     public function get(int $id): Attachment
     {
         return Attachment::fromApiResponse($this->transport->get('attachments/' . $id));
+    }
+
+    /**
+     * Returns the file content of an attachment.
+     *
+     * @throws \OpenEuropa\OpenProjectClient\Exception\OpenProjectException
+     */
+    public function download(int $id): StreamInterface
+    {
+        return $this->transport->getRaw('attachments/' . $id . '/content');
     }
 
     /**

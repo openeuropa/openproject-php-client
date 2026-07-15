@@ -18,6 +18,7 @@ use OpenEuropa\OpenProjectClient\Tests\Support\MockClientTrait;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\StreamInterface;
 
 #[CoversClass(AttachmentsEndpoint::class)]
 #[UsesClass(AbstractEndpoint::class)]
@@ -62,6 +63,23 @@ final class AttachmentsEndpointTest extends TestCase
         self::assertSame(3, $attachment->id);
         self::assertSame('phpclient-test.txt', $attachment->fileName);
         self::assertSame('text/plain', $attachment->contentType);
+    }
+
+    public function testDownloadReturnsContentStreamAndSendsToCorrectUri(): void
+    {
+        $endpoint = $this->createEndpoint();
+        $this->queueJsonResponse('the file content', 200);
+
+        $stream = $endpoint->download(3);
+
+        $request = $this->lastRequest();
+        self::assertSame('GET', $request->getMethod());
+        self::assertSame(
+            'http://example.test/api/v3/attachments/3/content',
+            (string) $request->getUri(),
+        );
+        self::assertInstanceOf(StreamInterface::class, $stream);
+        self::assertSame('the file content', (string) $stream);
     }
 
     public function testUploadPostsMultipartBodyAndReturnsAttachment(): void

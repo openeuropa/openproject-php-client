@@ -107,6 +107,25 @@ final class AttachmentsTest extends IntegrationTestCase
         self::assertSame($workPackageId, $attachment->container->id());
     }
 
+    public function testDownloadReturnsUploadedContent(): void
+    {
+        $contents = 'phpclient download test ' . uniqid();
+        $workPackageId = $this->createWorkPackage();
+        $fileName = 'phpclient-' . uniqid() . '.txt';
+
+        $uploaded = $this->client->attachments()->uploadToWorkPackage(
+            $workPackageId,
+            $contents,
+            $fileName,
+            'text/plain',
+        );
+        self::assertNotNull($uploaded->id);
+
+        $stream = $this->client->attachments()->download($uploaded->id);
+
+        self::assertSame($contents, (string) $stream);
+    }
+
     /**
      * Creates a work package and returns its ID, registering it for teardown.
      */

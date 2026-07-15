@@ -21,6 +21,7 @@ use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamFactoryInterface;
+use Psr\Http\Message\StreamInterface;
 
 /**
  * The single transport: builds PSR-7 requests, sends them, decodes responses.
@@ -69,6 +70,23 @@ final class Transport
         $request = $this->authentication->authenticate($request);
 
         return $this->decodeBody($this->dispatch($request));
+    }
+
+    /**
+     * Performs an authenticated GET and returns the raw response body stream.
+     *
+     * @param string $path
+     *   Resource path relative to the API root.
+     *
+     * @throws \OpenEuropa\OpenProjectClient\Exception\OpenProjectException
+     *   On a network failure or a non-2xx response.
+     */
+    public function getRaw(string $path): StreamInterface
+    {
+        $request = $this->requestFactory->createRequest('GET', $this->apiRoot . ltrim($path, '/'));
+        $request = $this->authentication->authenticate($request);
+
+        return $this->dispatch($request)->getBody();
     }
 
     /**

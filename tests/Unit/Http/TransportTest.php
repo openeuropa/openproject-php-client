@@ -23,6 +23,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Client\ClientExceptionInterface;
+use Psr\Http\Message\StreamInterface;
 
 #[CoversClass(Transport::class)]
 #[UsesClass(ApiKeyAuthentication::class)]
@@ -104,6 +105,26 @@ final class TransportTest extends TestCase
         $this->queueFixtureResponse('root.json');
 
         self::assertSame('OpenProject', $transport->get()['instanceName']);
+    }
+
+    public function testGetRawReturnsRawResponseBodyStreamWithoutDecoding(): void
+    {
+        $transport = $this->createTransport('http://example.test');
+        $this->queueJsonResponse('raw file bytes', 200);
+
+        $stream = $transport->getRaw('attachments/3/content');
+
+        self::assertInstanceOf(StreamInterface::class, $stream);
+        self::assertSame('raw file bytes', (string) $stream);
+
+        $request = $this->lastRequest();
+        self::assertSame('GET', $request->getMethod());
+        self::assertSame('http://example.test/api/v3/attachments/3/content', (string) $request->getUri());
+        self::assertSame(
+            'Basic ' . base64_encode('apikey:secret-token'),
+            $request->getHeaderLine('Authorization'),
+        );
+        self::assertSame('', $request->getHeaderLine('Accept'));
     }
 
     public function testThrowsWhenTheResponseBodyIsNotValidJson(): void
