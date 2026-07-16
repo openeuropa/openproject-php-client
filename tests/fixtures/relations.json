@@ -1,0 +1,33 @@
+{
+    "_type": "Collection",
+    "total": 2,
+    "count": 2,
+    "_embedded": {
+        "elements": [
+            {
+                "_type": "Relation",
+                "id": 650,
+                "name": "duplicated by",
+                "type": "duplicated",
+                "reverseType": "duplicates",
+                "description": "Those are the same... stupid Stormtroopers!",
+                "lag": null,
+                "_links": {
+                    "self": {"href": "/api/v3/relations/650"},
+                    "updateImmediately": {"href": "/api/v3/relations/650", "method": "patch"},
+                    "delete": {"href": "/api/v3/relations/650", "method": "delete", "title": "Remove relation"},
+                    "from": {"href": "/api/v3/work_packages/108", "title": "Destroy Rebel Base"},
+                    "to": {"href": "/api/v3/work_packages/78", "title": "Annihilate Yavin 4"}
+                }
+            },
+            {
+                "_type": "Relation",
+                "id": 652,
+                "name": "relates to",
+                "type": "relates",
+                "reverseType": "relates"
+            }
+        ]
+    },
+    "_links": {"self": {"href": "/api/v3/relations?filters=%5B%5D"}}
+}

@@ -10,6 +10,7 @@ use OpenEuropa\OpenProjectClient\Endpoint\AttachmentsEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\ConfigurationEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\PrioritiesEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\ProjectsEndpoint;
+use OpenEuropa\OpenProjectClient\Endpoint\RelationsEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\StatusesEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\TypesEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\UsersEndpoint;
@@ -139,5 +140,13 @@ final class Client
     public function activities(): ActivitiesEndpoint
     {
         return new ActivitiesEndpoint($this->transport);
+    }
+
+    /**
+     * Returns the relations endpoint for /api/v3/relations.
+     */
+    public function relations(): RelationsEndpoint
+    {
+        return new RelationsEndpoint($this->transport);
     }
 }
