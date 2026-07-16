@@ -10,6 +10,12 @@ use GuzzleHttp\Middleware;
 use GuzzleHttp\Psr7\HttpFactory;
 use OpenEuropa\OpenProjectClient\Authentication\ApiKeyAuthentication;
 use OpenEuropa\OpenProjectClient\Client;
+use OpenEuropa\OpenProjectClient\Exception\NotFoundException;
+use OpenEuropa\OpenProjectClient\Model\WorkPackage;
+use OpenEuropa\OpenProjectClient\Model\WorkPackageInput;
+use OpenEuropa\OpenProjectClient\Query\Filter;
+use OpenEuropa\OpenProjectClient\Query\FilterOperator;
+use OpenEuropa\OpenProjectClient\Query\FilterSet;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestInterface;
@@ -27,6 +33,13 @@ use Psr\Http\Message\RequestInterface;
 abstract class IntegrationTestCase extends TestCase
 {
     protected Client $client;
+
+    /**
+     * IDs of work packages created during a test run, deleted in tearDown.
+     *
+     * @var list<int>
+     */
+    protected array $createdWorkPackageIds = [];
 
     protected function setUp(): void
     {
@@ -50,6 +63,61 @@ abstract class IntegrationTestCase extends TestCase
             new HttpFactory(),
             new HttpFactory(),
         );
+    }
+
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+
+        foreach ($this->createdWorkPackageIds as $id) {
+            try {
+                $this->client->workPackages()->delete($id);
+            } catch (NotFoundException) {
+                // Already deleted; nothing to clean up.
+            }
+        }
+    }
+
+    /**
+     * Returns the ID of the first active project on the instance.
+     *
+     * Deleting a project archives it (active becomes false) and removes it
+     * asynchronously, and the API rejects type and work-package lookups on an
+     * archived project, so the suite always works against an active one.
+     */
+    protected function firstActiveProjectId(): int
+    {
+        $projects = $this->client->projects()->listPage(
+            new FilterSet(new Filter('active', FilterOperator::EQUAL, ['t'])),
+        );
+        self::assertNotEmpty($projects->elements, 'The instance must have at least one active project.');
+
+        $projectId = $projects->elements[0]->id;
+        self::assertNotNull($projectId);
+
+        return $projectId;
+    }
+
+    /**
+     * Creates a work package in the first active project and registers it for teardown.
+     */
+    protected function createWorkPackage(): WorkPackage
+    {
+        $projectId = $this->firstActiveProjectId();
+
+        $types = $this->client->types()->allByProject($projectId);
+        self::assertNotEmpty($types->elements, 'The project must have at least one type.');
+        $typeId = $types->elements[0]->id;
+
+        $wp = $this->client->workPackages()->create(
+            (new WorkPackageInput())->subject('phpclient-' . uniqid())->project($projectId)->type($typeId),
+        );
+
+        $id = $wp->id;
+        self::assertNotNull($id);
+        $this->createdWorkPackageIds[] = $id;
+
+        return $wp;
     }
 
     /**

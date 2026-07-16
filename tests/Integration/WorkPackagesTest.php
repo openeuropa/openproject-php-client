@@ -8,36 +8,12 @@ use OpenEuropa\OpenProjectClient\Exception\ConflictException;
 use OpenEuropa\OpenProjectClient\Exception\NotFoundException;
 use OpenEuropa\OpenProjectClient\Exception\ValidationException;
 use OpenEuropa\OpenProjectClient\Model\Form\Form;
-use OpenEuropa\OpenProjectClient\Model\WorkPackage;
 use OpenEuropa\OpenProjectClient\Model\WorkPackageInput;
-use OpenEuropa\OpenProjectClient\Query\Filter;
-use OpenEuropa\OpenProjectClient\Query\FilterOperator;
-use OpenEuropa\OpenProjectClient\Query\FilterSet;
 use PHPUnit\Framework\Attributes\CoversNothing;
 
 #[CoversNothing]
 final class WorkPackagesTest extends IntegrationTestCase
 {
-    /**
-     * IDs of work packages created during a test run, deleted in tearDown.
-     *
-     * @var list<int>
-     */
-    private array $createdWorkPackageIds = [];
-
-    protected function tearDown(): void
-    {
-        parent::tearDown();
-
-        foreach ($this->createdWorkPackageIds as $id) {
-            try {
-                $this->client->workPackages()->delete($id);
-            } catch (NotFoundException) {
-                // Already deleted; nothing to clean up.
-            }
-        }
-    }
-
     public function testGetReturnsWorkPackageWithMatchingId(): void
     {
         $wp = $this->createWorkPackage();
@@ -211,44 +187,5 @@ final class WorkPackagesTest extends IntegrationTestCase
 
         $this->expectException(ValidationException::class);
         $this->client->workPackages()->update($wp->id, (new WorkPackageInput())->subject(''), $wp->lockVersion);
-    }
-
-    /**
-     * Returns the ID of the first active project on the instance.
-     *
-     * Deleting a project archives it (active becomes false) and removes it
-     * asynchronously, and the API rejects type and work-package lookups on an
-     * archived project, so the suite always works against an active one.
-     */
-    private function firstActiveProjectId(): int
-    {
-        $projects = $this->client->projects()->listPage(
-            new FilterSet(new Filter('active', FilterOperator::EQUAL, ['t'])),
-        );
-        self::assertNotEmpty($projects->elements, 'The instance must have at least one active project.');
-
-        $projectId = $projects->elements[0]->id;
-        self::assertNotNull($projectId);
-
-        return $projectId;
-    }
-
-    private function createWorkPackage(): WorkPackage
-    {
-        $projectId = $this->firstActiveProjectId();
-
-        $types = $this->client->types()->allByProject($projectId);
-        self::assertNotEmpty($types->elements, 'The project must have at least one type.');
-        $typeId = $types->elements[0]->id;
-
-        $wp = $this->client->workPackages()->create(
-            (new WorkPackageInput())->subject('phpclient-' . uniqid())->project($projectId)->type($typeId),
-        );
-
-        $id = $wp->id;
-        self::assertNotNull($id);
-        $this->createdWorkPackageIds[] = $id;
-
-        return $wp;
     }
 }
