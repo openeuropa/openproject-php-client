@@ -49,6 +49,24 @@ final class FormTest extends TestCase
         self::assertSame('subject', $form->validationErrors['subject']->attribute);
     }
 
+    public function testDecodesFixtureWithSingleLinkAllowedValues(): void
+    {
+        $path = __DIR__ . '/../../../fixtures/work-package-form.json';
+        $data = json_decode((string) file_get_contents($path), true);
+
+        /** @var array<string, mixed> $data */
+        $form = Form::fromApiResponse($data);
+
+        $assigneeProp = $form->schema['assignee'];
+        self::assertSame([], $assigneeProp->allowedValues);
+        self::assertNotNull($assigneeProp->allowedValuesLink);
+        self::assertSame('/api/v3/workspaces/1/available_assignees', $assigneeProp->allowedValuesLink->href);
+
+        $typeProp = $form->schema['type'];
+        self::assertCount(3, $typeProp->allowedValues);
+        self::assertNull($typeProp->allowedValuesLink);
+    }
+
     public function testEmptyDataProducesEmptyForm(): void
     {
         $form = Form::fromApiResponse([]);

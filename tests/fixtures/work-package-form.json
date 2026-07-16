@@ -1,0 +1,904 @@
+{
+    "_type": "Form",
+    "_embedded": {
+        "payload": {
+            "subject": "",
+            "description": {
+                "format": "markdown",
+                "raw": "",
+                "html": ""
+            },
+            "scheduleManually": true,
+            "startDate": null,
+            "dueDate": null,
+            "estimatedTime": null,
+            "duration": null,
+            "ignoreNonWorkingDays": false,
+            "percentageDone": null,
+            "_meta": {},
+            "_links": {
+                "category": {
+                    "href": null
+                },
+                "type": {
+                    "href": "/api/v3/types/1",
+                    "title": "Task"
+                },
+                "priority": {
+                    "href": "/api/v3/priorities/8",
+                    "title": "Normal"
+                },
+                "project": {
+                    "href": "/api/v3/projects/1",
+                    "title": "Demo project"
+                },
+                "projectPhase": {
+                    "href": null
+                },
+                "projectPhaseDefinition": {
+                    "href": null
+                },
+                "status": {
+                    "href": "/api/v3/statuses/1",
+                    "title": "New"
+                },
+                "responsible": {
+                    "href": null
+                },
+                "assignee": {
+                    "href": null
+                },
+                "version": {
+                    "href": null
+                },
+                "parent": {
+                    "href": null
+                },
+                "budget": {
+                    "href": null
+                }
+            }
+        },
+        "schema": {
+            "_type": "Schema",
+            "_dependencies": [],
+            "_attributeGroups": [
+                {
+                    "_type": "WorkPackageFormAttributeGroup",
+                    "name": "People",
+                    "attributes": [
+                        "assignee",
+                        "responsible"
+                    ]
+                },
+                {
+                    "_type": "WorkPackageFormAttributeGroup",
+                    "name": "Estimates and progress",
+                    "attributes": [
+                        "estimatedTime",
+                        "remainingTime",
+                        "percentageDone",
+                        "spentTime"
+                    ]
+                },
+                {
+                    "_type": "WorkPackageFormAttributeGroup",
+                    "name": "Details",
+                    "attributes": [
+                        "priority",
+                        "version",
+                        "category",
+                        "projectPhase",
+                        "date"
+                    ]
+                },
+                {
+                    "_type": "WorkPackageFormAttributeGroup",
+                    "name": "Other",
+                    "attributes": []
+                },
+                {
+                    "_type": "WorkPackageFormAttributeGroup",
+                    "name": "Costs",
+                    "attributes": [
+                        "costsByType",
+                        "laborCosts",
+                        "materialCosts",
+                        "overallCosts",
+                        "budget"
+                    ]
+                }
+            ],
+            "lockVersion": {
+                "type": "Integer",
+                "name": "Lock version",
+                "required": true,
+                "hasDefault": false,
+                "writable": false,
+                "options": {}
+            },
+            "id": {
+                "type": "Integer",
+                "name": "ID",
+                "required": true,
+                "hasDefault": false,
+                "writable": false,
+                "options": {}
+            },
+            "subject": {
+                "type": "String",
+                "name": "Subject",
+                "required": true,
+                "hasDefault": false,
+                "writable": true,
+                "minLength": 1,
+                "maxLength": 255,
+                "options": {}
+            },
+            "description": {
+                "type": "Formattable",
+                "name": "Description",
+                "required": false,
+                "hasDefault": false,
+                "writable": true,
+                "options": {}
+            },
+            "duration": {
+                "type": "Duration",
+                "name": "Duration",
+                "required": false,
+                "hasDefault": false,
+                "writable": true,
+                "options": {}
+            },
+            "scheduleManually": {
+                "type": "Boolean",
+                "name": "Manual scheduling",
+                "required": false,
+                "hasDefault": true,
+                "writable": true,
+                "options": {}
+            },
+            "ignoreNonWorkingDays": {
+                "type": "Boolean",
+                "name": "Ignore non working days",
+                "required": false,
+                "hasDefault": false,
+                "writable": true,
+                "options": {}
+            },
+            "startDate": {
+                "type": "Date",
+                "name": "Start date",
+                "required": false,
+                "hasDefault": false,
+                "writable": true,
+                "options": {}
+            },
+            "dueDate": {
+                "type": "Date",
+                "name": "Finish date",
+                "required": false,
+                "hasDefault": false,
+                "writable": true,
+                "options": {}
+            },
+            "derivedStartDate": {
+                "type": "Date",
+                "name": "Derived start date",
+                "required": false,
+                "hasDefault": false,
+                "writable": false,
+                "options": {}
+            },
+            "derivedDueDate": {
+                "type": "Date",
+                "name": "Derived finish date",
+                "required": false,
+                "hasDefault": false,
+                "writable": false,
+                "options": {}
+            },
+            "estimatedTime": {
+                "type": "Duration",
+                "name": "Work",
+                "required": false,
+                "hasDefault": false,
+                "writable": true,
+                "attributeGroup": "Estimates and progress",
+                "options": {}
+            },
+            "derivedEstimatedTime": {
+                "type": "Duration",
+                "name": "Total work",
+                "required": false,
+                "hasDefault": false,
+                "writable": false,
+                "options": {}
+            },
+            "remainingTime": {
+                "type": "Duration",
+                "name": "Remaining work",
+                "required": false,
+                "hasDefault": false,
+                "writable": true,
+                "attributeGroup": "Estimates and progress",
+                "options": {}
+            },
+            "derivedRemainingTime": {
+                "type": "Duration",
+                "name": "Total remaining work",
+                "required": false,
+                "hasDefault": false,
+                "writable": false,
+                "options": {}
+            },
+            "spentTime": {
+                "type": "Duration",
+                "name": "Spent time",
+                "required": false,
+                "hasDefault": false,
+                "writable": false,
+                "attributeGroup": "Estimates and progress",
+                "options": {}
+            },
+            "percentageDone": {
+                "type": "Integer",
+                "name": "% Complete",
+                "required": false,
+                "hasDefault": false,
+                "writable": true,
+                "attributeGroup": "Estimates and progress",
+                "options": {}
+            },
+            "derivedPercentageDone": {
+                "type": "Integer",
+                "name": "Total % complete",
+                "required": false,
+                "hasDefault": false,
+                "writable": false,
+                "options": {}
+            },
+            "createdAt": {
+                "type": "DateTime",
+                "name": "Created on",
+                "required": true,
+                "hasDefault": false,
+                "writable": false,
+                "options": {}
+            },
+            "updatedAt": {
+                "type": "DateTime",
+                "name": "Updated on",
+                "required": true,
+                "hasDefault": false,
+                "writable": false,
+                "options": {}
+            },
+            "author": {
+                "type": "User",
+                "name": "Author",
+                "required": true,
+                "hasDefault": false,
+                "writable": false,
+                "options": {},
+                "location": "_links"
+            },
+            "project": {
+                "type": "Project",
+                "name": "Project",
+                "required": true,
+                "hasDefault": false,
+                "writable": true,
+                "location": "_links",
+                "_links": {
+                    "allowedValues": {
+                        "href": "/api/v3/work_packages/available_projects"
+                    }
+                }
+            },
+            "projectPhase": {
+                "type": "ProjectPhase",
+                "name": "Project phase",
+                "required": false,
+                "hasDefault": false,
+                "writable": true,
+                "attributeGroup": "Details",
+                "location": "_links",
+                "_embedded": {
+                    "allowedValues": [
+                        {
+                            "_type": "ProjectPhase",
+                            "id": 1,
+                            "name": "Initiating",
+                            "active": true,
+                            "createdAt": "2026-07-16T12:24:50.463Z",
+                            "updatedAt": "2026-07-16T12:24:52.283Z",
+                            "_links": {
+                                "self": {
+                                    "href": "/api/v3/project_phases/1",
+                                    "title": "Initiating"
+                                },
+                                "definition": {
+                                    "href": "/api/v3/project_phase_definitions/1",
+                                    "title": "Initiating"
+                                },
+                                "project": {
+                                    "href": "/api/v3/projects/1",
+                                    "title": "Demo project"
+                                }
+                            }
+                        },
+                        {
+                            "_type": "ProjectPhase",
+                            "id": 2,
+                            "name": "Planning",
+                            "active": true,
+                            "createdAt": "2026-07-16T12:24:50.463Z",
+                            "updatedAt": "2026-07-16T12:24:52.286Z",
+                            "_links": {
+                                "self": {
+                                    "href": "/api/v3/project_phases/2",
+                                    "title": "Planning"
+                                },
+                                "definition": {
+                                    "href": "/api/v3/project_phase_definitions/2",
+                                    "title": "Planning"
+                                },
+                                "project": {
+                                    "href": "/api/v3/projects/1",
+                                    "title": "Demo project"
+                                }
+                            }
+                        },
+                        {
+                            "_type": "ProjectPhase",
+                            "id": 3,
+                            "name": "Executing",
+                            "active": true,
+                            "createdAt": "2026-07-16T12:24:50.463Z",
+                            "updatedAt": "2026-07-16T12:24:52.288Z",
+                            "_links": {
+                                "self": {
+                                    "href": "/api/v3/project_phases/3",
+                                    "title": "Executing"
+                                },
+                                "definition": {
+                                    "href": "/api/v3/project_phase_definitions/3",
+                                    "title": "Executing"
+                                },
+                                "project": {
+                                    "href": "/api/v3/projects/1",
+                                    "title": "Demo project"
+                                }
+                            }
+                        },
+                        {
+                            "_type": "ProjectPhase",
+                            "id": 4,
+                            "name": "Closing",
+                            "active": true,
+                            "createdAt": "2026-07-16T12:24:50.463Z",
+                            "updatedAt": "2026-07-16T12:24:52.290Z",
+                            "_links": {
+                                "self": {
+                                    "href": "/api/v3/project_phases/4",
+                                    "title": "Closing"
+                                },
+                                "definition": {
+                                    "href": "/api/v3/project_phase_definitions/4",
+                                    "title": "Closing"
+                                },
+                                "project": {
+                                    "href": "/api/v3/projects/1",
+                                    "title": "Demo project"
+                                }
+                            }
+                        }
+                    ]
+                },
+                "_links": {
+                    "allowedValues": [
+                        {
+                            "href": "/api/v3/project_phases/1",
+                            "title": "Initiating"
+                        },
+                        {
+                            "href": "/api/v3/project_phases/2",
+                            "title": "Planning"
+                        },
+                        {
+                            "href": "/api/v3/project_phases/3",
+                            "title": "Executing"
+                        },
+                        {
+                            "href": "/api/v3/project_phases/4",
+                            "title": "Closing"
+                        }
+                    ]
+                }
+            },
+            "parent": {
+                "type": "WorkPackage",
+                "name": "Parent",
+                "required": false,
+                "hasDefault": false,
+                "writable": true,
+                "location": "_links",
+                "_links": {}
+            },
+            "assignee": {
+                "type": "User",
+                "name": "Assignee",
+                "required": false,
+                "hasDefault": false,
+                "writable": true,
+                "attributeGroup": "People",
+                "location": "_links",
+                "_links": {
+                    "allowedValues": {
+                        "href": "/api/v3/workspaces/1/available_assignees"
+                    }
+                }
+            },
+            "responsible": {
+                "type": "User",
+                "name": "Accountable",
+                "required": false,
+                "hasDefault": false,
+                "writable": true,
+                "attributeGroup": "People",
+                "location": "_links",
+                "_links": {
+                    "allowedValues": {
+                        "href": "/api/v3/workspaces/1/available_assignees"
+                    }
+                }
+            },
+            "type": {
+                "type": "Type",
+                "name": "Type",
+                "required": true,
+                "hasDefault": false,
+                "writable": true,
+                "location": "_links",
+                "_embedded": {
+                    "allowedValues": [
+                        {
+                            "_type": "Type",
+                            "id": 1,
+                            "name": "Task",
+                            "color": "#1A67A3",
+                            "position": 1,
+                            "isDefault": true,
+                            "isMilestone": false,
+                            "createdAt": "2026-07-16T12:24:50.968Z",
+                            "updatedAt": "2026-07-16T12:24:50.968Z",
+                            "_links": {
+                                "self": {
+                                    "href": "/api/v3/types/1",
+                                    "title": "Task"
+                                }
+                            }
+                        },
+                        {
+                            "_type": "Type",
+                            "id": 2,
+                            "name": "Milestone",
+                            "color": "#35C53F",
+                            "position": 2,
+                            "isDefault": true,
+                            "isMilestone": true,
+                            "createdAt": "2026-07-16T12:24:50.973Z",
+                            "updatedAt": "2026-07-16T12:24:50.973Z",
+                            "_links": {
+                                "self": {
+                                    "href": "/api/v3/types/2",
+                                    "title": "Milestone"
+                                }
+                            }
+                        },
+                        {
+                            "_type": "Type",
+                            "id": 3,
+                            "name": "Summary task",
+                            "color": "#FF922B",
+                            "position": 3,
+                            "isDefault": true,
+                            "isMilestone": false,
+                            "createdAt": "2026-07-16T12:24:50.977Z",
+                            "updatedAt": "2026-07-16T12:24:50.977Z",
+                            "_links": {
+                                "self": {
+                                    "href": "/api/v3/types/3",
+                                    "title": "Summary task"
+                                }
+                            }
+                        }
+                    ]
+                },
+                "_links": {
+                    "allowedValues": [
+                        {
+                            "href": "/api/v3/types/1",
+                            "title": "Task"
+                        },
+                        {
+                            "href": "/api/v3/types/2",
+                            "title": "Milestone"
+                        },
+                        {
+                            "href": "/api/v3/types/3",
+                            "title": "Summary task"
+                        }
+                    ]
+                }
+            },
+            "status": {
+                "type": "Status",
+                "name": "Status",
+                "required": true,
+                "hasDefault": true,
+                "writable": true,
+                "location": "_links",
+                "_embedded": {
+                    "allowedValues": [
+                        {
+                            "_type": "Status",
+                            "id": 1,
+                            "name": "New",
+                            "isClosed": false,
+                            "color": "#1098AD",
+                            "isDefault": true,
+                            "isReadonly": false,
+                            "excludedFromTotals": false,
+                            "defaultDoneRatio": 0,
+                            "position": 1,
+                            "_links": {
+                                "self": {
+                                    "href": "/api/v3/statuses/1",
+                                    "title": "New"
+                                }
+                            }
+                        },
+                        {
+                            "_type": "Status",
+                            "id": 7,
+                            "name": "In progress",
+                            "isClosed": false,
+                            "color": "#CC5DE8",
+                            "isDefault": false,
+                            "isReadonly": false,
+                            "excludedFromTotals": false,
+                            "defaultDoneRatio": 40,
+                            "position": 7,
+                            "_links": {
+                                "self": {
+                                    "href": "/api/v3/statuses/7",
+                                    "title": "In progress"
+                                }
+                            }
+                        },
+                        {
+                            "_type": "Status",
+                            "id": 12,
+                            "name": "Closed",
+                            "isClosed": true,
+                            "color": "#DEE2E6",
+                            "isDefault": false,
+                            "isReadonly": false,
+                            "excludedFromTotals": false,
+                            "defaultDoneRatio": 100,
+                            "position": 12,
+                            "_links": {
+                                "self": {
+                                    "href": "/api/v3/statuses/12",
+                                    "title": "Closed"
+                                }
+                            }
+                        },
+                        {
+                            "_type": "Status",
+                            "id": 13,
+                            "name": "On hold",
+                            "isClosed": false,
+                            "color": "#FFC078",
+                            "isDefault": false,
+                            "isReadonly": false,
+                            "excludedFromTotals": false,
+                            "defaultDoneRatio": 0,
+                            "position": 13,
+                            "_links": {
+                                "self": {
+                                    "href": "/api/v3/statuses/13",
+                                    "title": "On hold"
+                                }
+                            }
+                        },
+                        {
+                            "_type": "Status",
+                            "id": 14,
+                            "name": "Rejected",
+                            "isClosed": true,
+                            "color": "#FFA8A8",
+                            "isDefault": false,
+                            "isReadonly": false,
+                            "excludedFromTotals": false,
+                            "defaultDoneRatio": 0,
+                            "position": 14,
+                            "_links": {
+                                "self": {
+                                    "href": "/api/v3/statuses/14",
+                                    "title": "Rejected"
+                                }
+                            }
+                        }
+                    ]
+                },
+                "_links": {
+                    "allowedValues": [
+                        {
+                            "href": "/api/v3/statuses/1",
+                            "title": "New"
+                        },
+                        {
+                            "href": "/api/v3/statuses/7",
+                            "title": "In progress"
+                        },
+                        {
+                            "href": "/api/v3/statuses/12",
+                            "title": "Closed"
+                        },
+                        {
+                            "href": "/api/v3/statuses/13",
+                            "title": "On hold"
+                        },
+                        {
+                            "href": "/api/v3/statuses/14",
+                            "title": "Rejected"
+                        }
+                    ]
+                }
+            },
+            "category": {
+                "type": "Category",
+                "name": "Category",
+                "required": false,
+                "hasDefault": false,
+                "writable": true,
+                "attributeGroup": "Details",
+                "location": "_links",
+                "_embedded": {
+                    "allowedValues": [
+                        {
+                            "_type": "Category",
+                            "id": 1,
+                            "name": "Category 1 (to be changed in Project settings)",
+                            "_links": {
+                                "self": {
+                                    "href": "/api/v3/categories/1",
+                                    "title": "Category 1 (to be changed in Project settings)"
+                                },
+                                "project": {
+                                    "href": "/api/v3/projects/1",
+                                    "title": "Demo project"
+                                }
+                            }
+                        }
+                    ]
+                },
+                "_links": {
+                    "allowedValues": [
+                        {
+                            "href": "/api/v3/categories/1",
+                            "title": "Category 1 (to be changed in Project settings)"
+                        }
+                    ]
+                }
+            },
+            "version": {
+                "type": "Version",
+                "name": "Version",
+                "required": false,
+                "hasDefault": false,
+                "writable": true,
+                "attributeGroup": "Details",
+                "location": "_links",
+                "_embedded": {
+                    "allowedValues": []
+                },
+                "_links": {
+                    "allowedValues": []
+                }
+            },
+            "priority": {
+                "type": "Priority",
+                "name": "Priority",
+                "required": true,
+                "hasDefault": true,
+                "writable": true,
+                "attributeGroup": "Details",
+                "location": "_links",
+                "_embedded": {
+                    "allowedValues": [
+                        {
+                            "_type": "Priority",
+                            "id": 7,
+                            "name": "Low",
+                            "position": 1,
+                            "color": "#C5F6FA",
+                            "isDefault": false,
+                            "isActive": true,
+                            "_links": {
+                                "self": {
+                                    "href": "/api/v3/priorities/7",
+                                    "title": "Low"
+                                }
+                            }
+                        },
+                        {
+                            "_type": "Priority",
+                            "id": 8,
+                            "name": "Normal",
+                            "position": 2,
+                            "color": "#74C0FC",
+                            "isDefault": true,
+                            "isActive": true,
+                            "_links": {
+                                "self": {
+                                    "href": "/api/v3/priorities/8",
+                                    "title": "Normal"
+                                }
+                            }
+                        },
+                        {
+                            "_type": "Priority",
+                            "id": 9,
+                            "name": "High",
+                            "position": 3,
+                            "color": "#F59F00",
+                            "isDefault": false,
+                            "isActive": true,
+                            "_links": {
+                                "self": {
+                                    "href": "/api/v3/priorities/9",
+                                    "title": "High"
+                                }
+                            }
+                        },
+                        {
+                            "_type": "Priority",
+                            "id": 10,
+                            "name": "Immediate",
+                            "position": 4,
+                            "color": "#CC5DE8",
+                            "isDefault": false,
+                            "isActive": true,
+                            "_links": {
+                                "self": {
+                                    "href": "/api/v3/priorities/10",
+                                    "title": "Immediate"
+                                }
+                            }
+                        }
+                    ]
+                },
+                "_links": {
+                    "allowedValues": [
+                        {
+                            "href": "/api/v3/priorities/7",
+                            "title": "Low"
+                        },
+                        {
+                            "href": "/api/v3/priorities/8",
+                            "title": "Normal"
+                        },
+                        {
+                            "href": "/api/v3/priorities/9",
+                            "title": "High"
+                        },
+                        {
+                            "href": "/api/v3/priorities/10",
+                            "title": "Immediate"
+                        }
+                    ]
+                }
+            },
+            "budget": {
+                "type": "Budget",
+                "name": "Budget",
+                "required": false,
+                "hasDefault": false,
+                "writable": true,
+                "attributeGroup": "Costs",
+                "location": "_links",
+                "_embedded": {
+                    "allowedValues": []
+                },
+                "_links": {
+                    "allowedValues": []
+                }
+            },
+            "overallCosts": {
+                "type": "String",
+                "name": "Overall costs",
+                "required": false,
+                "hasDefault": false,
+                "writable": false,
+                "attributeGroup": "Costs",
+                "options": {}
+            },
+            "laborCosts": {
+                "type": "String",
+                "name": "Labor costs",
+                "required": false,
+                "hasDefault": false,
+                "writable": false,
+                "attributeGroup": "Costs",
+                "options": {}
+            },
+            "materialCosts": {
+                "type": "String",
+                "name": "Unit costs",
+                "required": false,
+                "hasDefault": false,
+                "writable": false,
+                "attributeGroup": "Costs",
+                "options": {}
+            },
+            "costsByType": {
+                "type": "Collection",
+                "name": "Spent units",
+                "required": false,
+                "hasDefault": false,
+                "writable": false,
+                "attributeGroup": "Costs",
+                "options": {}
+            },
+            "_links": {
+                "baseSchema": {
+                    "href": "/api/v3/work_packages/schemas/1-1"
+                },
+                "attachments": {
+                    "href": null
+                }
+            }
+        },
+        "validationErrors": {
+            "subject": {
+                "_type": "Error",
+                "errorIdentifier": "urn:openproject-org:api:v3:errors:PropertyConstraintViolation",
+                "message": "Subject can't be blank.",
+                "_embedded": {
+                    "details": {
+                        "attribute": "subject"
+                    }
+                }
+            }
+        }
+    },
+    "_links": {
+        "self": {
+            "href": "/api/v3/work_packages/form",
+            "method": "post"
+        },
+        "validate": {
+            "href": "/api/v3/work_packages/form",
+            "method": "post"
+        },
+        "previewMarkup": {
+            "href": "/api/v3/render/markdown?context=/api/v3/projects/1",
+            "method": "post"
+        },
+        "customFields": {
+            "href": "/projects/demo-project/settings/custom_fields",
+            "type": "text/html",
+            "title": "Custom fields"
+        },
+        "configureForm": {
+            "href": "/types/1/form_configuration/edit",
+            "type": "text/html",
+            "title": "Configure form"
+        }
+    }
+}

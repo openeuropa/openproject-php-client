@@ -66,6 +66,21 @@ final class SchemaPropertyTest extends TestCase
         self::assertSame('New', $prop->allowedValues[0]->title);
         self::assertSame('/api/v3/statuses/2', $prop->allowedValues[1]->href);
         self::assertSame('Closed', $prop->allowedValues[1]->title);
+        self::assertNull($prop->allowedValuesLink);
+    }
+
+    public function testAllowedValuesAsSingleLinkPopulatesAllowedValuesLink(): void
+    {
+        $data = self::baseData();
+        $data['_links'] = [
+            'allowedValues' => ['href' => '/api/v3/workspaces/1/available_assignees'],
+        ];
+
+        $prop = SchemaProperty::fromApiResponse($data);
+
+        self::assertSame([], $prop->allowedValues);
+        self::assertInstanceOf(Link::class, $prop->allowedValuesLink);
+        self::assertSame('/api/v3/workspaces/1/available_assignees', $prop->allowedValuesLink->href);
     }
 
     public function testMinimalPropertyWithOnlyRequiredFields(): void
@@ -80,6 +95,7 @@ final class SchemaPropertyTest extends TestCase
         self::assertNull($prop->location);
         self::assertNull($prop->placeholder);
         self::assertSame([], $prop->allowedValues);
+        self::assertNull($prop->allowedValuesLink);
     }
 
     public function testAllowedValuesSkipsNonArrayElements(): void

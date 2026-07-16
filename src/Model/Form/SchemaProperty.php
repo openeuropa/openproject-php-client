@@ -24,7 +24,10 @@ final readonly class SchemaProperty
      *   Where the value belongs in the payload: "_links" when the property is
      *   set as a link, null when it is a plain attribute.
      * @param list<Link> $allowedValues
-     *   The list of allowed value links for this property, empty when unconstrained.
+     *   The allowed values, when the API sends them inline. Empty otherwise.
+     * @param Link|null $allowedValuesLink
+     *   Link to the collection of allowed values, when the API sends a link
+     *   instead of inlining them. Null otherwise.
      */
     public function __construct(
         public string $type,
@@ -35,6 +38,7 @@ final readonly class SchemaProperty
         public ?string $location,
         public ?string $placeholder,
         public array $allowedValues,
+        public ?Link $allowedValuesLink,
     ) {
     }
 
@@ -50,14 +54,20 @@ final readonly class SchemaProperty
 
         $links = $data['_links'] ?? null;
         $allowedValues = [];
+        $allowedValuesLink = null;
         if (is_array($links)) {
             $raw = $links['allowedValues'] ?? null;
             if (is_array($raw) && $raw !== []) {
-                foreach ($raw as $item) {
-                    if (is_array($item)) {
-                        /** @var array<string, mixed> $item */
-                        $allowedValues[] = Link::fromApiResponse($item);
+                if (array_is_list($raw)) {
+                    foreach ($raw as $item) {
+                        if (is_array($item)) {
+                            /** @var array<string, mixed> $item */
+                            $allowedValues[] = Link::fromApiResponse($item);
+                        }
                     }
+                } else {
+                    /** @var array<string, mixed> $raw */
+                    $allowedValuesLink = Link::fromApiResponse($raw);
                 }
             }
         }
@@ -73,6 +83,7 @@ final readonly class SchemaProperty
             $hal->getString('location'),
             $hal->getString('placeholder'),
             $allowedValues,
+            $allowedValuesLink,
         );
     }
 }
