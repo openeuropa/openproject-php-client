@@ -8,7 +8,7 @@ use OpenEuropa\OpenProjectClient\Model\Attachment;
 use Psr\Http\Message\StreamInterface;
 
 /**
- * Endpoint for uploading and reading attachments via the OpenProject API.
+ * Endpoint for reading, uploading, and deleting attachments via the OpenProject API.
  */
 final class AttachmentsEndpoint extends AbstractEndpoint
 {
@@ -79,6 +79,16 @@ final class AttachmentsEndpoint extends AbstractEndpoint
         return Attachment::fromApiResponse(
             $this->transport->postMultipart('work_packages/' . $workPackageId . '/attachments', $parts),
         );
+    }
+
+    /**
+     * Deletes an attachment by ID.
+     *
+     * @throws \OpenEuropa\OpenProjectClient\Exception\OpenProjectException
+     */
+    public function delete(int $id): void
+    {
+        $this->transport->delete('attachments/' . $id);
     }
 
     /**

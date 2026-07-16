@@ -23,9 +23,24 @@ final class AttachmentsTest extends IntegrationTestCase
      */
     private array $createdWorkPackageIds = [];
 
+    /**
+     * IDs of containerless attachments created during a test run, deleted in tearDown.
+     *
+     * @var list<int>
+     */
+    private array $createdAttachmentIds = [];
+
     protected function tearDown(): void
     {
         parent::tearDown();
+
+        foreach ($this->createdAttachmentIds as $id) {
+            try {
+                $this->client->attachments()->delete($id);
+            } catch (NotFoundException) {
+                // Already deleted; nothing to clean up.
+            }
+        }
 
         foreach ($this->createdWorkPackageIds as $id) {
             try {
@@ -48,6 +63,7 @@ final class AttachmentsTest extends IntegrationTestCase
         );
 
         self::assertNotNull($attachment->id);
+        $this->createdAttachmentIds[] = $attachment->id;
         self::assertSame($fileName, $attachment->fileName);
         self::assertNotEmpty($attachment->contentType);
         self::assertNotEmpty($attachment->status);
@@ -124,6 +140,25 @@ final class AttachmentsTest extends IntegrationTestCase
         $stream = $this->client->attachments()->download($uploaded->id);
 
         self::assertSame($contents, (string) $stream);
+    }
+
+    public function testDeleteRemovesAttachment(): void
+    {
+        $fileName = 'phpclient-' . uniqid() . '.txt';
+
+        $attachment = $this->client->attachments()->upload(
+            'phpclient integration test',
+            $fileName,
+            'text/plain',
+        );
+        $id = $attachment->id;
+        self::assertNotNull($id);
+        $this->createdAttachmentIds[] = $id;
+
+        $this->client->attachments()->delete($id);
+
+        $this->expectException(NotFoundException::class);
+        $this->client->attachments()->get($id);
     }
 
     /**

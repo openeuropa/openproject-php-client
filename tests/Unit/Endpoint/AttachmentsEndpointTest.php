@@ -156,4 +156,19 @@ final class AttachmentsEndpointTest extends TestCase
         self::assertSame(3, $attachment->id);
         self::assertSame('phpclient-test.txt', $attachment->fileName);
     }
+
+    public function testDeleteSendsDeleteToAttachmentUri(): void
+    {
+        $endpoint = $this->createEndpoint();
+        $this->queueJsonResponse('', 204);
+
+        $endpoint->delete(3);
+
+        $request = $this->lastRequest();
+        self::assertSame('DELETE', $request->getMethod());
+        self::assertSame(
+            'http://example.test/api/v3/attachments/3',
+            (string) $request->getUri(),
+        );
+    }
 }
