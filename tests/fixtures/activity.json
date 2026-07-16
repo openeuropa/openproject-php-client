@@ -1,0 +1,40 @@
+{
+    "_type": "Activity::Comment",
+    "id": 156,
+    "comment": {
+        "format": "markdown",
+        "raw": "A fresh standalone comment for the activity fixture",
+        "html": "<p class=\"op-uc-p\">A fresh standalone comment for the activity fixture</p>"
+    },
+    "details": [],
+    "version": 3,
+    "internal": false,
+    "createdAt": "2026-07-16T16:06:30.755Z",
+    "updatedAt": "2026-07-16T16:06:30.755Z",
+    "_links": {
+        "attachments": {
+            "href": "/api/v3/activities/156/attachments"
+        },
+        "addAttachment": {
+            "href": "/api/v3/activities/156/attachments",
+            "method": "post"
+        },
+        "self": {
+            "href": "/api/v3/activities/156"
+        },
+        "workPackage": {
+            "href": "/api/v3/work_packages/87",
+            "title": "phpclient-activities-test"
+        },
+        "user": {
+            "href": "/api/v3/users/4"
+        },
+        "update": {
+            "href": "/api/v3/activities/156",
+            "method": "patch"
+        },
+        "emojiReactions": {
+            "href": "/api/v3/activities/156/emoji_reactions"
+        }
+    }
+}

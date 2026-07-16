@@ -8,6 +8,7 @@ use GuzzleHttp\Psr7\HttpFactory;
 use OpenEuropa\OpenProjectClient\Authentication\ApiKeyAuthentication;
 use OpenEuropa\OpenProjectClient\Client;
 use OpenEuropa\OpenProjectClient\Endpoint\AbstractEndpoint;
+use OpenEuropa\OpenProjectClient\Endpoint\ActivitiesEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\AttachmentsEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\ConfigurationEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\PrioritiesEndpoint;
@@ -35,6 +36,7 @@ use PHPUnit\Framework\TestCase;
 #[UsesClass(UsersEndpoint::class)]
 #[UsesClass(WorkPackagesEndpoint::class)]
 #[UsesClass(AttachmentsEndpoint::class)]
+#[UsesClass(ActivitiesEndpoint::class)]
 #[UsesClass(AbstractEndpoint::class)]
 final class ClientTest extends TestCase
 {
@@ -105,6 +107,13 @@ final class ClientTest extends TestCase
         $client = $this->createClient('http://example.test');
 
         self::assertInstanceOf(AttachmentsEndpoint::class, $client->attachments());
+    }
+
+    public function testActivitiesReturnsAnActivitiesEndpoint(): void
+    {
+        $client = $this->createClient('http://example.test');
+
+        self::assertInstanceOf(ActivitiesEndpoint::class, $client->activities());
     }
 
     private function createClient(string $baseUrl): Client
