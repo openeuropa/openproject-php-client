@@ -12,7 +12,7 @@ use OpenEuropa\OpenProjectClient\Http\HalResource;
 final readonly class Status
 {
     public function __construct(
-        public ?int $id,
+        public int $id,
         public ?string $name,
         public ?bool $isClosed,
         public ?string $color,
@@ -35,7 +35,7 @@ final readonly class Status
         $hal = new HalResource($data);
 
         return new self(
-            $hal->getInt('id'),
+            $hal->requireInt('id'),
             $hal->getString('name'),
             $hal->getBool('isClosed'),
             $hal->getString('color'),

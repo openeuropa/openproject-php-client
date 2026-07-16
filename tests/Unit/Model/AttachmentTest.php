@@ -30,6 +30,7 @@ final class AttachmentTest extends TestCase
     private static function baseData(): array
     {
         return [
+            'id' => 3,
             'fileName' => 'phpclient-test.txt',
             'description' => [
                 'format' => 'plain',
@@ -76,12 +77,20 @@ final class AttachmentTest extends TestCase
     {
         $attachment = Attachment::fromApiResponse(self::baseData());
 
-        self::assertNull($attachment->id);
         self::assertNull($attachment->fileSize);
         self::assertNull($attachment->self);
         self::assertNull($attachment->container);
         self::assertNull($attachment->author);
         self::assertNull($attachment->downloadLocation);
+    }
+
+    public function testThrowsWhenRequiredIdMissing(): void
+    {
+        $data = self::baseData();
+        unset($data['id']);
+
+        $this->expectException(UnexpectedResponseException::class);
+        Attachment::fromApiResponse($data);
     }
 
     public function testThrowsWhenRequiredFileNameMissing(): void

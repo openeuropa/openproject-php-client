@@ -92,10 +92,7 @@ abstract class IntegrationTestCase extends TestCase
         );
         self::assertNotEmpty($projects->elements, 'The instance must have at least one active project.');
 
-        $projectId = $projects->elements[0]->id;
-        self::assertNotNull($projectId);
-
-        return $projectId;
+        return $projects->elements[0]->id;
     }
 
     /**
@@ -113,9 +110,7 @@ abstract class IntegrationTestCase extends TestCase
             (new WorkPackageInput())->subject('phpclient-' . uniqid())->project($projectId)->type($typeId),
         );
 
-        $id = $wp->id;
-        self::assertNotNull($id);
-        $this->createdWorkPackageIds[] = $id;
+        $this->createdWorkPackageIds[] = $wp->id;
 
         return $wp;
     }

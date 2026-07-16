@@ -15,7 +15,6 @@ final class StatusesTest extends IntegrationTestCase
 
         self::assertGreaterThan(0, $results->count);
         self::assertNotEmpty($results->elements);
-        self::assertNotNull($results->elements[0]->id);
         self::assertNotNull($results->elements[0]->name);
     }
 
@@ -23,8 +22,6 @@ final class StatusesTest extends IntegrationTestCase
     {
         $results = $this->client->statuses()->all();
         $firstId = $results->elements[0]->id;
-
-        self::assertNotNull($firstId);
 
         $status = $this->client->statuses()->get($firstId);
 

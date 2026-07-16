@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace OpenEuropa\OpenProjectClient\Tests\Unit\Model;
 
+use OpenEuropa\OpenProjectClient\Exception\UnexpectedResponseException;
 use OpenEuropa\OpenProjectClient\Http\HalResource;
 use OpenEuropa\OpenProjectClient\Model\Formattable;
 use OpenEuropa\OpenProjectClient\Model\Project;
@@ -14,6 +15,7 @@ use PHPUnit\Framework\TestCase;
 #[CoversClass(Project::class)]
 #[UsesClass(HalResource::class)]
 #[UsesClass(Formattable::class)]
+#[UsesClass(UnexpectedResponseException::class)]
 final class ProjectTest extends TestCase
 {
     public function testDecodesProjectFixture(): void
@@ -56,5 +58,11 @@ final class ProjectTest extends TestCase
         self::assertSame('Minimal Project', $project->name);
         self::assertNull($project->description);
         self::assertNull($project->statusExplanation);
+    }
+
+    public function testThrowsWhenRequiredIdMissing(): void
+    {
+        $this->expectException(UnexpectedResponseException::class);
+        Project::fromApiResponse(['_type' => 'Project', 'name' => 'Minimal Project']);
     }
 }

@@ -12,7 +12,7 @@ use OpenEuropa\OpenProjectClient\Http\HalResource;
 final readonly class WorkPackage
 {
     public function __construct(
-        public ?int $id,
+        public int $id,
         public ?int $lockVersion,
         public string $subject,
         public ?string $startDate,
@@ -55,7 +55,7 @@ final readonly class WorkPackage
         }
 
         return new self(
-            $hal->getInt('id'),
+            $hal->requireInt('id'),
             $hal->getInt('lockVersion'),
             $hal->requireString('subject'),
             $hal->getString('startDate'),

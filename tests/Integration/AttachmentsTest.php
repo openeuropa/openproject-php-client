@@ -43,7 +43,6 @@ final class AttachmentsTest extends IntegrationTestCase
             'A description of the file',
         );
 
-        self::assertNotNull($attachment->id);
         $this->createdAttachmentIds[] = $attachment->id;
         self::assertSame($fileName, $attachment->fileName);
         self::assertNotEmpty($attachment->contentType);
@@ -57,7 +56,6 @@ final class AttachmentsTest extends IntegrationTestCase
     public function testUploadToWorkPackagePersistsAttachmentOnContainer(): void
     {
         $workPackageId = $this->createWorkPackage()->id;
-        self::assertNotNull($workPackageId);
         $fileName = 'phpclient-' . uniqid() . '.txt';
 
         $attachment = $this->client->attachments()->uploadToWorkPackage(
@@ -68,7 +66,6 @@ final class AttachmentsTest extends IntegrationTestCase
             'A description of the file',
         );
 
-        self::assertNotNull($attachment->id);
         self::assertSame($fileName, $attachment->fileName);
         self::assertNotEmpty($attachment->contentType);
         self::assertNotEmpty($attachment->status);
@@ -83,7 +80,6 @@ final class AttachmentsTest extends IntegrationTestCase
     public function testGetReturnsUploadedAttachment(): void
     {
         $workPackageId = $this->createWorkPackage()->id;
-        self::assertNotNull($workPackageId);
         $fileName = 'phpclient-' . uniqid() . '.txt';
 
         $uploaded = $this->client->attachments()->uploadToWorkPackage(
@@ -93,7 +89,6 @@ final class AttachmentsTest extends IntegrationTestCase
             'text/plain',
             'A description of the file',
         );
-        self::assertNotNull($uploaded->id);
 
         $attachment = $this->client->attachments()->get($uploaded->id);
 
@@ -110,7 +105,6 @@ final class AttachmentsTest extends IntegrationTestCase
     {
         $contents = 'phpclient download test ' . uniqid();
         $workPackageId = $this->createWorkPackage()->id;
-        self::assertNotNull($workPackageId);
         $fileName = 'phpclient-' . uniqid() . '.txt';
 
         $uploaded = $this->client->attachments()->uploadToWorkPackage(
@@ -119,7 +113,6 @@ final class AttachmentsTest extends IntegrationTestCase
             $fileName,
             'text/plain',
         );
-        self::assertNotNull($uploaded->id);
 
         $stream = $this->client->attachments()->download($uploaded->id);
 
@@ -136,7 +129,6 @@ final class AttachmentsTest extends IntegrationTestCase
             'text/plain',
         );
         $id = $attachment->id;
-        self::assertNotNull($id);
         $this->createdAttachmentIds[] = $id;
 
         $this->client->attachments()->delete($id);

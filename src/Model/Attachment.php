@@ -13,7 +13,7 @@ use OpenEuropa\OpenProjectClient\Http\HalResource;
 final readonly class Attachment
 {
     public function __construct(
-        public ?int $id,
+        public int $id,
         public string $fileName,
         public ?int $fileSize,
         public Formattable $description,
@@ -53,7 +53,7 @@ final readonly class Attachment
         /** @var array<string, mixed> $digestData */
 
         return new self(
-            $hal->getInt('id'),
+            $hal->requireInt('id'),
             $hal->requireString('fileName'),
             $hal->getInt('fileSize'),
             Formattable::fromApiResponse($descriptionData),

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace OpenEuropa\OpenProjectClient\Tests\Unit\Model;
 
+use OpenEuropa\OpenProjectClient\Exception\UnexpectedResponseException;
 use OpenEuropa\OpenProjectClient\Http\HalResource;
 use OpenEuropa\OpenProjectClient\Model\Status;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -12,6 +13,7 @@ use PHPUnit\Framework\TestCase;
 
 #[CoversClass(Status::class)]
 #[UsesClass(HalResource::class)]
+#[UsesClass(UnexpectedResponseException::class)]
 final class StatusTest extends TestCase
 {
     public function testMapsAllFieldsFromFixture(): void
@@ -35,9 +37,9 @@ final class StatusTest extends TestCase
 
     public function testMissingFieldsProduceAllNulls(): void
     {
-        $status = Status::fromApiResponse(['_type' => 'Status']);
+        $status = Status::fromApiResponse(['_type' => 'Status', 'id' => 13]);
 
-        self::assertNull($status->id);
+        self::assertSame(13, $status->id);
         self::assertNull($status->name);
         self::assertNull($status->isClosed);
         self::assertNull($status->color);
@@ -46,5 +48,11 @@ final class StatusTest extends TestCase
         self::assertNull($status->excludedFromTotals);
         self::assertNull($status->defaultDoneRatio);
         self::assertNull($status->position);
+    }
+
+    public function testThrowsWhenRequiredIdMissing(): void
+    {
+        $this->expectException(UnexpectedResponseException::class);
+        Status::fromApiResponse(['_type' => 'Status']);
     }
 }

@@ -17,7 +17,7 @@ final readonly class Activity
      *   when the API omits the field.
      */
     public function __construct(
-        public ?int $id,
+        public int $id,
         public ?int $version,
         public ?Formattable $comment,
         public array $details,
@@ -59,7 +59,7 @@ final readonly class Activity
         }
 
         return new self(
-            $hal->getInt('id'),
+            $hal->requireInt('id'),
             $hal->getInt('version'),
             $comment,
             $details,

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace OpenEuropa\OpenProjectClient\Tests\Unit\Model;
 
+use OpenEuropa\OpenProjectClient\Exception\UnexpectedResponseException;
 use OpenEuropa\OpenProjectClient\Http\HalResource;
 use OpenEuropa\OpenProjectClient\Model\Activity;
 use OpenEuropa\OpenProjectClient\Model\Formattable;
@@ -14,6 +15,7 @@ use PHPUnit\Framework\TestCase;
 
 #[CoversClass(Activity::class)]
 #[UsesClass(HalResource::class)]
+#[UsesClass(UnexpectedResponseException::class)]
 #[UsesClass(Formattable::class)]
 #[UsesClass(Link::class)]
 final class ActivityTest extends TestCase
@@ -43,6 +45,7 @@ final class ActivityTest extends TestCase
     public function testDecodesDetailsIntoFormattableList(): void
     {
         $activity = Activity::fromApiResponse([
+            'id' => 42,
             'details' => [
                 ['format' => 'custom', 'raw' => 'Status set to New', 'html' => '<strong>Status</strong> set to New'],
                 ['format' => 'custom', 'raw' => 'Priority set to Normal', 'html' => '<strong>Priority</strong> set'],
@@ -58,6 +61,7 @@ final class ActivityTest extends TestCase
     public function testNonArrayDetailsElementIsSkipped(): void
     {
         $activity = Activity::fromApiResponse([
+            'id' => 42,
             'details' => [
                 ['format' => 'custom', 'raw' => 'Status set to New', 'html' => '<strong>Status</strong> set to New'],
                 'not-an-array',
@@ -72,9 +76,10 @@ final class ActivityTest extends TestCase
     {
         $activity = Activity::fromApiResponse([
             '_type' => 'Activity::Comment',
+            'id' => 42,
         ]);
 
-        self::assertNull($activity->id);
+        self::assertSame(42, $activity->id);
         self::assertNull($activity->version);
         self::assertNull($activity->comment);
         self::assertSame([], $activity->details);
@@ -89,9 +94,16 @@ final class ActivityTest extends TestCase
     public function testCommentWithoutFormatIsNull(): void
     {
         $activity = Activity::fromApiResponse([
+            'id' => 42,
             'comment' => ['raw' => 'No format key'],
         ]);
 
         self::assertNull($activity->comment);
+    }
+
+    public function testThrowsWhenRequiredIdMissing(): void
+    {
+        $this->expectException(UnexpectedResponseException::class);
+        Activity::fromApiResponse(['_type' => 'Activity::Comment']);
     }
 }

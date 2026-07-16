@@ -93,4 +93,10 @@ final class WorkPackageTest extends TestCase
         $this->expectException(UnexpectedResponseException::class);
         WorkPackage::fromApiResponse(['id' => 9]);
     }
+
+    public function testThrowsWhenRequiredIdMissing(): void
+    {
+        $this->expectException(UnexpectedResponseException::class);
+        WorkPackage::fromApiResponse(['subject' => 'Minimal work package']);
+    }
 }

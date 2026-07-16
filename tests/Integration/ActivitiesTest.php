@@ -13,7 +13,6 @@ final class ActivitiesTest extends IntegrationTestCase
     public function testCommentAndListActivitiesRoundTrip(): void
     {
         $workPackageId = $this->createWorkPackage()->id;
-        self::assertNotNull($workPackageId);
         $raw = 'phpclient integration test comment ' . uniqid();
 
         $created = $this->client->activities()->comment($workPackageId, $raw);
@@ -34,7 +33,6 @@ final class ActivitiesTest extends IntegrationTestCase
     public function testCommentWithNotifyFalseDoesNotError(): void
     {
         $workPackageId = $this->createWorkPackage()->id;
-        self::assertNotNull($workPackageId);
 
         $activity = $this->client->activities()->comment(
             $workPackageId,

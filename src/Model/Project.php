@@ -12,7 +12,7 @@ use OpenEuropa\OpenProjectClient\Http\HalResource;
 final readonly class Project
 {
     public function __construct(
-        public ?int $id,
+        public int $id,
         public ?string $identifier,
         public ?string $name,
         public ?bool $active,
@@ -54,7 +54,7 @@ final readonly class Project
         }
 
         return new self(
-            $hal->getInt('id'),
+            $hal->requireInt('id'),
             $hal->getString('identifier'),
             $hal->getString('name'),
             $hal->getBool('active'),

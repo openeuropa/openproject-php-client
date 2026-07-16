@@ -47,7 +47,6 @@ final class ProjectsTest extends IntegrationTestCase
             (new ProjectInput())->name($name)->identifier($identifier),
         );
 
-        self::assertNotNull($created->id);
         $this->createdProjectIds[] = $created->id;
         self::assertSame($name, $created->name);
 
@@ -65,7 +64,6 @@ final class ProjectsTest extends IntegrationTestCase
             (new ProjectInput())->name($name)->identifier($identifier),
         );
 
-        self::assertNotNull($created->id);
         $this->createdProjectIds[] = $created->id;
 
         $results = $this->client->projects()->listPage();
@@ -79,7 +77,6 @@ final class ProjectsTest extends IntegrationTestCase
 
         self::assertNotEmpty($results->elements, 'The instance must have at least one project.');
 
-        self::assertNotNull($results->elements[0]->id);
         self::assertNotNull($results->elements[0]->name);
     }
 
@@ -89,7 +86,6 @@ final class ProjectsTest extends IntegrationTestCase
 
         self::assertNotEmpty($projects, 'The instance must have at least one project.');
 
-        self::assertNotNull($projects[0]->id);
         self::assertNotNull($projects[0]->name);
     }
 
@@ -104,7 +100,6 @@ final class ProjectsTest extends IntegrationTestCase
         self::assertNotEmpty($results->elements, 'The instance must have at least one active project.');
 
         $firstId = $results->elements[0]->id;
-        self::assertNotNull($firstId);
 
         $project = $this->client->projects()->get($firstId);
 
@@ -121,7 +116,6 @@ final class ProjectsTest extends IntegrationTestCase
     public function testUpdateFormReturnsFormWithSchema(): void
     {
         $created = $this->createProject();
-        self::assertNotNull($created->id);
 
         $form = $this->client->projects()->updateForm(
             $created->id,
@@ -135,7 +129,6 @@ final class ProjectsTest extends IntegrationTestCase
     public function testUpdateChangesNameAndCanBeReadBack(): void
     {
         $created = $this->createProject();
-        self::assertNotNull($created->id);
 
         $newName = 'phpclient-updated-' . uniqid();
         $updated = $this->client->projects()->update(
@@ -152,7 +145,6 @@ final class ProjectsTest extends IntegrationTestCase
     public function testUpdateWithInvalidPayloadThrowsValidationException(): void
     {
         $created = $this->createProject();
-        self::assertNotNull($created->id);
 
         $this->expectException(ValidationException::class);
         $this->client->projects()->update($created->id, (new ProjectInput())->name(''));
@@ -162,7 +154,6 @@ final class ProjectsTest extends IntegrationTestCase
     {
         $created = $this->createProject();
         $id = $created->id;
-        self::assertNotNull($id);
         self::assertTrue($created->active);
 
         $this->client->projects()->delete($id);
@@ -181,9 +172,7 @@ final class ProjectsTest extends IntegrationTestCase
             (new ProjectInput())->name('phpclient project ' . $suffix)->identifier('phpclient-' . $suffix),
         );
 
-        $id = $project->id;
-        self::assertNotNull($id);
-        $this->createdProjectIds[] = $id;
+        $this->createdProjectIds[] = $project->id;
 
         return $project;
     }

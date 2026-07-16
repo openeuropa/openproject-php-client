@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace OpenEuropa\OpenProjectClient\Tests\Unit\Model;
 
+use OpenEuropa\OpenProjectClient\Exception\UnexpectedResponseException;
 use OpenEuropa\OpenProjectClient\Http\HalResource;
 use OpenEuropa\OpenProjectClient\Model\Priority;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -12,6 +13,7 @@ use PHPUnit\Framework\TestCase;
 
 #[CoversClass(Priority::class)]
 #[UsesClass(HalResource::class)]
+#[UsesClass(UnexpectedResponseException::class)]
 final class PriorityTest extends TestCase
 {
     public function testMapsAllFieldsFromFixture(): void
@@ -31,12 +33,18 @@ final class PriorityTest extends TestCase
 
     public function testMissingFieldsProduceAllNulls(): void
     {
-        $priority = Priority::fromApiResponse(['_type' => 'Priority']);
+        $priority = Priority::fromApiResponse(['_type' => 'Priority', 'id' => 5]);
 
-        self::assertNull($priority->id);
+        self::assertSame(5, $priority->id);
         self::assertNull($priority->name);
         self::assertNull($priority->position);
         self::assertNull($priority->isDefault);
         self::assertNull($priority->isActive);
+    }
+
+    public function testThrowsWhenRequiredIdMissing(): void
+    {
+        $this->expectException(UnexpectedResponseException::class);
+        Priority::fromApiResponse(['_type' => 'Priority']);
     }
 }

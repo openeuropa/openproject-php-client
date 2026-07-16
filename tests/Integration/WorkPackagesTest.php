@@ -18,7 +18,6 @@ final class WorkPackagesTest extends IntegrationTestCase
     {
         $wp = $this->createWorkPackage();
         $id = $wp->id;
-        self::assertNotNull($id);
 
         $fetched = $this->client->workPackages()->get($id);
         self::assertSame($id, $fetched->id);
@@ -40,7 +39,6 @@ final class WorkPackagesTest extends IntegrationTestCase
             self::markTestSkipped('No work packages found in the instance.');
         }
 
-        self::assertNotNull($results->elements[0]->id);
         self::assertNotEmpty($results->elements[0]->subject);
     }
 
@@ -56,7 +54,6 @@ final class WorkPackagesTest extends IntegrationTestCase
             self::markTestSkipped('No work packages found in the instance.');
         }
 
-        self::assertNotNull($first->id);
         self::assertNotEmpty($first->subject);
     }
 
@@ -74,7 +71,6 @@ final class WorkPackagesTest extends IntegrationTestCase
             self::markTestSkipped('No work packages found in the project.');
         }
 
-        self::assertNotNull($first->id);
         self::assertNotEmpty($first->subject);
     }
 
@@ -90,7 +86,6 @@ final class WorkPackagesTest extends IntegrationTestCase
     {
         $wp = $this->createWorkPackage();
         $id = $wp->id;
-        self::assertNotNull($id);
 
         $form = $this->client->workPackages()->updateForm(
             $id,
@@ -114,7 +109,6 @@ final class WorkPackagesTest extends IntegrationTestCase
             (new WorkPackageInput())->subject($subject)->project($projectId)->type($typeId),
         );
 
-        self::assertNotNull($created->id);
         $this->createdWorkPackageIds[] = $created->id;
         self::assertSame($subject, $created->subject);
 
@@ -126,7 +120,6 @@ final class WorkPackagesTest extends IntegrationTestCase
     {
         $wp = $this->createWorkPackage();
         $id = $wp->id;
-        self::assertNotNull($id);
 
         $this->client->workPackages()->delete($id);
 
@@ -139,7 +132,6 @@ final class WorkPackagesTest extends IntegrationTestCase
         $wp = $this->createWorkPackage();
 
         $newSubject = 'phpclient-updated-' . uniqid();
-        self::assertNotNull($wp->id);
         self::assertNotNull($wp->lockVersion);
 
         $updated = $this->client->workPackages()->update(
@@ -158,7 +150,6 @@ final class WorkPackagesTest extends IntegrationTestCase
     {
         $wp = $this->createWorkPackage();
 
-        self::assertNotNull($wp->id);
         self::assertNotNull($wp->lockVersion);
 
         $originalLockVersion = $wp->lockVersion;
@@ -182,7 +173,6 @@ final class WorkPackagesTest extends IntegrationTestCase
     {
         $wp = $this->createWorkPackage();
 
-        self::assertNotNull($wp->id);
         self::assertNotNull($wp->lockVersion);
 
         $this->expectException(ValidationException::class);

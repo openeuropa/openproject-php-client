@@ -12,7 +12,7 @@ use OpenEuropa\OpenProjectClient\Http\HalResource;
 final readonly class Priority
 {
     public function __construct(
-        public ?int $id,
+        public int $id,
         public ?string $name,
         public ?int $position,
         public ?bool $isDefault,
@@ -31,7 +31,7 @@ final readonly class Priority
         $hal = new HalResource($data);
 
         return new self(
-            $hal->getInt('id'),
+            $hal->requireInt('id'),
             $hal->getString('name'),
             $hal->getInt('position'),
             $hal->getBool('isDefault'),
