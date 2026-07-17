@@ -14,6 +14,7 @@ use OpenEuropa\OpenProjectClient\Endpoint\RelationsEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\StatusesEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\TypesEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\UsersEndpoint;
+use OpenEuropa\OpenProjectClient\Endpoint\VersionsEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\WorkPackagesEndpoint;
 use OpenEuropa\OpenProjectClient\Http\Transport;
 use OpenEuropa\OpenProjectClient\Model\InstanceInfo;
@@ -148,5 +149,13 @@ final class Client
     public function relations(): RelationsEndpoint
     {
         return new RelationsEndpoint($this->transport);
+    }
+
+    /**
+     * Returns the versions endpoint for /api/v3/versions.
+     */
+    public function versions(): VersionsEndpoint
+    {
+        return new VersionsEndpoint($this->transport);
     }
 }

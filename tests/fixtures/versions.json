@@ -1,0 +1,52 @@
+{
+    "_type": "Collection",
+    "total": 2,
+    "count": 2,
+    "_embedded": {
+        "elements": [
+            {
+                "_type": "Version",
+                "id": 3,
+                "name": "v0.9.1-alpha",
+                "description": {
+                    "format": "plain",
+                    "raw": "First draft of the energy weapon",
+                    "html": "<p>First draft of the energy weapon</p>"
+                },
+                "startDate": "2026-02-02",
+                "endDate": "2026-02-09",
+                "status": "closed",
+                "sharing": "none",
+                "createdAt": "2026-02-06T09:30:49.157Z",
+                "updatedAt": "2026-02-10T09:53:21.620Z",
+                "_links": {
+                    "self": {"href": "/api/v3/versions/3", "title": "v0.9.1-alpha"},
+                    "definingProject": {"href": "/api/v3/projects/10", "title": "Death Star"},
+                    "availableInProjects": {"href": "/api/v3/versions/3/workspaces"}
+                }
+            },
+            {
+                "_type": "Version",
+                "id": 4,
+                "name": "v1.0",
+                "description": {
+                    "format": "plain",
+                    "raw": "",
+                    "html": ""
+                },
+                "startDate": null,
+                "endDate": null,
+                "status": "open",
+                "sharing": "tree",
+                "createdAt": "2026-03-01T08:12:00.000Z",
+                "updatedAt": "2026-03-05T11:47:33.000Z",
+                "_links": {
+                    "self": {"href": "/api/v3/versions/4", "title": "v1.0"},
+                    "definingProject": {"href": "/api/v3/projects/11", "title": "Yavin 4"},
+                    "availableInProjects": {"href": "/api/v3/versions/4/workspaces"}
+                }
+            }
+        ]
+    },
+    "_links": {"self": {"href": "/api/v3/versions?filters=%5B%5D"}}
+}

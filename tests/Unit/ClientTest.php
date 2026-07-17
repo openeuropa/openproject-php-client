@@ -17,6 +17,7 @@ use OpenEuropa\OpenProjectClient\Endpoint\RelationsEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\StatusesEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\TypesEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\UsersEndpoint;
+use OpenEuropa\OpenProjectClient\Endpoint\VersionsEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\WorkPackagesEndpoint;
 use OpenEuropa\OpenProjectClient\Http\Transport;
 use OpenEuropa\OpenProjectClient\Model\InstanceInfo;
@@ -39,6 +40,7 @@ use PHPUnit\Framework\TestCase;
 #[UsesClass(AttachmentsEndpoint::class)]
 #[UsesClass(ActivitiesEndpoint::class)]
 #[UsesClass(RelationsEndpoint::class)]
+#[UsesClass(VersionsEndpoint::class)]
 #[UsesClass(AbstractEndpoint::class)]
 final class ClientTest extends TestCase
 {
@@ -123,6 +125,13 @@ final class ClientTest extends TestCase
         $client = $this->createClient('http://example.test');
 
         self::assertInstanceOf(RelationsEndpoint::class, $client->relations());
+    }
+
+    public function testVersionsReturnsAVersionsEndpoint(): void
+    {
+        $client = $this->createClient('http://example.test');
+
+        self::assertInstanceOf(VersionsEndpoint::class, $client->versions());
     }
 
     private function createClient(string $baseUrl): Client

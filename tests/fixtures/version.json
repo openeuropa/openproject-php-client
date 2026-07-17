@@ -1,0 +1,25 @@
+{
+    "_type": "Version",
+    "id": 3,
+    "name": "v0.9.1-alpha",
+    "description": {
+        "format": "plain",
+        "raw": "First draft of the energy weapon ... (behold, Alderaan *evil_laughter*)",
+        "html": "<p>First draft of the energy weapon ... (behold, Alderaan *evil_laughter*)</p>"
+    },
+    "startDate": "2026-02-02",
+    "endDate": "2026-02-09",
+    "status": "closed",
+    "sharing": "none",
+    "createdAt": "2026-02-06T09:30:49.157Z",
+    "updatedAt": "2026-02-10T09:53:21.620Z",
+    "_links": {
+        "self": {"href": "/api/v3/versions/3", "title": "v0.9.1-alpha"},
+        "schema": {"href": "/api/v3/versions/schema"},
+        "update": {"href": "/api/v3/versions/3/form", "method": "post"},
+        "updateImmediately": {"href": "/api/v3/versions/3", "method": "patch"},
+        "delete": {"href": "/api/v3/versions/3", "method": "delete"},
+        "availableInProjects": {"href": "/api/v3/versions/3/workspaces"},
+        "definingProject": {"href": "/api/v3/projects/10", "title": "Death Star"}
+    }
+}
