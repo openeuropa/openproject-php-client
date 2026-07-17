@@ -5,12 +5,52 @@ declare(strict_types=1);
 namespace OpenEuropa\OpenProjectClient\Tests\Integration;
 
 use OpenEuropa\OpenProjectClient\Exception\NotFoundException;
+use OpenEuropa\OpenProjectClient\Exception\ValidationException;
+use OpenEuropa\OpenProjectClient\Model\Form\Form;
+use OpenEuropa\OpenProjectClient\Model\Project;
+use OpenEuropa\OpenProjectClient\Model\ProjectInput;
 use OpenEuropa\OpenProjectClient\Model\Version;
+use OpenEuropa\OpenProjectClient\Model\VersionInput;
 use PHPUnit\Framework\Attributes\CoversNothing;
 
 #[CoversNothing]
 final class VersionsTest extends IntegrationTestCase
 {
+    /**
+     * IDs of projects created during a test run, deleted in tearDown.
+     *
+     * @var list<int>
+     */
+    private array $createdProjectIds = [];
+
+    /**
+     * IDs of versions created during a test run, deleted in tearDown.
+     *
+     * @var list<int>
+     */
+    private array $createdVersionIds = [];
+
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+
+        foreach ($this->createdVersionIds as $id) {
+            try {
+                $this->client->versions()->delete($id);
+            } catch (NotFoundException) {
+                // Already deleted; nothing to clean up.
+            }
+        }
+
+        foreach ($this->createdProjectIds as $id) {
+            try {
+                $this->client->projects()->delete($id);
+            } catch (NotFoundException) {
+                // Already deleted; nothing to clean up.
+            }
+        }
+    }
+
     public function testGetWithNonexistentIdThrowsNotFoundException(): void
     {
         $this->expectException(NotFoundException::class);
@@ -48,5 +88,94 @@ final class VersionsTest extends IntegrationTestCase
         foreach ($projectResults->elements as $version) {
             self::assertInstanceOf(Version::class, $version);
         }
+    }
+
+    public function testCreatePersistsVersionAndCanBeReadBack(): void
+    {
+        $project = $this->createProject();
+
+        $name = 'phpclient version ' . uniqid();
+        $created = $this->createVersion($project->id, $name);
+
+        self::assertSame($name, $created->name);
+
+        $fetched = $this->client->versions()->get($created->id);
+        self::assertSame($name, $fetched->name);
+
+        $this->client->versions()->delete($created->id);
+
+        $this->expectException(NotFoundException::class);
+        $this->client->versions()->get($created->id);
+    }
+
+    public function testCreateFormReturnsFormWithSchema(): void
+    {
+        $form = $this->client->versions()->createForm();
+        self::assertInstanceOf(Form::class, $form);
+        self::assertNotEmpty($form->schema);
+    }
+
+    public function testUpdateFormReturnsFormWithSchema(): void
+    {
+        $project = $this->createProject();
+        $created = $this->createVersion($project->id, 'phpclient version ' . uniqid());
+
+        $form = $this->client->versions()->updateForm(
+            $created->id,
+            (new VersionInput())->name('phpclient updated ' . uniqid()),
+        );
+
+        self::assertInstanceOf(Form::class, $form);
+        self::assertNotEmpty($form->schema);
+    }
+
+    public function testUpdateChangesNameAndCanBeReadBack(): void
+    {
+        $project = $this->createProject();
+        $created = $this->createVersion($project->id, 'phpclient version ' . uniqid());
+
+        $newName = 'phpclient-updated-' . uniqid();
+        $updated = $this->client->versions()->update(
+            $created->id,
+            (new VersionInput())->name($newName),
+        );
+
+        self::assertSame($newName, $updated->name);
+
+        $fetched = $this->client->versions()->get($created->id);
+        self::assertSame($newName, $fetched->name);
+    }
+
+    public function testUpdateWithInvalidPayloadThrowsValidationException(): void
+    {
+        $project = $this->createProject();
+        $created = $this->createVersion($project->id, 'phpclient version ' . uniqid());
+
+        $this->expectException(ValidationException::class);
+        $this->client->versions()->update($created->id, (new VersionInput())->status('not-a-status'));
+    }
+
+    private function createProject(): Project
+    {
+        $suffix = uniqid();
+
+        $project = $this->client->projects()->create(
+            (new ProjectInput())->name('phpclient project ' . $suffix)->identifier('phpclient-' . $suffix),
+        );
+
+        $this->createdProjectIds[] = $project->id;
+
+        return $project;
+    }
+
+    private function createVersion(int $projectId, string $name): Version
+    {
+        $version = $this->client->versions()->create(
+            (new VersionInput())->name($name)->status('open')->sharing('none')->definingProject($projectId),
+        );
+
+        $this->createdVersionIds[] = $version->id;
+
+        return $version;
     }
 }
