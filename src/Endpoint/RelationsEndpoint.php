@@ -6,10 +6,11 @@ namespace OpenEuropa\OpenProjectClient\Endpoint;
 
 use OpenEuropa\OpenProjectClient\Model\PageResults;
 use OpenEuropa\OpenProjectClient\Model\Relation;
+use OpenEuropa\OpenProjectClient\Model\RelationInput;
 use OpenEuropa\OpenProjectClient\Query\FilterSet;
 
 /**
- * Endpoint for GET /api/v3/relations and /api/v3/relations/{id}.
+ * Endpoint for reading and writing relations via the OpenProject API.
  */
 final class RelationsEndpoint extends AbstractEndpoint
 {
@@ -33,5 +34,37 @@ final class RelationsEndpoint extends AbstractEndpoint
     public function all(?FilterSet $filters = null): PageResults
     {
         return $this->getCollectionPage('relations', Relation::fromApiResponse(...), $filters);
+    }
+
+    /**
+     * Creates a relation on a work package and returns the created resource.
+     *
+     * @throws \OpenEuropa\OpenProjectClient\Exception\OpenProjectException
+     */
+    public function create(int $workPackageId, RelationInput $payload): Relation
+    {
+        return Relation::fromApiResponse(
+            $this->transport->post('work_packages/' . $workPackageId . '/relations', $payload->toArray()),
+        );
+    }
+
+    /**
+     * Updates a relation and returns the updated resource.
+     *
+     * @throws \OpenEuropa\OpenProjectClient\Exception\OpenProjectException
+     */
+    public function update(int $id, RelationInput $payload): Relation
+    {
+        return Relation::fromApiResponse($this->transport->patch('relations/' . $id, $payload->toArray()));
+    }
+
+    /**
+     * Deletes a relation by ID.
+     *
+     * @throws \OpenEuropa\OpenProjectClient\Exception\OpenProjectException
+     */
+    public function delete(int $id): void
+    {
+        $this->transport->delete('relations/' . $id);
     }
 }

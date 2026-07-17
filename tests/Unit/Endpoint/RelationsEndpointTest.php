@@ -13,6 +13,7 @@ use OpenEuropa\OpenProjectClient\Http\Transport;
 use OpenEuropa\OpenProjectClient\Model\Link;
 use OpenEuropa\OpenProjectClient\Model\PageResults;
 use OpenEuropa\OpenProjectClient\Model\Relation;
+use OpenEuropa\OpenProjectClient\Model\RelationInput;
 use OpenEuropa\OpenProjectClient\Query\Filter;
 use OpenEuropa\OpenProjectClient\Query\FilterOperator;
 use OpenEuropa\OpenProjectClient\Query\FilterSet;
@@ -26,6 +27,7 @@ use PHPUnit\Framework\TestCase;
 #[UsesClass(Transport::class)]
 #[UsesClass(ApiKeyAuthentication::class)]
 #[UsesClass(Relation::class)]
+#[UsesClass(RelationInput::class)]
 #[UsesClass(Link::class)]
 #[UsesClass(PageResults::class)]
 #[UsesClass(HalResource::class)]
@@ -96,5 +98,54 @@ final class RelationsEndpointTest extends TestCase
         $uri = (string) $this->lastRequest()->getUri();
         self::assertSame('/api/v3/relations', $this->lastRequest()->getUri()->getPath());
         self::assertStringContainsString('filters=', $uri);
+    }
+
+    public function testCreatePostsToWorkPackageRelationsUriAndReturnsRelation(): void
+    {
+        $endpoint = $this->createEndpoint();
+        $this->queueFixtureResponse('relation.json', 201);
+
+        $relation = $endpoint->create(108, (new RelationInput())->type('relates')->to(78));
+
+        $request = $this->lastRequest();
+        self::assertSame('POST', $request->getMethod());
+        self::assertSame('/api/v3/work_packages/108/relations', $request->getUri()->getPath());
+        $body = (string) $request->getBody();
+        self::assertStringContainsString('"type":"relates"', $body);
+        self::assertStringContainsString('"href":"\/api\/v3\/work_packages\/78"', $body);
+        self::assertSame('application/json', $request->getHeaderLine('Content-Type'));
+        self::assertInstanceOf(Relation::class, $relation);
+        self::assertSame(650, $relation->id);
+    }
+
+    public function testUpdatePatchesToRelationUriAndReturnsRelation(): void
+    {
+        $endpoint = $this->createEndpoint();
+        $this->queueFixtureResponse('relation.json');
+
+        $relation = $endpoint->update(650, (new RelationInput())->description('updated'));
+
+        $request = $this->lastRequest();
+        self::assertSame('PATCH', $request->getMethod());
+        self::assertSame('/api/v3/relations/650', $request->getUri()->getPath());
+        self::assertStringContainsString('"description":"updated"', (string) $request->getBody());
+        self::assertSame('application/json', $request->getHeaderLine('Content-Type'));
+        self::assertInstanceOf(Relation::class, $relation);
+        self::assertSame(650, $relation->id);
+    }
+
+    public function testDeleteSendsDeleteToRelationUri(): void
+    {
+        $endpoint = $this->createEndpoint();
+        $this->queueJsonResponse('', 204);
+
+        $endpoint->delete(650);
+
+        $request = $this->lastRequest();
+        self::assertSame('DELETE', $request->getMethod());
+        self::assertSame(
+            'http://example.test/api/v3/relations/650',
+            (string) $request->getUri(),
+        );
     }
 }
