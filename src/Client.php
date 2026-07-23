@@ -13,6 +13,7 @@ use OpenEuropa\OpenProjectClient\Endpoint\PrioritiesEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\ProjectsEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\RelationsEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\StatusesEndpoint;
+use OpenEuropa\OpenProjectClient\Endpoint\TimeEntriesEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\TypesEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\UsersEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\VersionsEndpoint;
@@ -166,5 +167,13 @@ final class Client
     public function categories(): CategoriesEndpoint
     {
         return new CategoriesEndpoint($this->transport);
+    }
+
+    /**
+     * Returns the time entries endpoint for /api/v3/time_entries.
+     */
+    public function timeEntries(): TimeEntriesEndpoint
+    {
+        return new TimeEntriesEndpoint($this->transport);
     }
 }

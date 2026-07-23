@@ -16,6 +16,7 @@ use OpenEuropa\OpenProjectClient\Endpoint\PrioritiesEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\ProjectsEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\RelationsEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\StatusesEndpoint;
+use OpenEuropa\OpenProjectClient\Endpoint\TimeEntriesEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\TypesEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\UsersEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\VersionsEndpoint;
@@ -43,6 +44,7 @@ use PHPUnit\Framework\TestCase;
 #[UsesClass(RelationsEndpoint::class)]
 #[UsesClass(VersionsEndpoint::class)]
 #[UsesClass(CategoriesEndpoint::class)]
+#[UsesClass(TimeEntriesEndpoint::class)]
 #[UsesClass(AbstractEndpoint::class)]
 final class ClientTest extends TestCase
 {
@@ -141,6 +143,13 @@ final class ClientTest extends TestCase
         $client = $this->createClient('http://example.test');
 
         self::assertInstanceOf(CategoriesEndpoint::class, $client->categories());
+    }
+
+    public function testTimeEntriesReturnsATimeEntriesEndpoint(): void
+    {
+        $client = $this->createClient('http://example.test');
+
+        self::assertInstanceOf(TimeEntriesEndpoint::class, $client->timeEntries());
     }
 
     private function createClient(string $baseUrl): Client
