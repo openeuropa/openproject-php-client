@@ -11,10 +11,14 @@ use OpenEuropa\OpenProjectClient\Endpoint\TimeEntriesEndpoint;
 use OpenEuropa\OpenProjectClient\Http\HalResource;
 use OpenEuropa\OpenProjectClient\Http\Transport;
 use OpenEuropa\OpenProjectClient\Model\CustomFields;
+use OpenEuropa\OpenProjectClient\Model\Form\Form;
+use OpenEuropa\OpenProjectClient\Model\Form\SchemaProperty;
 use OpenEuropa\OpenProjectClient\Model\Formattable;
 use OpenEuropa\OpenProjectClient\Model\Link;
 use OpenEuropa\OpenProjectClient\Model\PageResults;
 use OpenEuropa\OpenProjectClient\Model\TimeEntry;
+use OpenEuropa\OpenProjectClient\Model\TimeEntryInput;
+use OpenEuropa\OpenProjectClient\Model\ValidationError;
 use OpenEuropa\OpenProjectClient\Query\CollectionParams;
 use OpenEuropa\OpenProjectClient\Query\Filter;
 use OpenEuropa\OpenProjectClient\Query\FilterOperator;
@@ -38,6 +42,10 @@ use PHPUnit\Framework\TestCase;
 #[UsesClass(Filter::class)]
 #[UsesClass(FilterOperator::class)]
 #[UsesClass(CollectionParams::class)]
+#[UsesClass(Form::class)]
+#[UsesClass(SchemaProperty::class)]
+#[UsesClass(ValidationError::class)]
+#[UsesClass(TimeEntryInput::class)]
 final class TimeEntriesEndpointTest extends TestCase
 {
     use MockClientTrait;
@@ -123,5 +131,98 @@ final class TimeEntriesEndpointTest extends TestCase
 
         $lastUri = (string) $this->lastRequest()->getUri();
         self::assertStringContainsString('offset=2', $lastUri);
+    }
+
+    public function testCreateFormWithNoPayloadSendsPostToGlobalFormUri(): void
+    {
+        $endpoint = $this->createEndpoint();
+        $this->queueFixtureResponse('form.json');
+
+        $form = $endpoint->createForm();
+
+        self::assertSame('POST', $this->lastRequest()->getMethod());
+        self::assertSame(
+            'http://example.test/api/v3/time_entries/form',
+            (string) $this->lastRequest()->getUri(),
+        );
+        self::assertInstanceOf(Form::class, $form);
+    }
+
+    public function testCreateFormWithPayloadSendsJsonBodyAndContentTypeHeader(): void
+    {
+        $endpoint = $this->createEndpoint();
+        $this->queueFixtureResponse('form.json');
+
+        $endpoint->createForm((new TimeEntryInput())->hours('PT2H'));
+
+        $request = $this->lastRequest();
+        self::assertStringContainsString('"hours":"PT2H"', (string) $request->getBody());
+        self::assertSame('application/json', $request->getHeaderLine('Content-Type'));
+    }
+
+    public function testCreatePostsToTimeEntriesUriAndReturnsTimeEntry(): void
+    {
+        $endpoint = $this->createEndpoint();
+        $this->queueFixtureResponse('time-entry.json', 201);
+
+        $timeEntry = $endpoint->create((new TimeEntryInput())->hours('PT2H'));
+
+        $request = $this->lastRequest();
+        self::assertSame('POST', $request->getMethod());
+        self::assertSame('http://example.test/api/v3/time_entries', (string) $request->getUri());
+        self::assertStringContainsString('"hours":"PT2H"', (string) $request->getBody());
+        self::assertSame('application/json', $request->getHeaderLine('Content-Type'));
+        self::assertSame(42, $timeEntry->id);
+    }
+
+    public function testUpdateFormPostsToTimeEntryFormUriAndReturnsForm(): void
+    {
+        $endpoint = $this->createEndpoint();
+        $this->queueFixtureResponse('form.json');
+
+        $form = $endpoint->updateForm(42, (new TimeEntryInput())->hours('PT2H'));
+
+        $request = $this->lastRequest();
+        self::assertSame('POST', $request->getMethod());
+        self::assertSame(
+            'http://example.test/api/v3/time_entries/42/form',
+            (string) $request->getUri(),
+        );
+        self::assertStringContainsString('"hours":"PT2H"', (string) $request->getBody());
+        self::assertSame('application/json', $request->getHeaderLine('Content-Type'));
+        self::assertTrue($form->hasErrors());
+    }
+
+    public function testUpdatePatchesToTimeEntryUriAndReturnsTimeEntry(): void
+    {
+        $endpoint = $this->createEndpoint();
+        $this->queueFixtureResponse('time-entry.json');
+
+        $timeEntry = $endpoint->update(42, (new TimeEntryInput())->hours('PT2H'));
+
+        $request = $this->lastRequest();
+        self::assertSame('PATCH', $request->getMethod());
+        self::assertSame(
+            'http://example.test/api/v3/time_entries/42',
+            (string) $request->getUri(),
+        );
+        self::assertStringContainsString('"hours":"PT2H"', (string) $request->getBody());
+        self::assertSame('application/json', $request->getHeaderLine('Content-Type'));
+        self::assertSame(42, $timeEntry->id);
+    }
+
+    public function testDeleteSendsDeleteToTimeEntryUri(): void
+    {
+        $endpoint = $this->createEndpoint();
+        $this->queueJsonResponse('', 204);
+
+        $endpoint->delete(42);
+
+        $request = $this->lastRequest();
+        self::assertSame('DELETE', $request->getMethod());
+        self::assertSame(
+            'http://example.test/api/v3/time_entries/42',
+            (string) $request->getUri(),
+        );
     }
 }
