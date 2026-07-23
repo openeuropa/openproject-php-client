@@ -10,6 +10,7 @@ use OpenEuropa\OpenProjectClient\Client;
 use OpenEuropa\OpenProjectClient\Endpoint\AbstractEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\ActivitiesEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\AttachmentsEndpoint;
+use OpenEuropa\OpenProjectClient\Endpoint\CategoriesEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\ConfigurationEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\PrioritiesEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\ProjectsEndpoint;
@@ -41,6 +42,7 @@ use PHPUnit\Framework\TestCase;
 #[UsesClass(ActivitiesEndpoint::class)]
 #[UsesClass(RelationsEndpoint::class)]
 #[UsesClass(VersionsEndpoint::class)]
+#[UsesClass(CategoriesEndpoint::class)]
 #[UsesClass(AbstractEndpoint::class)]
 final class ClientTest extends TestCase
 {
@@ -132,6 +134,13 @@ final class ClientTest extends TestCase
         $client = $this->createClient('http://example.test');
 
         self::assertInstanceOf(VersionsEndpoint::class, $client->versions());
+    }
+
+    public function testCategoriesReturnsACategoriesEndpoint(): void
+    {
+        $client = $this->createClient('http://example.test');
+
+        self::assertInstanceOf(CategoriesEndpoint::class, $client->categories());
     }
 
     private function createClient(string $baseUrl): Client

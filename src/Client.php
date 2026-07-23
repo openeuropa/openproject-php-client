@@ -7,6 +7,7 @@ namespace OpenEuropa\OpenProjectClient;
 use OpenEuropa\OpenProjectClient\Authentication\AuthenticationInterface;
 use OpenEuropa\OpenProjectClient\Endpoint\ActivitiesEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\AttachmentsEndpoint;
+use OpenEuropa\OpenProjectClient\Endpoint\CategoriesEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\ConfigurationEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\PrioritiesEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\ProjectsEndpoint;
@@ -157,5 +158,13 @@ final class Client
     public function versions(): VersionsEndpoint
     {
         return new VersionsEndpoint($this->transport);
+    }
+
+    /**
+     * Returns the categories endpoint for /api/v3/categories.
+     */
+    public function categories(): CategoriesEndpoint
+    {
+        return new CategoriesEndpoint($this->transport);
     }
 }
