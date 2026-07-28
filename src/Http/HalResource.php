@@ -131,4 +131,39 @@ final class HalResource
         /** @var array<string, mixed> $entry */
         return Link::fromApiResponse($entry);
     }
+
+    /**
+     * Returns the Links for the given relation, or an empty list when absent or not an array.
+     *
+     * @return list<Link>
+     */
+    public function linkList(string $rel): array
+    {
+        $links = $this->data['_links'] ?? null;
+        if (!is_array($links)) {
+            return [];
+        }
+
+        $entry = $links[$rel] ?? null;
+        if (!is_array($entry)) {
+            return [];
+        }
+
+        // HAL renders a relation holding one link as a bare object and a
+        // relation holding several as an array, so both shapes are valid here.
+        if (!array_is_list($entry)) {
+            /** @var array<string, mixed> $entry */
+            return [Link::fromApiResponse($entry)];
+        }
+
+        $list = [];
+        foreach ($entry as $item) {
+            if (is_array($item)) {
+                /** @var array<string, mixed> $item */
+                $list[] = Link::fromApiResponse($item);
+            }
+        }
+
+        return $list;
+    }
 }
