@@ -1,0 +1,28 @@
+{
+    "_type": "Collection",
+    "total": 1,
+    "count": 1,
+    "pageSize": 20,
+    "offset": 2,
+    "_embedded": {
+        "elements": [
+            {
+                "_type": "Membership",
+                "id": 23,
+                "createdAt": "2015-03-22T12:00:00.000Z",
+                "updatedAt": "2015-03-22T12:00:00.000Z",
+                "_links": {
+                    "self": {"href": "/api/v3/memberships/23"},
+                    "project": {"href": "/api/v3/projects/1", "title": "Some project"},
+                    "principal": {"href": "/api/v3/users/2", "title": "Some user"},
+                    "roles": [
+                        {"href": "/api/v3/roles/1", "title": "Member"}
+                    ]
+                }
+            }
+        ]
+    },
+    "_links": {
+        "self": {"href": "/api/v3/memberships?offset=2&pageSize=20"}
+    }
+}

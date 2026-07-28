@@ -9,6 +9,7 @@ use OpenEuropa\OpenProjectClient\Endpoint\ActivitiesEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\AttachmentsEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\CategoriesEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\ConfigurationEndpoint;
+use OpenEuropa\OpenProjectClient\Endpoint\MembershipsEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\PrioritiesEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\ProjectsEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\RelationsEndpoint;
@@ -175,5 +176,13 @@ final class Client
     public function timeEntries(): TimeEntriesEndpoint
     {
         return new TimeEntriesEndpoint($this->transport);
+    }
+
+    /**
+     * Returns the memberships endpoint for /api/v3/memberships.
+     */
+    public function memberships(): MembershipsEndpoint
+    {
+        return new MembershipsEndpoint($this->transport);
     }
 }

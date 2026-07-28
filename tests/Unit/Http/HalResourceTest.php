@@ -203,4 +203,74 @@ final class HalResourceTest extends TestCase
 
         self::assertNull($hal->link('self'));
     }
+
+    public function testLinkListReturnsListOfLinksWhenRelationIsAList(): void
+    {
+        $hal = new HalResource([
+            '_links' => [
+                'roles' => [
+                    ['href' => '/api/v3/roles/4', 'title' => 'Sith Lord'],
+                    ['href' => '/api/v3/roles/5'],
+                ],
+            ],
+        ]);
+
+        $roles = $hal->linkList('roles');
+
+        self::assertCount(2, $roles);
+        self::assertSame('/api/v3/roles/4', $roles[0]->href);
+        self::assertSame('/api/v3/roles/5', $roles[1]->href);
+    }
+
+    public function testLinkListWrapsASingleLinkObjectIntoAOneElementList(): void
+    {
+        $hal = new HalResource([
+            '_links' => [
+                'roles' => ['href' => '/api/v3/roles/4', 'title' => 'Sith Lord'],
+            ],
+        ]);
+
+        $roles = $hal->linkList('roles');
+
+        self::assertCount(1, $roles);
+        self::assertSame('/api/v3/roles/4', $roles[0]->href);
+    }
+
+    public function testLinkListSkipsNonArrayEntriesInTheList(): void
+    {
+        $hal = new HalResource([
+            '_links' => [
+                'roles' => [
+                    ['href' => '/api/v3/roles/4'],
+                    'not-an-array',
+                ],
+            ],
+        ]);
+
+        $roles = $hal->linkList('roles');
+
+        self::assertCount(1, $roles);
+        self::assertSame('/api/v3/roles/4', $roles[0]->href);
+    }
+
+    public function testLinkListReturnsEmptyListWhenRelationAbsent(): void
+    {
+        $hal = new HalResource(['_links' => []]);
+
+        self::assertSame([], $hal->linkList('roles'));
+    }
+
+    public function testLinkListReturnsEmptyListWhenLinksAbsent(): void
+    {
+        $hal = new HalResource([]);
+
+        self::assertSame([], $hal->linkList('roles'));
+    }
+
+    public function testLinkListReturnsEmptyListWhenRelationNotAnArray(): void
+    {
+        $hal = new HalResource(['_links' => ['roles' => 'not-an-array']]);
+
+        self::assertSame([], $hal->linkList('roles'));
+    }
 }
