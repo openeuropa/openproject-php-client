@@ -4,11 +4,15 @@ declare(strict_types=1);
 
 namespace OpenEuropa\OpenProjectClient\Tests\Integration;
 
+use OpenEuropa\OpenProjectClient\Exception\ForbiddenException;
 use OpenEuropa\OpenProjectClient\Exception\NotFoundException;
 use OpenEuropa\OpenProjectClient\Exception\ValidationException;
 use OpenEuropa\OpenProjectClient\Model\Form\Form;
 use OpenEuropa\OpenProjectClient\Model\TimeEntry;
 use OpenEuropa\OpenProjectClient\Model\TimeEntryInput;
+use OpenEuropa\OpenProjectClient\Query\Filter;
+use OpenEuropa\OpenProjectClient\Query\FilterOperator;
+use OpenEuropa\OpenProjectClient\Query\FilterSet;
 use PHPUnit\Framework\Attributes\CoversNothing;
 
 #[CoversNothing]
@@ -129,19 +133,44 @@ final class TimeEntriesTest extends IntegrationTestCase
 
     private function createTimeEntry(string $comment): TimeEntry
     {
-        $workPackage = $this->createWorkPackage();
+        $projectId = $this->firstActiveProjectAcceptingTimeEntries();
+        $workPackage = $this->createWorkPackage($projectId);
 
         $timeEntry = $this->client->timeEntries()->create(
             (new TimeEntryInput())
                 ->spentOn(date('Y-m-d'))
                 ->hours('PT2H')
                 ->comment($comment)
-                ->project($this->firstActiveProjectId())
+                ->project($projectId)
                 ->workPackage($workPackage->id),
         );
 
         $this->createdTimeEntryIds[] = $timeEntry->id;
 
         return $timeEntry;
+    }
+
+    /**
+     * Returns the ID of the first active project that accepts time entries.
+     *
+     * Time tracking is a per-project module that can be disabled, and the
+     * project resource exposes no flag for it, so probing with a non-persisting
+     * form request is the only way to find a project that will accept one.
+     */
+    private function firstActiveProjectAcceptingTimeEntries(): int
+    {
+        $filters = new FilterSet(new Filter('active', FilterOperator::EQUAL, ['t']));
+
+        foreach ($this->client->projects()->all($filters) as $project) {
+            try {
+                $this->client->timeEntries()->createForm((new TimeEntryInput())->project($project->id));
+            } catch (ForbiddenException) {
+                continue;
+            }
+
+            return $project->id;
+        }
+
+        self::fail('The instance must have at least one active project that accepts time entries.');
     }
 }

@@ -132,11 +132,15 @@ abstract class IntegrationTestCase extends TestCase
     }
 
     /**
-     * Creates a work package in the first active project and registers it for teardown.
+     * Creates a work package and registers it for teardown.
+     *
+     * @param int|null $projectId
+     *   The project to create the work package in. Pass null to use the
+     *   first active project on the instance.
      */
-    protected function createWorkPackage(): WorkPackage
+    protected function createWorkPackage(?int $projectId = null): WorkPackage
     {
-        $projectId = $this->firstActiveProjectId();
+        $projectId ??= $this->firstActiveProjectId();
 
         $types = $this->client->types()->allByProject($projectId);
         self::assertNotEmpty($types->elements, 'The project must have at least one type.');
