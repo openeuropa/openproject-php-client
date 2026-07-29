@@ -10,9 +10,13 @@ use OpenEuropa\OpenProjectClient\Endpoint\AbstractEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\MembershipsEndpoint;
 use OpenEuropa\OpenProjectClient\Http\HalResource;
 use OpenEuropa\OpenProjectClient\Http\Transport;
+use OpenEuropa\OpenProjectClient\Model\Form\Form;
+use OpenEuropa\OpenProjectClient\Model\Form\SchemaProperty;
 use OpenEuropa\OpenProjectClient\Model\Link;
 use OpenEuropa\OpenProjectClient\Model\Membership;
+use OpenEuropa\OpenProjectClient\Model\MembershipInput;
 use OpenEuropa\OpenProjectClient\Model\PageResults;
+use OpenEuropa\OpenProjectClient\Model\ValidationError;
 use OpenEuropa\OpenProjectClient\Query\CollectionParams;
 use OpenEuropa\OpenProjectClient\Query\Filter;
 use OpenEuropa\OpenProjectClient\Query\FilterOperator;
@@ -34,6 +38,10 @@ use PHPUnit\Framework\TestCase;
 #[UsesClass(Filter::class)]
 #[UsesClass(FilterOperator::class)]
 #[UsesClass(CollectionParams::class)]
+#[UsesClass(Form::class)]
+#[UsesClass(SchemaProperty::class)]
+#[UsesClass(ValidationError::class)]
+#[UsesClass(MembershipInput::class)]
 final class MembershipsEndpointTest extends TestCase
 {
     use MockClientTrait;
@@ -119,5 +127,104 @@ final class MembershipsEndpointTest extends TestCase
 
         $lastUri = (string) $this->lastRequest()->getUri();
         self::assertStringContainsString('offset=2', $lastUri);
+    }
+
+    public function testCreateFormWithNoPayloadSendsPostToGlobalFormUri(): void
+    {
+        $endpoint = $this->createEndpoint();
+        $this->queueFixtureResponse('form.json');
+
+        $form = $endpoint->createForm();
+
+        self::assertSame('POST', $this->lastRequest()->getMethod());
+        self::assertSame(
+            'http://example.test/api/v3/memberships/form',
+            (string) $this->lastRequest()->getUri(),
+        );
+        self::assertInstanceOf(Form::class, $form);
+    }
+
+    public function testCreateFormWithPayloadSendsJsonBodyAndContentTypeHeader(): void
+    {
+        $endpoint = $this->createEndpoint();
+        $this->queueFixtureResponse('form.json');
+
+        $endpoint->createForm((new MembershipInput())->project(21));
+
+        $request = $this->lastRequest();
+        self::assertStringContainsString('"project":{"href":"\/api\/v3\/projects\/21"}', (string) $request->getBody());
+        self::assertSame('application/json', $request->getHeaderLine('Content-Type'));
+    }
+
+    public function testCreatePostsToMembershipsUriAndReturnsMembership(): void
+    {
+        $endpoint = $this->createEndpoint();
+        $this->queueFixtureResponse('membership.json', 201);
+
+        $membership = $endpoint->create((new MembershipInput())->project(21)->user(14)->roles(4));
+
+        $request = $this->lastRequest();
+        self::assertSame('POST', $request->getMethod());
+        self::assertSame('http://example.test/api/v3/memberships', (string) $request->getUri());
+        self::assertStringContainsString('"roles":[{"href":"\/api\/v3\/roles\/4"}]', (string) $request->getBody());
+        self::assertSame('application/json', $request->getHeaderLine('Content-Type'));
+        self::assertSame(11, $membership->id);
+    }
+
+    public function testUpdateFormPostsToMembershipFormUriAndReturnsForm(): void
+    {
+        $endpoint = $this->createEndpoint();
+        $this->queueFixtureResponse('form.json');
+
+        $form = $endpoint->updateForm(11, (new MembershipInput())->roles(5, 6));
+
+        $request = $this->lastRequest();
+        self::assertSame('POST', $request->getMethod());
+        self::assertSame(
+            'http://example.test/api/v3/memberships/11/form',
+            (string) $request->getUri(),
+        );
+        self::assertStringContainsString(
+            '"roles":[{"href":"\/api\/v3\/roles\/5"},{"href":"\/api\/v3\/roles\/6"}]',
+            (string) $request->getBody(),
+        );
+        self::assertSame('application/json', $request->getHeaderLine('Content-Type'));
+        self::assertTrue($form->hasErrors());
+    }
+
+    public function testUpdatePatchesToMembershipUriAndReturnsMembership(): void
+    {
+        $endpoint = $this->createEndpoint();
+        $this->queueFixtureResponse('membership.json');
+
+        $membership = $endpoint->update(11, (new MembershipInput())->roles(5, 6));
+
+        $request = $this->lastRequest();
+        self::assertSame('PATCH', $request->getMethod());
+        self::assertSame(
+            'http://example.test/api/v3/memberships/11',
+            (string) $request->getUri(),
+        );
+        self::assertStringContainsString(
+            '"roles":[{"href":"\/api\/v3\/roles\/5"},{"href":"\/api\/v3\/roles\/6"}]',
+            (string) $request->getBody(),
+        );
+        self::assertSame('application/json', $request->getHeaderLine('Content-Type'));
+        self::assertSame(11, $membership->id);
+    }
+
+    public function testDeleteSendsDeleteToMembershipUri(): void
+    {
+        $endpoint = $this->createEndpoint();
+        $this->queueJsonResponse('', 204);
+
+        $endpoint->delete(11);
+
+        $request = $this->lastRequest();
+        self::assertSame('DELETE', $request->getMethod());
+        self::assertSame(
+            'http://example.test/api/v3/memberships/11',
+            (string) $request->getUri(),
+        );
     }
 }
