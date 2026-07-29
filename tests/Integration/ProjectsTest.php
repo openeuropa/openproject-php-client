@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace OpenEuropa\OpenProjectClient\Tests\Integration;
 
-use OpenEuropa\OpenProjectClient\Exception\NotFoundException;
 use OpenEuropa\OpenProjectClient\Exception\ValidationException;
 use OpenEuropa\OpenProjectClient\Model\Form\Form;
-use OpenEuropa\OpenProjectClient\Model\Project;
 use OpenEuropa\OpenProjectClient\Model\ProjectInput;
 use OpenEuropa\OpenProjectClient\Query\Filter;
 use OpenEuropa\OpenProjectClient\Query\FilterOperator;
@@ -17,26 +15,6 @@ use PHPUnit\Framework\Attributes\CoversNothing;
 #[CoversNothing]
 final class ProjectsTest extends IntegrationTestCase
 {
-    /**
-     * IDs of projects created during a test run, deleted in tearDown.
-     *
-     * @var list<int>
-     */
-    private array $createdProjectIds = [];
-
-    protected function tearDown(): void
-    {
-        parent::tearDown();
-
-        foreach ($this->createdProjectIds as $id) {
-            try {
-                $this->client->projects()->delete($id);
-            } catch (NotFoundException) {
-                // Already deleted; nothing to clean up.
-            }
-        }
-    }
-
     public function testCreatePersistsProjectAndCanBeReadBack(): void
     {
         $suffix = uniqid();
@@ -162,18 +140,5 @@ final class ProjectsTest extends IntegrationTestCase
         // and removed later, so it is still readable here but no longer active.
         $archived = $this->client->projects()->get($id);
         self::assertFalse($archived->active);
-    }
-
-    private function createProject(): Project
-    {
-        $suffix = uniqid();
-
-        $project = $this->client->projects()->create(
-            (new ProjectInput())->name('phpclient project ' . $suffix)->identifier('phpclient-' . $suffix),
-        );
-
-        $this->createdProjectIds[] = $project->id;
-
-        return $project;
     }
 }

@@ -7,8 +7,6 @@ namespace OpenEuropa\OpenProjectClient\Tests\Integration;
 use OpenEuropa\OpenProjectClient\Exception\NotFoundException;
 use OpenEuropa\OpenProjectClient\Exception\ValidationException;
 use OpenEuropa\OpenProjectClient\Model\Form\Form;
-use OpenEuropa\OpenProjectClient\Model\Project;
-use OpenEuropa\OpenProjectClient\Model\ProjectInput;
 use OpenEuropa\OpenProjectClient\Model\Version;
 use OpenEuropa\OpenProjectClient\Model\VersionInput;
 use PHPUnit\Framework\Attributes\CoversNothing;
@@ -16,13 +14,6 @@ use PHPUnit\Framework\Attributes\CoversNothing;
 #[CoversNothing]
 final class VersionsTest extends IntegrationTestCase
 {
-    /**
-     * IDs of projects created during a test run, deleted in tearDown.
-     *
-     * @var list<int>
-     */
-    private array $createdProjectIds = [];
-
     /**
      * IDs of versions created during a test run, deleted in tearDown.
      *
@@ -32,8 +23,6 @@ final class VersionsTest extends IntegrationTestCase
 
     protected function tearDown(): void
     {
-        parent::tearDown();
-
         foreach ($this->createdVersionIds as $id) {
             try {
                 $this->client->versions()->delete($id);
@@ -42,13 +31,7 @@ final class VersionsTest extends IntegrationTestCase
             }
         }
 
-        foreach ($this->createdProjectIds as $id) {
-            try {
-                $this->client->projects()->delete($id);
-            } catch (NotFoundException) {
-                // Already deleted; nothing to clean up.
-            }
-        }
+        parent::tearDown();
     }
 
     public function testGetWithNonexistentIdThrowsNotFoundException(): void
@@ -153,19 +136,6 @@ final class VersionsTest extends IntegrationTestCase
 
         $this->expectException(ValidationException::class);
         $this->client->versions()->update($created->id, (new VersionInput())->status('not-a-status'));
-    }
-
-    private function createProject(): Project
-    {
-        $suffix = uniqid();
-
-        $project = $this->client->projects()->create(
-            (new ProjectInput())->name('phpclient project ' . $suffix)->identifier('phpclient-' . $suffix),
-        );
-
-        $this->createdProjectIds[] = $project->id;
-
-        return $project;
     }
 
     private function createVersion(int $projectId, string $name): Version

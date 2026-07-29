@@ -9,20 +9,11 @@ use OpenEuropa\OpenProjectClient\Exception\ValidationException;
 use OpenEuropa\OpenProjectClient\Model\Form\Form;
 use OpenEuropa\OpenProjectClient\Model\Membership;
 use OpenEuropa\OpenProjectClient\Model\MembershipInput;
-use OpenEuropa\OpenProjectClient\Model\Project;
-use OpenEuropa\OpenProjectClient\Model\ProjectInput;
 use PHPUnit\Framework\Attributes\CoversNothing;
 
 #[CoversNothing]
 final class MembershipsTest extends IntegrationTestCase
 {
-    /**
-     * IDs of projects created during a test run, deleted in tearDown.
-     *
-     * @var list<int>
-     */
-    private array $createdProjectIds = [];
-
     /**
      * IDs of memberships created during a test run, deleted in tearDown.
      *
@@ -35,14 +26,6 @@ final class MembershipsTest extends IntegrationTestCase
         foreach ($this->createdMembershipIds as $id) {
             try {
                 $this->client->memberships()->delete($id);
-            } catch (NotFoundException) {
-                // Already deleted; nothing to clean up.
-            }
-        }
-
-        foreach ($this->createdProjectIds as $id) {
-            try {
-                $this->client->projects()->delete($id);
             } catch (NotFoundException) {
                 // Already deleted; nothing to clean up.
             }
@@ -204,19 +187,6 @@ final class MembershipsTest extends IntegrationTestCase
 
         $this->expectException(ValidationException::class);
         $this->client->memberships()->update($created->id, (new MembershipInput())->roles());
-    }
-
-    private function createProject(): Project
-    {
-        $suffix = uniqid();
-
-        $project = $this->client->projects()->create(
-            (new ProjectInput())->name('phpclient project ' . $suffix)->identifier('phpclient-' . $suffix),
-        );
-
-        $this->createdProjectIds[] = $project->id;
-
-        return $project;
     }
 
     /**

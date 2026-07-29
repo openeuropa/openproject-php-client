@@ -11,6 +11,8 @@ use GuzzleHttp\Psr7\HttpFactory;
 use OpenEuropa\OpenProjectClient\Authentication\ApiKeyAuthentication;
 use OpenEuropa\OpenProjectClient\Client;
 use OpenEuropa\OpenProjectClient\Exception\NotFoundException;
+use OpenEuropa\OpenProjectClient\Model\Project;
+use OpenEuropa\OpenProjectClient\Model\ProjectInput;
 use OpenEuropa\OpenProjectClient\Model\WorkPackage;
 use OpenEuropa\OpenProjectClient\Model\WorkPackageInput;
 use OpenEuropa\OpenProjectClient\Query\Filter;
@@ -40,6 +42,13 @@ abstract class IntegrationTestCase extends TestCase
      * @var list<int>
      */
     protected array $createdWorkPackageIds = [];
+
+    /**
+     * IDs of projects created during a test run, deleted in tearDown.
+     *
+     * @var list<int>
+     */
+    protected array $createdProjectIds = [];
 
     protected function setUp(): void
     {
@@ -76,6 +85,17 @@ abstract class IntegrationTestCase extends TestCase
                 // Already deleted; nothing to clean up.
             }
         }
+
+        foreach ($this->createdProjectIds as $id) {
+            try {
+                $this->client->projects()->delete($id);
+            } catch (NotFoundException) {
+                // Already deleted; nothing to clean up.
+                continue;
+            }
+
+            $this->waitForProjectRemoval($id);
+        }
     }
 
     /**
@@ -96,6 +116,22 @@ abstract class IntegrationTestCase extends TestCase
     }
 
     /**
+     * Creates a project and registers it for teardown.
+     */
+    protected function createProject(): Project
+    {
+        $suffix = uniqid();
+
+        $project = $this->client->projects()->create(
+            (new ProjectInput())->name('phpclient project ' . $suffix)->identifier('phpclient-' . $suffix),
+        );
+
+        $this->createdProjectIds[] = $project->id;
+
+        return $project;
+    }
+
+    /**
      * Creates a work package in the first active project and registers it for teardown.
      */
     protected function createWorkPackage(): WorkPackage
@@ -113,6 +149,32 @@ abstract class IntegrationTestCase extends TestCase
         $this->createdWorkPackageIds[] = $wp->id;
 
         return $wp;
+    }
+
+    /**
+     * Waits for a deleted project's background removal to complete.
+     *
+     * A project delete archives the project at once and removes its row
+     * through a background job, so the row can still exist after the request
+     * returns. Waiting for it to disappear keeps that removal from
+     * overlapping the next project the suite creates: two of those running at
+     * once deadlock on the projects table in Postgres. Giving up silently
+     * once the deadline passes is deliberate, because teardown cleanup must
+     * never fail an otherwise passing test.
+     */
+    private function waitForProjectRemoval(int $id): void
+    {
+        $deadline = microtime(true) + 10.0;
+
+        while (microtime(true) < $deadline) {
+            try {
+                $this->client->projects()->get($id);
+            } catch (NotFoundException) {
+                return;
+            }
+
+            usleep(100_000);
+        }
     }
 
     /**
