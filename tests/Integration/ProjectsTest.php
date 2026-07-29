@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace OpenEuropa\OpenProjectClient\Tests\Integration;
 
+use OpenEuropa\OpenProjectClient\Exception\NotFoundException;
 use OpenEuropa\OpenProjectClient\Exception\ValidationException;
 use OpenEuropa\OpenProjectClient\Model\Form\Form;
 use OpenEuropa\OpenProjectClient\Model\ProjectInput;
@@ -120,6 +121,21 @@ final class ProjectsTest extends IntegrationTestCase
         self::assertSame($newName, $fetched->name);
     }
 
+    public function testUpdateArchivesProjectAndCanBeReadBack(): void
+    {
+        $created = $this->createProject();
+
+        $updated = $this->client->projects()->update(
+            $created->id,
+            (new ProjectInput())->active(false),
+        );
+
+        self::assertFalse($updated->active);
+
+        $fetched = $this->client->projects()->get($created->id);
+        self::assertFalse($fetched->active);
+    }
+
     public function testUpdateWithInvalidPayloadThrowsValidationException(): void
     {
         $created = $this->createProject();
@@ -128,7 +144,7 @@ final class ProjectsTest extends IntegrationTestCase
         $this->client->projects()->update($created->id, (new ProjectInput())->name(''));
     }
 
-    public function testDeleteArchivesProjectForAsynchronousRemoval(): void
+    public function testDeleteAcceptsProjectForAsynchronousRemoval(): void
     {
         $created = $this->createProject();
         $id = $created->id;
@@ -137,8 +153,14 @@ final class ProjectsTest extends IntegrationTestCase
         $this->client->projects()->delete($id);
 
         // Project deletion runs asynchronously: the project is archived at once
-        // and removed later, so it is still readable here but no longer active.
-        $archived = $this->client->projects()->get($id);
-        self::assertFalse($archived->active);
+        // and its row removed later by a background job, so a read immediately
+        // after delete() can observe either the archived project or a 404 once
+        // the row is already gone.
+        try {
+            $archived = $this->client->projects()->get($id);
+            self::assertFalse($archived->active);
+        } catch (NotFoundException) {
+            // The background job already removed the row.
+        }
     }
 }
