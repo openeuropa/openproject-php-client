@@ -1,0 +1,37 @@
+name: Integration
+
+on:
+  schedule:
+    # Weekly, Monday 02:43 UTC.
+    - cron: '43 2 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  integration:
+    name: Integration suite
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    # Scheduled runs are for the canonical repository only; forks can still
+    # trigger the job manually through workflow_dispatch.
+    if: github.event_name == 'workflow_dispatch' || github.repository == 'openeuropa/openproject-php-client'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+
+      - name: Start OpenProject
+        run: docker compose --profile openproject up -d
+
+      - name: Install dependencies
+        run: docker compose run --rm php composer install --ansi --no-progress
+
+      - name: Wait for OpenProject
+        run: scripts/wait-for-openproject.sh
+
+      - name: Run the integration suite
+        run: |
+          docker compose --profile openproject run --rm \
+            -e OPENPROJECT_API_TOKEN="$(scripts/generate-api-token.sh)" \
+            php composer test:integration
