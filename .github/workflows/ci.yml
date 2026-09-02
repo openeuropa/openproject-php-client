@@ -47,7 +47,7 @@ jobs:
         run: composer test
 
   coverage:
-    name: Coverage
+    name: Code coverage
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -63,4 +63,4 @@ jobs:
         uses: ramsey/composer-install@a8d0d959dab41457692a5e2041bd9b757a119e3f # 3.2.1
 
       - name: Code coverage
-        run: composer coverage:check
+        run: composer coverage

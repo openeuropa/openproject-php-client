@@ -35,11 +35,7 @@
         "test:integration": "phpunit --testsuite=integration",
         "coverage": [
             "@putenv XDEBUG_MODE=coverage",
-            "phpunit --coverage-text"
-        ],
-        "coverage:check": [
-            "@putenv XDEBUG_MODE=coverage",
-            "phpunit --coverage-clover=.phpunit.cache/clover.xml",
+            "phpunit --coverage-text --coverage-clover=.phpunit.cache/clover.xml",
             "coverage-check .phpunit.cache/clover.xml 100 --show-files"
         ]
     },

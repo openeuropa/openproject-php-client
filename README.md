@@ -297,7 +297,7 @@ docker compose run --rm php composer phpstan
 # Run the test suite (PHPUnit).
 docker compose run --rm php composer test
 
-# Run the test suite with a text coverage report.
+# Run the test suite with a coverage report; fails below 100% coverage.
 docker compose run --rm php composer coverage
 ```
 
