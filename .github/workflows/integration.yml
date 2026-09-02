@@ -1,10 +1,24 @@
 name: Integration
 
 on:
+  push:
+    branches:
+      - 1.x
+    # Only code that can change the suite's outcome is worth a multi-minute
+    # instance boot; docs and planning commits stay free.
+    paths:
+      - src/**
+      - tests/Integration/**
+      - composer.json
+      - .github/workflows/integration.yml
   schedule:
     # Weekly, Monday 02:43 UTC.
     - cron: '43 2 * * 1'
   workflow_dispatch:
+
+concurrency:
+  group: integration-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
@@ -14,8 +28,8 @@ jobs:
     name: Integration suite
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    # Scheduled runs are for the canonical repository only; forks can still
-    # trigger the job manually through workflow_dispatch.
+    # Scheduled and push runs are for the canonical repository only; forks
+    # can still trigger the job manually through workflow_dispatch.
     if: github.event_name == 'workflow_dispatch' || github.repository == 'openeuropa/openproject-php-client'
     steps:
       - name: Checkout
