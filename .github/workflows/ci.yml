@@ -64,5 +64,3 @@ jobs:
 
       - name: Code coverage
         run: composer coverage
-        env:
-          COLUMNS: 160
