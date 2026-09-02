@@ -48,4 +48,4 @@ jobs:
         run: |
           docker compose --profile openproject run --rm \
             -e OPENPROJECT_API_TOKEN="$(scripts/generate-api-token.sh)" \
-            php composer test:integration
+            php composer test:integration -- --testdox
