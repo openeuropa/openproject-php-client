@@ -16,7 +16,7 @@ final readonly class Status
      */
     public function __construct(
         public int $id,
-        public ?string $name,
+        public string $name,
         public ?bool $isClosed,
         public ?string $color,
         public ?bool $isDefault,
@@ -41,7 +41,7 @@ final readonly class Status
 
         return new self(
             $hal->requireInt('id'),
-            $hal->getString('name'),
+            $hal->requireString('name'),
             $hal->getBool('isClosed'),
             $hal->getString('color'),
             $hal->getBool('isDefault'),

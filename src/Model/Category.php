@@ -16,7 +16,7 @@ final readonly class Category
      */
     public function __construct(
         public int $id,
-        public ?string $name,
+        public string $name,
         public ?Link $self,
         public ?Link $project,
         public ?Link $defaultAssignee,
@@ -37,7 +37,7 @@ final readonly class Category
 
         return new self(
             $hal->requireInt('id'),
-            $hal->getString('name'),
+            $hal->requireString('name'),
             $hal->link('self'),
             $hal->link('project'),
             $hal->link('defaultAssignee'),

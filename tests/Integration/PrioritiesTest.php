@@ -15,7 +15,7 @@ final class PrioritiesTest extends IntegrationTestCase
 
         self::assertGreaterThan(0, $results->count);
         self::assertNotEmpty($results->elements);
-        self::assertNotNull($results->elements[0]->name);
+        self::assertNotEmpty($results->elements[0]->name);
     }
 
     public function testGetReturnsSinglePriority(): void

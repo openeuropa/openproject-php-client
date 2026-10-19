@@ -33,15 +33,16 @@ final class CategoryTest extends TestCase
         self::assertSame(42, $category->defaultAssignee?->id());
     }
 
-    public function testAbsentFieldsAreNull(): void
+    public function testAbsentOptionalFieldsAreNull(): void
     {
         $category = Category::fromApiResponse([
             '_type' => 'Category',
             'id' => 11,
+            'name' => 'Frontend',
         ]);
 
         self::assertSame(11, $category->id);
-        self::assertNull($category->name);
+        self::assertSame('Frontend', $category->name);
         self::assertNull($category->self);
         self::assertNull($category->project);
         self::assertNull($category->defaultAssignee);
@@ -50,6 +51,12 @@ final class CategoryTest extends TestCase
     public function testThrowsWhenRequiredIdMissing(): void
     {
         $this->expectException(UnexpectedResponseException::class);
-        Category::fromApiResponse(['_type' => 'Category']);
+        Category::fromApiResponse(['_type' => 'Category', 'name' => 'Frontend']);
+    }
+
+    public function testThrowsWhenRequiredNameMissing(): void
+    {
+        $this->expectException(UnexpectedResponseException::class);
+        Category::fromApiResponse(['_type' => 'Category', 'id' => 11]);
     }
 }

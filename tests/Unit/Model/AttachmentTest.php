@@ -32,18 +32,6 @@ final class AttachmentTest extends TestCase
         return [
             'id' => 3,
             'fileName' => 'phpclient-test.txt',
-            'description' => [
-                'format' => 'plain',
-                'raw' => 'A user provided description of the file',
-                'html' => '<p>A user provided description of the file</p>',
-            ],
-            'status' => 'uploaded',
-            'contentType' => 'text/plain',
-            'digest' => [
-                'algorithm' => 'md5',
-                'hash' => '0a8d2241310c47be0c9893f042556808',
-            ],
-            'createdAt' => '2026-07-01T17:02:16.648Z',
         ];
     }
 
@@ -62,8 +50,9 @@ final class AttachmentTest extends TestCase
         self::assertSame('text/plain', $attachment->contentType);
         self::assertSame('2026-07-01T17:02:16.648Z', $attachment->createdAt);
 
-        self::assertSame('plain', $attachment->description->format);
+        self::assertSame('plain', $attachment->description?->format);
 
+        self::assertNotNull($attachment->digest);
         self::assertSame('md5', $attachment->digest->algorithm);
         self::assertSame('0a8d2241310c47be0c9893f042556808', $attachment->digest->hash);
 
@@ -78,10 +67,26 @@ final class AttachmentTest extends TestCase
         $attachment = Attachment::fromApiResponse(self::baseData());
 
         self::assertNull($attachment->fileSize);
+        self::assertNull($attachment->description);
+        self::assertNull($attachment->status);
+        self::assertNull($attachment->contentType);
+        self::assertNull($attachment->digest);
+        self::assertNull($attachment->createdAt);
         self::assertNull($attachment->self);
         self::assertNull($attachment->container);
         self::assertNull($attachment->author);
         self::assertNull($attachment->downloadLocation);
+    }
+
+    public function testMalformedDescriptionAndDigestAreNull(): void
+    {
+        $attachment = Attachment::fromApiResponse(self::baseData() + [
+            'description' => ['raw' => 'A description without a format'],
+            'digest' => ['algorithm' => 'md5'],
+        ]);
+
+        self::assertNull($attachment->description);
+        self::assertNull($attachment->digest);
     }
 
     public function testThrowsWhenRequiredIdMissing(): void
@@ -97,51 +102,6 @@ final class AttachmentTest extends TestCase
     {
         $data = self::baseData();
         unset($data['fileName']);
-
-        $this->expectException(UnexpectedResponseException::class);
-        Attachment::fromApiResponse($data);
-    }
-
-    public function testThrowsWhenRequiredDescriptionMissing(): void
-    {
-        $data = self::baseData();
-        unset($data['description']);
-
-        $this->expectException(UnexpectedResponseException::class);
-        Attachment::fromApiResponse($data);
-    }
-
-    public function testThrowsWhenRequiredStatusMissing(): void
-    {
-        $data = self::baseData();
-        unset($data['status']);
-
-        $this->expectException(UnexpectedResponseException::class);
-        Attachment::fromApiResponse($data);
-    }
-
-    public function testThrowsWhenRequiredContentTypeMissing(): void
-    {
-        $data = self::baseData();
-        unset($data['contentType']);
-
-        $this->expectException(UnexpectedResponseException::class);
-        Attachment::fromApiResponse($data);
-    }
-
-    public function testThrowsWhenRequiredDigestMissing(): void
-    {
-        $data = self::baseData();
-        unset($data['digest']);
-
-        $this->expectException(UnexpectedResponseException::class);
-        Attachment::fromApiResponse($data);
-    }
-
-    public function testThrowsWhenRequiredCreatedAtMissing(): void
-    {
-        $data = self::baseData();
-        unset($data['createdAt']);
 
         $this->expectException(UnexpectedResponseException::class);
         Attachment::fromApiResponse($data);

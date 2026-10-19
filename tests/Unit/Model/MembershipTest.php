@@ -27,8 +27,6 @@ final class MembershipTest extends TestCase
     {
         return [
             'id' => 11,
-            'createdAt' => '2015-03-20T12:56:56.626Z',
-            'updatedAt' => '2018-12-20T18:16:11.563Z',
         ];
     }
 
@@ -55,6 +53,8 @@ final class MembershipTest extends TestCase
     {
         $membership = Membership::fromApiResponse(self::baseData());
 
+        self::assertNull($membership->createdAt);
+        self::assertNull($membership->updatedAt);
         self::assertNull($membership->self);
         self::assertNull($membership->project);
         self::assertNull($membership->principal);
@@ -65,24 +65,6 @@ final class MembershipTest extends TestCase
     {
         $data = self::baseData();
         unset($data['id']);
-
-        $this->expectException(UnexpectedResponseException::class);
-        Membership::fromApiResponse($data);
-    }
-
-    public function testThrowsWhenRequiredCreatedAtMissing(): void
-    {
-        $data = self::baseData();
-        unset($data['createdAt']);
-
-        $this->expectException(UnexpectedResponseException::class);
-        Membership::fromApiResponse($data);
-    }
-
-    public function testThrowsWhenRequiredUpdatedAtMissing(): void
-    {
-        $data = self::baseData();
-        unset($data['updatedAt']);
 
         $this->expectException(UnexpectedResponseException::class);
         Membership::fromApiResponse($data);

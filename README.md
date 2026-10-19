@@ -280,8 +280,8 @@ exposes `httpStatus` and `errorIdentifier`:
 Two more sit directly under `OpenProjectException`, not `ApiException`:
 `ApiUnreachableException` (a network-level failure the PSR-18 client raised,
 or an HTTP >= 500 response) and `UnexpectedResponseException` (a response
-body missing a field the API contract requires). A body that is not a JSON
-object at all raises `OpenProjectException` itself.
+body missing a field the client cannot do without, such as an `id`). A body
+that is not a JSON object at all raises `OpenProjectException` itself.
 
 ```php
 use OpenEuropa\OpenProjectClient\Exception\ValidationException;
@@ -369,8 +369,9 @@ $page = PageResults::fromApiResponse(
 );
 ```
 
-Fields the API marks as required, such as a work package's `id` and
-`subject`, must be present; any other field can be left out.
+Only `id` and the resource's name (`subject` on a work package, `fileName` on
+an attachment, `name` on the others that have one) must be present; any other
+field can be left out and reads as `null`.
 
 ## Development
 

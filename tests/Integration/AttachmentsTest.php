@@ -96,6 +96,8 @@ final class AttachmentsTest extends IntegrationTestCase
         self::assertSame($uploaded->id, $attachment->id);
         self::assertSame($uploaded->fileName, $attachment->fileName);
         self::assertSame($uploaded->contentType, $attachment->contentType);
+        self::assertNotNull($uploaded->digest);
+        self::assertNotNull($attachment->digest);
         self::assertSame($uploaded->digest->algorithm, $attachment->digest->algorithm);
         self::assertSame($uploaded->digest->hash, $attachment->digest->hash);
         self::assertNotNull($attachment->container);

@@ -17,7 +17,7 @@ use PHPUnit\Framework\TestCase;
 final class TypeTest extends TestCase
 {
     /**
-     * A complete valid base array matching the type fixture.
+     * A complete valid base array with every required field present.
      *
      * @return array<string, mixed>
      */
@@ -26,12 +26,6 @@ final class TypeTest extends TestCase
         return [
             'id' => 1,
             'name' => 'Bug',
-            'color' => '#ff0000',
-            'position' => 1,
-            'isDefault' => true,
-            'isMilestone' => false,
-            'createdAt' => '2014-05-21T08:51:20.396Z',
-            'updatedAt' => '2014-05-21T08:51:20.396Z',
         ];
     }
 
@@ -53,6 +47,18 @@ final class TypeTest extends TestCase
         self::assertSame('2014-05-21T08:51:20.396Z', $type->updatedAt);
     }
 
+    public function testAbsentOptionalFieldsAreNull(): void
+    {
+        $type = Type::fromApiResponse(self::baseData());
+
+        self::assertNull($type->color);
+        self::assertNull($type->position);
+        self::assertNull($type->isDefault);
+        self::assertNull($type->isMilestone);
+        self::assertNull($type->createdAt);
+        self::assertNull($type->updatedAt);
+    }
+
     public function testThrowsWhenRequiredIdMissing(): void
     {
         $data = self::baseData();
@@ -66,60 +72,6 @@ final class TypeTest extends TestCase
     {
         $data = self::baseData();
         unset($data['name']);
-
-        $this->expectException(UnexpectedResponseException::class);
-        Type::fromApiResponse($data);
-    }
-
-    public function testThrowsWhenRequiredColorMissing(): void
-    {
-        $data = self::baseData();
-        unset($data['color']);
-
-        $this->expectException(UnexpectedResponseException::class);
-        Type::fromApiResponse($data);
-    }
-
-    public function testThrowsWhenRequiredPositionMissing(): void
-    {
-        $data = self::baseData();
-        unset($data['position']);
-
-        $this->expectException(UnexpectedResponseException::class);
-        Type::fromApiResponse($data);
-    }
-
-    public function testThrowsWhenRequiredIsDefaultMissing(): void
-    {
-        $data = self::baseData();
-        unset($data['isDefault']);
-
-        $this->expectException(UnexpectedResponseException::class);
-        Type::fromApiResponse($data);
-    }
-
-    public function testThrowsWhenRequiredIsMilestoneMissing(): void
-    {
-        $data = self::baseData();
-        unset($data['isMilestone']);
-
-        $this->expectException(UnexpectedResponseException::class);
-        Type::fromApiResponse($data);
-    }
-
-    public function testThrowsWhenRequiredCreatedAtMissing(): void
-    {
-        $data = self::baseData();
-        unset($data['createdAt']);
-
-        $this->expectException(UnexpectedResponseException::class);
-        Type::fromApiResponse($data);
-    }
-
-    public function testThrowsWhenRequiredUpdatedAtMissing(): void
-    {
-        $data = self::baseData();
-        unset($data['updatedAt']);
 
         $this->expectException(UnexpectedResponseException::class);
         Type::fromApiResponse($data);

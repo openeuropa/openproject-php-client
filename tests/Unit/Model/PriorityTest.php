@@ -31,12 +31,12 @@ final class PriorityTest extends TestCase
         self::assertTrue($priority->isActive);
     }
 
-    public function testMissingFieldsProduceAllNulls(): void
+    public function testMissingOptionalFieldsProduceNulls(): void
     {
-        $priority = Priority::fromApiResponse(['_type' => 'Priority', 'id' => 5]);
+        $priority = Priority::fromApiResponse(['_type' => 'Priority', 'id' => 5, 'name' => 'Low']);
 
         self::assertSame(5, $priority->id);
-        self::assertNull($priority->name);
+        self::assertSame('Low', $priority->name);
         self::assertNull($priority->position);
         self::assertNull($priority->isDefault);
         self::assertNull($priority->isActive);
@@ -45,6 +45,12 @@ final class PriorityTest extends TestCase
     public function testThrowsWhenRequiredIdMissing(): void
     {
         $this->expectException(UnexpectedResponseException::class);
-        Priority::fromApiResponse(['_type' => 'Priority']);
+        Priority::fromApiResponse(['_type' => 'Priority', 'name' => 'Low']);
+    }
+
+    public function testThrowsWhenRequiredNameMissing(): void
+    {
+        $this->expectException(UnexpectedResponseException::class);
+        Priority::fromApiResponse(['_type' => 'Priority', 'id' => 5]);
     }
 }

@@ -17,12 +17,12 @@ final readonly class Type
     public function __construct(
         public int $id,
         public string $name,
-        public string $color,
-        public int $position,
-        public bool $isDefault,
-        public bool $isMilestone,
-        public string $createdAt,
-        public string $updatedAt,
+        public ?string $color,
+        public ?int $position,
+        public ?bool $isDefault,
+        public ?bool $isMilestone,
+        public ?string $createdAt,
+        public ?string $updatedAt,
     ) {
     }
 
@@ -41,12 +41,12 @@ final readonly class Type
         return new self(
             $hal->requireInt('id'),
             $hal->requireString('name'),
-            $hal->requireString('color'),
-            $hal->requireInt('position'),
-            $hal->requireBool('isDefault'),
-            $hal->requireBool('isMilestone'),
-            $hal->requireString('createdAt'),
-            $hal->requireString('updatedAt'),
+            $hal->getString('color'),
+            $hal->getInt('position'),
+            $hal->getBool('isDefault'),
+            $hal->getBool('isMilestone'),
+            $hal->getString('createdAt'),
+            $hal->getString('updatedAt'),
         );
     }
 }

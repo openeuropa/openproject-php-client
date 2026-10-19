@@ -35,12 +35,12 @@ final class StatusTest extends TestCase
         self::assertSame(4, $status->position);
     }
 
-    public function testMissingFieldsProduceAllNulls(): void
+    public function testMissingOptionalFieldsProduceNulls(): void
     {
-        $status = Status::fromApiResponse(['_type' => 'Status', 'id' => 13]);
+        $status = Status::fromApiResponse(['_type' => 'Status', 'id' => 13, 'name' => 'Rejected']);
 
         self::assertSame(13, $status->id);
-        self::assertNull($status->name);
+        self::assertSame('Rejected', $status->name);
         self::assertNull($status->isClosed);
         self::assertNull($status->color);
         self::assertNull($status->isDefault);
@@ -53,6 +53,12 @@ final class StatusTest extends TestCase
     public function testThrowsWhenRequiredIdMissing(): void
     {
         $this->expectException(UnexpectedResponseException::class);
-        Status::fromApiResponse(['_type' => 'Status']);
+        Status::fromApiResponse(['_type' => 'Status', 'name' => 'Rejected']);
+    }
+
+    public function testThrowsWhenRequiredNameMissing(): void
+    {
+        $this->expectException(UnexpectedResponseException::class);
+        Status::fromApiResponse(['_type' => 'Status', 'id' => 13]);
     }
 }

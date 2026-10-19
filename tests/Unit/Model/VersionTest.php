@@ -30,15 +30,6 @@ final class VersionTest extends TestCase
         return [
             'id' => 3,
             'name' => 'v0.9.1-alpha',
-            'description' => [
-                'format' => 'plain',
-                'raw' => 'First draft of the energy weapon',
-                'html' => '<p>First draft of the energy weapon</p>',
-            ],
-            'status' => 'closed',
-            'sharing' => 'none',
-            'createdAt' => '2026-02-06T09:30:49.157Z',
-            'updatedAt' => '2026-02-10T09:53:21.620Z',
         ];
     }
 
@@ -56,22 +47,36 @@ final class VersionTest extends TestCase
         self::assertSame('none', $version->sharing);
         self::assertSame('2026-02-06T09:30:49.157Z', $version->createdAt);
         self::assertSame('2026-02-10T09:53:21.620Z', $version->updatedAt);
-        self::assertSame('plain', $version->description->format);
+        self::assertSame('plain', $version->description?->format);
 
         self::assertSame(3, $version->self?->id());
         self::assertSame(10, $version->definingProject?->id());
         self::assertSame('/api/v3/versions/3/workspaces', $version->availableInProjects?->href);
     }
 
-    public function testAbsentStartAndEndDateAreNull(): void
+    public function testAbsentOptionalFieldsAreNull(): void
     {
         $version = Version::fromApiResponse(self::baseData());
 
+        self::assertNull($version->description);
         self::assertNull($version->startDate);
         self::assertNull($version->endDate);
+        self::assertNull($version->status);
+        self::assertNull($version->sharing);
+        self::assertNull($version->createdAt);
+        self::assertNull($version->updatedAt);
         self::assertNull($version->self);
         self::assertNull($version->definingProject);
         self::assertNull($version->availableInProjects);
+    }
+
+    public function testMalformedDescriptionIsNull(): void
+    {
+        $version = Version::fromApiResponse(self::baseData() + [
+            'description' => ['raw' => 'A description without a format'],
+        ]);
+
+        self::assertNull($version->description);
     }
 
     public function testThrowsWhenRequiredIdMissing(): void
@@ -87,51 +92,6 @@ final class VersionTest extends TestCase
     {
         $data = self::baseData();
         unset($data['name']);
-
-        $this->expectException(UnexpectedResponseException::class);
-        Version::fromApiResponse($data);
-    }
-
-    public function testThrowsWhenRequiredDescriptionMissing(): void
-    {
-        $data = self::baseData();
-        unset($data['description']);
-
-        $this->expectException(UnexpectedResponseException::class);
-        Version::fromApiResponse($data);
-    }
-
-    public function testThrowsWhenRequiredStatusMissing(): void
-    {
-        $data = self::baseData();
-        unset($data['status']);
-
-        $this->expectException(UnexpectedResponseException::class);
-        Version::fromApiResponse($data);
-    }
-
-    public function testThrowsWhenRequiredSharingMissing(): void
-    {
-        $data = self::baseData();
-        unset($data['sharing']);
-
-        $this->expectException(UnexpectedResponseException::class);
-        Version::fromApiResponse($data);
-    }
-
-    public function testThrowsWhenRequiredCreatedAtMissing(): void
-    {
-        $data = self::baseData();
-        unset($data['createdAt']);
-
-        $this->expectException(UnexpectedResponseException::class);
-        Version::fromApiResponse($data);
-    }
-
-    public function testThrowsWhenRequiredUpdatedAtMissing(): void
-    {
-        $data = self::baseData();
-        unset($data['updatedAt']);
 
         $this->expectException(UnexpectedResponseException::class);
         Version::fromApiResponse($data);

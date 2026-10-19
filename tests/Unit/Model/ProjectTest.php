@@ -65,4 +65,10 @@ final class ProjectTest extends TestCase
         $this->expectException(UnexpectedResponseException::class);
         Project::fromApiResponse(['_type' => 'Project', 'name' => 'Minimal Project']);
     }
+
+    public function testThrowsWhenRequiredNameMissing(): void
+    {
+        $this->expectException(UnexpectedResponseException::class);
+        Project::fromApiResponse(['_type' => 'Project', 'id' => 5]);
+    }
 }

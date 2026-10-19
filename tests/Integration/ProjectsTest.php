@@ -56,7 +56,7 @@ final class ProjectsTest extends IntegrationTestCase
 
         self::assertNotEmpty($results->elements, 'The instance must have at least one project.');
 
-        self::assertNotNull($results->elements[0]->name);
+        self::assertNotEmpty($results->elements[0]->name);
     }
 
     public function testAllGeneratorReturnsIterable(): void
@@ -65,7 +65,7 @@ final class ProjectsTest extends IntegrationTestCase
 
         self::assertNotEmpty($projects, 'The instance must have at least one project.');
 
-        self::assertNotNull($projects[0]->name);
+        self::assertNotEmpty($projects[0]->name);
     }
 
     public function testGetReturnsProjectWithMatchingId(): void

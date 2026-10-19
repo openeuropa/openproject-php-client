@@ -16,7 +16,7 @@ final readonly class Priority
      */
     public function __construct(
         public int $id,
-        public ?string $name,
+        public string $name,
         public ?int $position,
         public ?bool $isDefault,
         public ?bool $isActive,
@@ -37,7 +37,7 @@ final readonly class Priority
 
         return new self(
             $hal->requireInt('id'),
-            $hal->getString('name'),
+            $hal->requireString('name'),
             $hal->getInt('position'),
             $hal->getBool('isDefault'),
             $hal->getBool('isActive'),

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace OpenEuropa\OpenProjectClient\Model;
 
-use OpenEuropa\OpenProjectClient\Exception\UnexpectedResponseException;
 use OpenEuropa\OpenProjectClient\Http\HalResource;
 
 /**
@@ -19,11 +18,11 @@ final readonly class Attachment
         public int $id,
         public string $fileName,
         public ?int $fileSize,
-        public Formattable $description,
-        public string $status,
-        public string $contentType,
-        public AttachmentDigest $digest,
-        public string $createdAt,
+        public ?Formattable $description,
+        public ?string $status,
+        public ?string $contentType,
+        public ?AttachmentDigest $digest,
+        public ?string $createdAt,
         public ?Link $self,
         public ?Link $container,
         public ?Link $author,
@@ -44,26 +43,32 @@ final readonly class Attachment
         $hal = new HalResource($data);
 
         $descriptionData = $data['description'] ?? null;
-        if (!is_array($descriptionData)) {
-            throw new UnexpectedResponseException('Expected required "description" object in API response.');
+        $description = null;
+        if (is_array($descriptionData) && isset($descriptionData['format']) && is_string($descriptionData['format'])) {
+            /** @var array<string, mixed> $descriptionData */
+            $description = Formattable::fromApiResponse($descriptionData);
         }
-        /** @var array<string, mixed> $descriptionData */
 
         $digestData = $data['digest'] ?? null;
-        if (!is_array($digestData)) {
-            throw new UnexpectedResponseException('Expected required "digest" object in API response.');
+        $digest = null;
+        if (
+            is_array($digestData)
+            && is_string($digestData['algorithm'] ?? null)
+            && is_string($digestData['hash'] ?? null)
+        ) {
+            /** @var array<string, mixed> $digestData */
+            $digest = AttachmentDigest::fromApiResponse($digestData);
         }
-        /** @var array<string, mixed> $digestData */
 
         return new self(
             $hal->requireInt('id'),
             $hal->requireString('fileName'),
             $hal->getInt('fileSize'),
-            Formattable::fromApiResponse($descriptionData),
-            $hal->requireString('status'),
-            $hal->requireString('contentType'),
-            AttachmentDigest::fromApiResponse($digestData),
-            $hal->requireString('createdAt'),
+            $description,
+            $hal->getString('status'),
+            $hal->getString('contentType'),
+            $digest,
+            $hal->getString('createdAt'),
             $hal->link('self'),
             $hal->link('container'),
             $hal->link('author'),

@@ -17,7 +17,7 @@ final readonly class Project
     public function __construct(
         public int $id,
         public ?string $identifier,
-        public ?string $name,
+        public string $name,
         public ?bool $active,
         public ?bool $public,
         public ?bool $favorited,
@@ -61,7 +61,7 @@ final readonly class Project
         return new self(
             $hal->requireInt('id'),
             $hal->getString('identifier'),
-            $hal->getString('name'),
+            $hal->requireString('name'),
             $hal->getBool('active'),
             $hal->getBool('public'),
             $hal->getBool('favorited'),
