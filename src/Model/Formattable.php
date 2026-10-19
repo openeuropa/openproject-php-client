@@ -11,6 +11,9 @@ use OpenEuropa\OpenProjectClient\Exception\OpenProjectException;
  */
 final readonly class Formattable
 {
+    /**
+     * @internal
+     */
     public function __construct(
         public string $format,
         public ?string $raw,

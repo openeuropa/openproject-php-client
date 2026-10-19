@@ -9,6 +9,9 @@ namespace OpenEuropa\OpenProjectClient\Model;
  */
 final readonly class Link
 {
+    /**
+     * @internal
+     */
     public function __construct(
         public ?string $href,
         public ?string $title,

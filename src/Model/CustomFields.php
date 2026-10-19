@@ -10,6 +10,8 @@ namespace OpenEuropa\OpenProjectClient\Model;
 final readonly class CustomFields
 {
     /**
+     * @internal
+     *
      * @param array<string, mixed> $values
      *   Raw top-level customField<N> values keyed by field name.
      * @param array<string, list<Link>> $links

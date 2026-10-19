@@ -12,6 +12,8 @@ use OpenEuropa\OpenProjectClient\Http\HalResource;
 final readonly class Activity
 {
     /**
+     * @internal
+     *
      * @param list<Formattable> $details
      *   The changed-attribute descriptions recorded in this activity. Empty
      *   when the API omits the field.

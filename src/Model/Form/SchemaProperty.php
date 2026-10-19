@@ -13,6 +13,8 @@ use OpenEuropa\OpenProjectClient\Model\Link;
 final readonly class SchemaProperty
 {
     /**
+     * @internal
+     *
      * @param string $type
      *   The API type name of the property, for example "String" or "Status".
      * @param string $name

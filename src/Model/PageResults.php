@@ -15,6 +15,8 @@ use OpenEuropa\OpenProjectClient\Http\HalResource;
 final readonly class PageResults implements \IteratorAggregate
 {
     /**
+     * @internal
+     *
      * @param list<T> $elements
      */
     public function __construct(

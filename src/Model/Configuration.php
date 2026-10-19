@@ -12,6 +12,8 @@ use OpenEuropa\OpenProjectClient\Http\HalResource;
 final readonly class Configuration
 {
     /**
+     * @internal
+     *
      * @param list<int> $perPageOptions
      *   The selectable page-size options for collection endpoints.
      * @param list<string> $activeFeatureFlags

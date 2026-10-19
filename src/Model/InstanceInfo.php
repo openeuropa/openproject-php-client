@@ -11,6 +11,9 @@ use OpenEuropa\OpenProjectClient\Exception\OpenProjectException;
  */
 final readonly class InstanceInfo
 {
+    /**
+     * @internal
+     */
     public function __construct(
         public string $instanceName,
         // Only present for tokens with admin privileges.

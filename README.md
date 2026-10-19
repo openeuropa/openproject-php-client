@@ -342,6 +342,36 @@ retrying a write after a timeout can create the resource twice.
   `StreamInterface`; see [Requirements](#requirements) for the
   redirect-following requirement this relies on.
 
+### Building DTOs
+
+To build a DTO yourself, for example as the return value of a test double,
+use its `fromApiResponse()` with the decoded JSON body the API would
+return; the constructors are `@internal`. A JSON fixture captured from an
+instance works as-is.
+
+```php
+use OpenEuropa\OpenProjectClient\Model\PageResults;
+use OpenEuropa\OpenProjectClient\Model\WorkPackage;
+
+$data = [
+    'id' => 42,
+    'subject' => 'Fix login',
+    '_links' => [
+        'status' => ['href' => '/api/v3/statuses/1', 'title' => 'New'],
+    ],
+];
+$workPackage = WorkPackage::fromApiResponse($data);
+
+// A collection takes the element factory as its second argument.
+$page = PageResults::fromApiResponse(
+    ['total' => 1, 'count' => 1, '_embedded' => ['elements' => [$data]]],
+    WorkPackage::fromApiResponse(...),
+);
+```
+
+Fields the API marks as required, such as a work package's `id` and
+`subject`, must be present; any other field can be left out.
+
 ## Development
 
 All tooling runs in Docker; no local PHP installation is needed.

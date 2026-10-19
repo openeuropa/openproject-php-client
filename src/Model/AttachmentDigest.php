@@ -11,6 +11,9 @@ use OpenEuropa\OpenProjectClient\Http\HalResource;
  */
 final readonly class AttachmentDigest
 {
+    /**
+     * @internal
+     */
     public function __construct(
         public string $algorithm,
         public string $hash,

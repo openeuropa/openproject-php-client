@@ -12,6 +12,9 @@ use OpenEuropa\OpenProjectClient\Http\HalResource;
  */
 final readonly class Attachment
 {
+    /**
+     * @internal
+     */
     public function __construct(
         public int $id,
         public string $fileName,

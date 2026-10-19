@@ -11,6 +11,9 @@ use OpenEuropa\OpenProjectClient\Http\HalResource;
  */
 final readonly class ValidationError
 {
+    /**
+     * @internal
+     */
     public function __construct(
         public ?string $attribute,
         public ?string $message,

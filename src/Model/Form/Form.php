@@ -17,6 +17,8 @@ use OpenEuropa\OpenProjectClient\Model\ValidationError;
 final readonly class Form
 {
     /**
+     * @internal
+     *
      * @param array<string, mixed> $payload
      *   The raw writable payload from the form response.
      * @param array<string, SchemaProperty> $schema

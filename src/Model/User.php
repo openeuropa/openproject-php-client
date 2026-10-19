@@ -11,6 +11,9 @@ use OpenEuropa\OpenProjectClient\Http\HalResource;
  */
 final readonly class User
 {
+    /**
+     * @internal
+     */
     public function __construct(
         public int $id,
         public string $name,

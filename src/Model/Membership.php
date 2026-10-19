@@ -12,6 +12,8 @@ use OpenEuropa\OpenProjectClient\Http\HalResource;
 final readonly class Membership
 {
     /**
+     * @internal
+     *
      * @param list<Link> $roles
      */
     public function __construct(
