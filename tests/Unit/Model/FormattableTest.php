@@ -4,14 +4,16 @@ declare(strict_types=1);
 
 namespace OpenEuropa\OpenProjectClient\Tests\Unit\Model;
 
-use OpenEuropa\OpenProjectClient\Exception\OpenProjectException;
+use OpenEuropa\OpenProjectClient\Exception\UnexpectedResponseException;
+use OpenEuropa\OpenProjectClient\Http\HalResource;
 use OpenEuropa\OpenProjectClient\Model\Formattable;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
 #[CoversClass(Formattable::class)]
-#[UsesClass(OpenProjectException::class)]
+#[UsesClass(HalResource::class)]
+#[UsesClass(UnexpectedResponseException::class)]
 final class FormattableTest extends TestCase
 {
     public function testMapsAllFields(): void
@@ -52,7 +54,7 @@ final class FormattableTest extends TestCase
 
     public function testThrowsWhenFormatIsMissing(): void
     {
-        $this->expectException(OpenProjectException::class);
+        $this->expectException(UnexpectedResponseException::class);
         $this->expectExceptionMessage('format');
 
         Formattable::fromApiResponse(['raw' => 'some text']);
@@ -60,7 +62,7 @@ final class FormattableTest extends TestCase
 
     public function testThrowsWhenFormatIsNotAString(): void
     {
-        $this->expectException(OpenProjectException::class);
+        $this->expectException(UnexpectedResponseException::class);
         $this->expectExceptionMessage('format');
 
         Formattable::fromApiResponse(['format' => 123]);

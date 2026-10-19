@@ -46,6 +46,8 @@ final readonly class Form
      *
      * @param array<string, mixed> $data
      *   The decoded form response body.
+     *
+     * @throws \OpenEuropa\OpenProjectClient\Exception\UnexpectedResponseException
      */
     public static function fromApiResponse(array $data): self
     {

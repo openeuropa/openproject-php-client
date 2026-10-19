@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace OpenEuropa\OpenProjectClient\Model;
 
-use OpenEuropa\OpenProjectClient\Exception\OpenProjectException;
+use OpenEuropa\OpenProjectClient\Http\HalResource;
 
 /**
  * OpenProject rich-text value with format, raw source, and server-rendered HTML.
@@ -27,25 +27,16 @@ final readonly class Formattable
      * @param array<string, mixed> $data
      *   The decoded formattable object.
      *
-     * @throws \OpenEuropa\OpenProjectClient\Exception\OpenProjectException
-     *   When the required "format" property is missing or not a string.
+     * @throws \OpenEuropa\OpenProjectClient\Exception\UnexpectedResponseException
      */
     public static function fromApiResponse(array $data): self
     {
-        $format = $data['format'] ?? null;
-        if (!is_string($format)) {
-            throw new OpenProjectException(
-                'The Formattable object is missing the required "format" property.',
-            );
-        }
-
-        $raw = $data['raw'] ?? null;
-        $html = $data['html'] ?? null;
+        $hal = new HalResource($data);
 
         return new self(
-            $format,
-            is_string($raw) ? $raw : null,
-            is_string($html) ? $html : null,
+            $hal->requireString('format'),
+            $hal->getString('raw'),
+            $hal->getString('html'),
         );
     }
 }

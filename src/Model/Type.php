@@ -31,6 +31,8 @@ final readonly class Type
      *
      * @param array<string, mixed> $data
      *   The decoded response body.
+     *
+     * @throws \OpenEuropa\OpenProjectClient\Exception\UnexpectedResponseException
      */
     public static function fromApiResponse(array $data): self
     {

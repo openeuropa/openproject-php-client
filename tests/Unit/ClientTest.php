@@ -22,6 +22,7 @@ use OpenEuropa\OpenProjectClient\Endpoint\TypesEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\UsersEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\VersionsEndpoint;
 use OpenEuropa\OpenProjectClient\Endpoint\WorkPackagesEndpoint;
+use OpenEuropa\OpenProjectClient\Http\HalResource;
 use OpenEuropa\OpenProjectClient\Http\Transport;
 use OpenEuropa\OpenProjectClient\Model\InstanceInfo;
 use OpenEuropa\OpenProjectClient\Tests\Support\MockClientTrait;
@@ -31,6 +32,7 @@ use PHPUnit\Framework\TestCase;
 
 #[CoversClass(Client::class)]
 #[UsesClass(Transport::class)]
+#[UsesClass(HalResource::class)]
 #[UsesClass(ApiKeyAuthentication::class)]
 #[UsesClass(InstanceInfo::class)]
 #[UsesClass(ConfigurationEndpoint::class)]

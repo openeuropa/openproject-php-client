@@ -4,12 +4,16 @@ declare(strict_types=1);
 
 namespace OpenEuropa\OpenProjectClient\Tests\Unit\Model;
 
-use OpenEuropa\OpenProjectClient\Exception\OpenProjectException;
+use OpenEuropa\OpenProjectClient\Exception\UnexpectedResponseException;
+use OpenEuropa\OpenProjectClient\Http\HalResource;
 use OpenEuropa\OpenProjectClient\Model\InstanceInfo;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
 #[CoversClass(InstanceInfo::class)]
+#[UsesClass(HalResource::class)]
+#[UsesClass(UnexpectedResponseException::class)]
 final class InstanceInfoTest extends TestCase
 {
     public function testMapsInstanceNameAndCoreVersion(): void
@@ -38,7 +42,7 @@ final class InstanceInfoTest extends TestCase
 
     public function testThrowsWhenInstanceNameIsMissing(): void
     {
-        $this->expectException(OpenProjectException::class);
+        $this->expectException(UnexpectedResponseException::class);
         $this->expectExceptionMessage('instanceName');
 
         InstanceInfo::fromApiResponse(['_type' => 'Root']);

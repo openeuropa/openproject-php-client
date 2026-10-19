@@ -49,6 +49,8 @@ final readonly class SchemaProperty
      *
      * @param array<string, mixed> $data
      *   The decoded schema property object.
+     *
+     * @throws \OpenEuropa\OpenProjectClient\Exception\UnexpectedResponseException
      */
     public static function fromApiResponse(array $data): self
     {
