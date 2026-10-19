@@ -2,12 +2,10 @@
 
 PHP client for the [OpenProject API v3](https://www.openproject.org/docs/api/).
 
-> **Status: under development.** The public API is not stable yet and the
-> package has not been published to Packagist.
-
 ## Requirements
 
 - PHP >= 8.3
+- An OpenProject instance; the client is tested against OpenProject 17.
 - A [PSR-18](https://www.php-fig.org/psr/psr-18/) HTTP client and
   [PSR-17](https://www.php-fig.org/psr/psr-17/) factories of your choice
   (e.g. [Guzzle 7](https://github.com/guzzle/guzzle)). The library does not
@@ -95,6 +93,35 @@ $project = $client->projects()->get(1);
 $workPackage = $client->workPackages()->get(42);
 ```
 
+### Reading responses
+
+A related resource, such as a work package's status or assignee, is a
+`Link` with a `title` and an `id()`:
+
+```php
+$workPackage->status?->title;  // e.g. "In progress"
+$workPackage->assignee?->id(); // e.g. 5, or null when unassigned
+```
+
+Long text, such as a description, has the text as written in `raw` and the
+rendered version in `html`:
+
+```php
+$workPackage->description?->raw;
+$workPackage->description?->html;
+```
+
+Custom fields are in `customFields` (on work packages, time entries, and
+users):
+
+```php
+// Text, number, date, and similar fields.
+$workPackage->customFields->values['customField3']; // e.g. "ACME Corp"
+
+// List, user, and version fields: always a list of links.
+$workPackage->customFields->links['customField4'][0]->title; // e.g. "High"
+```
+
 ### Pagination
 
 Collection endpoints expose up to two read shapes, depending on how the API
@@ -128,15 +155,12 @@ foreach ($page as $workPackage) {
 }
 ```
 
-`workPackages()->all()` and `listPage()` default to an empty filter set
-rather than no filters at all, so omitting `$filters` returns every work
-package, not just the open ones the raw API defaults to.
+Some endpoints can also list by parent, e.g.
+`workPackages()->listByProject($projectId)` or
+`activities()->allByWorkPackage($workPackageId)`.
 
-Some endpoints add further listing methods scoped to a parent resource
-(`workPackages()->listByProject()`, `types()->allByProject()`,
-`categories()->allByProject()`, `versions()->allByProject()`,
-`activities()->allByWorkPackage()`); each returns the same shape as its
-unscoped sibling.
+Unlike the raw API, work package listings include closed work packages
+unless you filter them out.
 
 ### Filters
 
@@ -180,12 +204,18 @@ $page = $client->workPackages()->listPage($filters, $params);
 
 ### The two-step form flow
 
-Every writable resource validates through a form endpoint before you commit
-the write: `createForm()` (and `updateForm()` for existing resources) posts
-a payload for validation and returns a `Form` carrying the (possibly
-corrected) `payload`, the `schema` (allowed values and writability per
-property, as `SchemaProperty`), and any `validationErrors` keyed by
-property name. `create()` and `update()` do not run the form step for you.
+Projects, work packages, versions, time entries, and memberships validate
+through a form endpoint before you commit the write: `createForm()` (and
+`updateForm()` for existing resources) posts a payload for validation and
+returns a `Form` carrying the (possibly corrected) `payload`, the `schema`
+(allowed values and writability per property, as `SchemaProperty`), and any
+`validationErrors` keyed by property name. `create()` and `update()` do not
+run the form step for you. Relations, attachment uploads, and work-package
+comments have no form step.
+
+Call `createForm()` without a payload to get a blank form listing the
+allowed values; `workPackages()->createForm($input, $projectId)` limits
+them to one project.
 
 Please note that **form endpoints answer HTTP 200 even when the payload is
 invalid**. Check `$form->hasErrors()`, not the response status.
@@ -213,6 +243,19 @@ The `*Input` classes (`WorkPackageInput`, `ProjectInput`, `RelationInput`,
 and so on) are fluent builders for the write payload; `createForm()` and
 `create()` accept the same instance.
 
+Work package, project, version, and time entry inputs also set custom
+fields:
+
+```php
+$input = (new WorkPackageInput())
+    ->customField(3, 'ACME Corp')                      // text, number, date, and similar fields
+    ->customFieldLink(4, $optionId, 'custom_options'); // list field; 'users' or 'versions' for those
+```
+
+The builders have methods for the common fields. To send a field they don't
+cover, use `set()` with the API's property name, e.g.
+`->set('remainingTime', 'PT2H')`.
+
 ### Exceptions
 
 Every exception the client throws extends `OpenProjectException` (itself a
@@ -229,12 +272,13 @@ exposes `httpStatus` and `errorIdentifier`:
 | 404 | `NotFoundException` |
 | 409 | `ConflictException` |
 | 422 | `ValidationException` (adds `errors`, a `list<ValidationError>`) |
-| any other 4xx | `ApiErrorException` |
+| any other non-2xx below 500, including an unfollowed 3xx redirect | `ApiErrorException` |
 
 Two more sit directly under `OpenProjectException`, not `ApiException`:
 `ApiUnreachableException` (a network-level failure the PSR-18 client raised,
 or an HTTP >= 500 response) and `UnexpectedResponseException` (a response
-body that does not match what the API contract promised).
+body missing a field the API contract requires). A body that is not a JSON
+object at all raises `OpenProjectException` itself.
 
 ```php
 use OpenEuropa\OpenProjectClient\Exception\ValidationException;
@@ -247,6 +291,12 @@ try {
     }
 }
 ```
+
+### Retries
+
+The client never retries a request; configure retries on the HTTP client
+you inject. `ApiUnreachableException` marks the failures worth retrying, but
+retrying a write after a timeout can create the resource twice.
 
 ### Write-side notes
 
@@ -272,8 +322,9 @@ try {
   is archived, and the row disappears shortly after via a background job.
   Every other endpoint's `delete()` is synchronous.
 - Attachments upload through `attachments()->upload()` (standalone) or
-  `attachments()->uploadToWorkPackage()`, and download through
-  `attachments()->download()`, which returns a PSR-7 `StreamInterface`. See
+  `attachments()->uploadToWorkPackage()`, which take the file contents as a
+  string, so the whole file is held in memory. Downloads go through
+  `attachments()->download()`, which returns a PSR-7 `StreamInterface`; see
   [Requirements](#requirements) for the redirect-following requirement this
   relies on.
 
