@@ -6,6 +6,8 @@ namespace OpenEuropa\OpenProjectClient\Model;
 
 /**
  * Keyed HAL link fragments for work-package relationships.
+ *
+ * @internal
  */
 final class WorkPackageLinks
 {

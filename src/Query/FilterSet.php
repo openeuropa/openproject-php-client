@@ -21,6 +21,8 @@ final readonly class FilterSet
      * Returns the filters as a JSON-encoded array for the "filters" query param.
      *
      * An empty set serializes to "[]".
+     *
+     * @internal
      */
     public function toJson(): string
     {

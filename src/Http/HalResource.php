@@ -9,6 +9,8 @@ use OpenEuropa\OpenProjectClient\Model\Link;
 
 /**
  * Thin read helper over a decoded HAL response array.
+ *
+ * @internal
  */
 final class HalResource
 {

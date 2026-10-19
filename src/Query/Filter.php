@@ -24,6 +24,8 @@ final readonly class Filter
     /**
      * Returns the filter as the array shape expected in a filters JSON array.
      *
+     * @internal
+     *
      * @return array<string, array{operator: string, values: list<string>|null}>
      */
     public function toArray(): array

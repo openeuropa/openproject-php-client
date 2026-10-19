@@ -239,6 +239,8 @@ final class WorkPackageInput
     /**
      * Returns the payload array for the API request.
      *
+     * @internal
+     *
      * @return array<string, mixed>
      */
     public function toArray(): array

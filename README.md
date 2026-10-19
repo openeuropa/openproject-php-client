@@ -32,6 +32,9 @@ reached through a method on `Client` (`$client->projects()`,
 `$client->workPackages()`, ...) that returns an endpoint object; responses
 decode to immutable, readonly DTOs.
 
+Classes and methods tagged `@internal` are not part of the public API and
+can change in any release.
+
 ### Authentication
 
 `ApiKeyAuthentication` takes an API token, generated in the OpenProject web

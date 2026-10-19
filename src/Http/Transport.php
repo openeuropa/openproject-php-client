@@ -28,6 +28,8 @@ use Psr\Http\Message\StreamInterface;
  *
  * This is the only place that touches PSR-7/PSR-18 and the only place that
  * throws on transport or API errors; endpoints and DTOs never see either.
+ *
+ * @internal
  */
 final class Transport
 {

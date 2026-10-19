@@ -11,9 +11,14 @@ use OpenEuropa\OpenProjectClient\Query\FilterSet;
 
 /**
  * Base class for all endpoint classes, providing transport access.
+ *
+ * @internal
  */
 abstract class AbstractEndpoint
 {
+    /**
+     * @internal
+     */
     public function __construct(protected readonly Transport $transport)
     {
     }

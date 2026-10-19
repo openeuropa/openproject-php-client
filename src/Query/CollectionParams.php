@@ -41,6 +41,8 @@ final readonly class CollectionParams
     /**
      * Returns the set parameters as a query string key-value map.
      *
+     * @internal
+     *
      * @return array<string, string>
      */
     public function toQueryParams(): array
