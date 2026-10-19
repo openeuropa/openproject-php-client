@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace OpenEuropa\OpenProjectClient\Tests\Unit\Http;
 
+use GuzzleHttp\Psr7\FnStream;
 use GuzzleHttp\Psr7\HttpFactory;
 use OpenEuropa\OpenProjectClient\Authentication\ApiKeyAuthentication;
 use OpenEuropa\OpenProjectClient\Exception\ApiErrorException;
@@ -335,7 +336,12 @@ final class TransportTest extends TestCase
 
         $result = $transport->postMultipart('attachments', [
             ['name' => 'metadata', 'contents' => '{"fileName":"a.txt"}', 'contentType' => 'application/json'],
-            ['name' => 'file', 'contents' => 'DATA', 'contentType' => 'text/plain', 'filename' => 'a.txt'],
+            [
+                'name' => 'file',
+                'contents' => (new HttpFactory())->createStream('DATA'),
+                'contentType' => 'text/plain',
+                'filename' => 'a.txt',
+            ],
         ]);
 
         $request = $this->lastRequest();
@@ -354,6 +360,63 @@ final class TransportTest extends TestCase
         self::assertStringContainsString('filename="a.txt"', $body);
         self::assertStringContainsString('DATA', $body);
         self::assertSame(7, $result['id']);
+    }
+
+    public function testPostMultipartReadsSeekableStreamFromTheStart(): void
+    {
+        $transport = $this->createTransport('http://example.test');
+        $this->queueJsonResponse('{"id": 7}', 201);
+        $stream = (new HttpFactory())->createStream('DATA');
+        $stream->getContents();
+
+        $transport->postMultipart('attachments', [
+            ['name' => 'file', 'contents' => $stream, 'contentType' => 'text/plain', 'filename' => 'a.txt'],
+        ]);
+
+        self::assertStringContainsString("\r\n\r\nDATA\r\n", (string) $this->lastRequest()->getBody());
+    }
+
+    public function testPostMultipartRejectsNonReadableStreamWithoutSending(): void
+    {
+        $transport = $this->createTransport('http://example.test');
+        $stream = FnStream::decorate((new HttpFactory())->createStream('DATA'), [
+            'isReadable' => static fn (): bool => false,
+        ]);
+
+        try {
+            $transport->postMultipart('attachments', [
+                ['name' => 'file', 'contents' => $stream, 'contentType' => 'text/plain', 'filename' => 'a.txt'],
+            ]);
+            self::fail('Expected an OpenProjectException.');
+        } catch (OpenProjectException $exception) {
+            self::assertSame(OpenProjectException::class, $exception::class);
+            self::assertSame('The stream for multipart part "file" is not readable.', $exception->getMessage());
+        }
+        self::assertSame([], $this->requestHistory);
+    }
+
+    public function testPostMultipartWrapsStreamReadFailure(): void
+    {
+        $transport = $this->createTransport('http://example.test');
+        $previous = new \RuntimeException('Disk read failed.');
+        $stream = FnStream::decorate((new HttpFactory())->createStream('DATA'), [
+            'read' => static fn (): never => throw $previous,
+        ]);
+
+        try {
+            $transport->postMultipart('attachments', [
+                ['name' => 'file', 'contents' => $stream, 'contentType' => 'text/plain', 'filename' => 'a.txt'],
+            ]);
+            self::fail('Expected an OpenProjectException.');
+        } catch (OpenProjectException $exception) {
+            self::assertSame(OpenProjectException::class, $exception::class);
+            self::assertSame(
+                'Could not read the multipart request body: Disk read failed.',
+                $exception->getMessage(),
+            );
+            self::assertSame($previous, $exception->getPrevious());
+        }
+        self::assertSame([], $this->requestHistory);
     }
 
     public function testDeleteSendsCorrectMethodAndReturnsVoid(): void

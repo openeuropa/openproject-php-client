@@ -87,7 +87,12 @@ final class AttachmentsEndpointTest extends TestCase
         $endpoint = $this->createEndpoint();
         $this->queueFixtureResponse('attachment.json', 201);
 
-        $attachment = $endpoint->upload('file bytes here', 'phpclient-test.txt', 'text/plain', 'A description');
+        $attachment = $endpoint->upload(
+            (new HttpFactory())->createStream('file bytes here'),
+            'phpclient-test.txt',
+            'text/plain',
+            'A description',
+        );
 
         $request = $this->lastRequest();
         self::assertSame('POST', $request->getMethod());
@@ -114,7 +119,7 @@ final class AttachmentsEndpointTest extends TestCase
         $endpoint = $this->createEndpoint();
         $this->queueFixtureResponse('attachment.json', 201);
 
-        $endpoint->upload('x', 'f.txt', 'text/plain');
+        $endpoint->upload((new HttpFactory())->createStream('x'), 'f.txt', 'text/plain');
 
         $body = (string) $this->lastRequest()->getBody();
         self::assertStringContainsString('"fileName":"f.txt"', $body);
@@ -128,7 +133,7 @@ final class AttachmentsEndpointTest extends TestCase
 
         $attachment = $endpoint->uploadToWorkPackage(
             42,
-            'file bytes here',
+            (new HttpFactory())->createStream('file bytes here'),
             'phpclient-test.txt',
             'text/plain',
             'A description',

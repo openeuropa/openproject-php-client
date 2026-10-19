@@ -35,8 +35,9 @@ final class AttachmentsEndpoint extends AbstractEndpoint
     /**
      * Uploads a file as a containerless attachment and returns the created resource.
      *
-     * @param string $contents
-     *   The raw file bytes.
+     * @param StreamInterface $contents
+     *   The file contents, read from the start when the stream is seekable.
+     *   Must be readable.
      * @param string $fileName
      *   The name to store the file under.
      * @param string $contentType
@@ -45,7 +46,7 @@ final class AttachmentsEndpoint extends AbstractEndpoint
      * @throws \OpenEuropa\OpenProjectClient\Exception\OpenProjectException
      */
     public function upload(
-        string $contents,
+        StreamInterface $contents,
         string $fileName,
         string $contentType,
         ?string $description = null,
@@ -58,8 +59,9 @@ final class AttachmentsEndpoint extends AbstractEndpoint
     /**
      * Uploads a file as an attachment to a work package and returns the created resource.
      *
-     * @param string $contents
-     *   The raw file bytes.
+     * @param StreamInterface $contents
+     *   The file contents, read from the start when the stream is seekable.
+     *   Must be readable.
      * @param string $fileName
      *   The name to store the file under.
      * @param string $contentType
@@ -69,7 +71,7 @@ final class AttachmentsEndpoint extends AbstractEndpoint
      */
     public function uploadToWorkPackage(
         int $workPackageId,
-        string $contents,
+        StreamInterface $contents,
         string $fileName,
         string $contentType,
         ?string $description = null,
@@ -94,10 +96,10 @@ final class AttachmentsEndpoint extends AbstractEndpoint
     /**
      * Builds the metadata and file parts of an attachment upload body.
      *
-     * @return list<array{name: string, contents: string, contentType: string, filename?: string}>
+     * @return list<array{name: string, contents: string|StreamInterface, contentType: string, filename?: string}>
      */
     private function buildUploadParts(
-        string $contents,
+        StreamInterface $contents,
         string $fileName,
         string $contentType,
         ?string $description,

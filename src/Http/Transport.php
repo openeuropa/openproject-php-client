@@ -140,27 +140,45 @@ final class Transport
      *
      * @param string $path
      *   Resource path relative to the API root.
-     * @param list<array{name: string, contents: string, contentType: string, filename?: string}> $parts
+     * @param list<array{name: string, contents: string|StreamInterface, contentType: string, filename?: string}> $parts
      *   The ordered multipart parts. Each part carries an explicit content type so
-     *   the builder never falls back to filename-based MIME detection.
+     *   the builder never falls back to filename-based MIME detection. A stream
+     *   must be readable.
      *
      * @return array<string, mixed>
      *   The decoded response body.
      *
      * @throws \OpenEuropa\OpenProjectClient\Exception\OpenProjectException
-     *   On a network failure, a non-2xx response, or an invalid JSON body.
+     *   On an unreadable stream, a network failure, a non-2xx response, or an
+     *   invalid JSON body.
      */
     public function postMultipart(string $path, array $parts): array
     {
         $builder = new MultipartStreamBuilder($this->streamFactory);
         foreach ($parts as $part) {
+            // The builder would read a non-readable stream through __toString(),
+            // loading it whole into memory.
+            if ($part['contents'] instanceof StreamInterface && !$part['contents']->isReadable()) {
+                throw new OpenProjectException(
+                    sprintf('The stream for multipart part "%s" is not readable.', $part['name']),
+                );
+            }
             $options = ['headers' => ['Content-Type' => $part['contentType']]];
             if (isset($part['filename'])) {
                 $options['filename'] = $part['filename'];
             }
             $builder->addResource($part['name'], $part['contents'], $options);
         }
-        $stream = $builder->build();
+        try {
+            $stream = $builder->build();
+        } catch (\RuntimeException $exception) {
+            // PSR-7 streams report read failures as a plain \RuntimeException.
+            throw new OpenProjectException(
+                sprintf('Could not read the multipart request body: %s', $exception->getMessage()),
+                0,
+                $exception,
+            );
+        }
 
         $request = $this->requestFactory
             ->createRequest('POST', $this->apiRoot . ltrim($path, '/'))

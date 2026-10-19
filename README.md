@@ -323,10 +323,21 @@ retrying a write after a timeout can create the resource twice.
   Every other endpoint's `delete()` is synchronous.
 - Attachments upload through `attachments()->upload()` (standalone) or
   `attachments()->uploadToWorkPackage()`, which take the file contents as a
-  string, so the whole file is held in memory. Downloads go through
-  `attachments()->download()`, which returns a PSR-7 `StreamInterface`; see
-  [Requirements](#requirements) for the redirect-following requirement this
-  relies on.
+  readable PSR-7 `StreamInterface`. Create it with the stream factory you
+  pass to `Client`:
+
+  ```php
+  // From a file.
+  $stream = $streamFactory->createStreamFromFile('/path/to/report.pdf');
+  // From content already in memory.
+  $stream = $streamFactory->createStream($contents);
+
+  $client->attachments()->uploadToWorkPackage(42, $stream, 'report.pdf', 'application/pdf');
+  ```
+
+  Downloads go through `attachments()->download()`, which returns a PSR-7
+  `StreamInterface`; see [Requirements](#requirements) for the
+  redirect-following requirement this relies on.
 
 ## Development
 

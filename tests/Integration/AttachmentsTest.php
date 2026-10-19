@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace OpenEuropa\OpenProjectClient\Tests\Integration;
 
+use GuzzleHttp\Psr7\HttpFactory;
 use OpenEuropa\OpenProjectClient\Exception\NotFoundException;
 use OpenEuropa\OpenProjectClient\Model\AttachmentDigest;
 use OpenEuropa\OpenProjectClient\Model\Formattable;
@@ -37,7 +38,7 @@ final class AttachmentsTest extends IntegrationTestCase
         $fileName = 'phpclient-' . uniqid() . '.txt';
 
         $attachment = $this->client->attachments()->upload(
-            'phpclient integration test',
+            (new HttpFactory())->createStream('phpclient integration test'),
             $fileName,
             'text/plain',
             'A description of the file',
@@ -60,7 +61,7 @@ final class AttachmentsTest extends IntegrationTestCase
 
         $attachment = $this->client->attachments()->uploadToWorkPackage(
             $workPackageId,
-            'phpclient integration test',
+            (new HttpFactory())->createStream('phpclient integration test'),
             $fileName,
             'text/plain',
             'A description of the file',
@@ -84,7 +85,7 @@ final class AttachmentsTest extends IntegrationTestCase
 
         $uploaded = $this->client->attachments()->uploadToWorkPackage(
             $workPackageId,
-            'phpclient integration test',
+            (new HttpFactory())->createStream('phpclient integration test'),
             $fileName,
             'text/plain',
             'A description of the file',
@@ -109,7 +110,7 @@ final class AttachmentsTest extends IntegrationTestCase
 
         $uploaded = $this->client->attachments()->uploadToWorkPackage(
             $workPackageId,
-            $contents,
+            (new HttpFactory())->createStream($contents),
             $fileName,
             'text/plain',
         );
@@ -124,7 +125,7 @@ final class AttachmentsTest extends IntegrationTestCase
         $fileName = 'phpclient-' . uniqid() . '.txt';
 
         $attachment = $this->client->attachments()->upload(
-            'phpclient integration test',
+            (new HttpFactory())->createStream('phpclient integration test'),
             $fileName,
             'text/plain',
         );
