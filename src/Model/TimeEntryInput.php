@@ -36,9 +36,9 @@ final class TimeEntryInput
     /**
      * Sets the date the expenditure is booked for.
      */
-    public function spentOn(string $spentOn): self
+    public function spentOn(\DateTimeInterface $spentOn): self
     {
-        $this->properties['spentOn'] = $spentOn;
+        $this->properties['spentOn'] = $spentOn->format('Y-m-d');
 
         return $this;
     }

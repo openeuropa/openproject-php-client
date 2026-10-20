@@ -42,14 +42,14 @@ final class VersionInputTest extends TestCase
 
     public function testStartDateSetter(): void
     {
-        $input = (new VersionInput())->startDate('2026-02-02');
+        $input = (new VersionInput())->startDate(new \DateTimeImmutable('2026-02-02'));
 
         self::assertSame(['startDate' => '2026-02-02'], $input->toArray());
     }
 
     public function testEndDateSetter(): void
     {
-        $input = (new VersionInput())->endDate('2026-02-09');
+        $input = (new VersionInput())->endDate(new \DateTimeImmutable('2026-02-09'));
 
         self::assertSame(['endDate' => '2026-02-09'], $input->toArray());
     }
@@ -123,8 +123,8 @@ final class VersionInputTest extends TestCase
             ->name('Full version')
             ->status('open')
             ->sharing('none')
-            ->startDate('2026-02-02')
-            ->endDate('2026-02-09')
+            ->startDate(new \DateTimeImmutable('2026-02-02'))
+            ->endDate(new \DateTimeImmutable('2026-02-09'))
             ->description('A version description')
             ->definingProject(10)
             ->customField(1, 'extra');

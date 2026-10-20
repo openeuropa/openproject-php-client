@@ -56,9 +56,9 @@ final class WorkPackageInput
     /**
      * Sets the start date.
      */
-    public function startDate(string $date): self
+    public function startDate(\DateTimeInterface $date): self
     {
-        $this->properties['startDate'] = $date;
+        $this->properties['startDate'] = $date->format('Y-m-d');
 
         return $this;
     }
@@ -66,9 +66,9 @@ final class WorkPackageInput
     /**
      * Sets the due date.
      */
-    public function dueDate(string $date): self
+    public function dueDate(\DateTimeInterface $date): self
     {
-        $this->properties['dueDate'] = $date;
+        $this->properties['dueDate'] = $date->format('Y-m-d');
 
         return $this;
     }

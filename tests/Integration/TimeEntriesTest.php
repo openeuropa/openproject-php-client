@@ -140,7 +140,7 @@ final class TimeEntriesTest extends IntegrationTestCase
 
         $timeEntry = $this->client->timeEntries()->create(
             (new TimeEntryInput())
-                ->spentOn(date('Y-m-d'))
+                ->spentOn(new \DateTimeImmutable())
                 ->hours('PT2H')
                 ->comment($comment)
                 ->project($projectId)

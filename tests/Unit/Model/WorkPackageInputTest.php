@@ -35,16 +35,26 @@ final class WorkPackageInputTest extends TestCase
 
     public function testStartDateSetter(): void
     {
-        $input = (new WorkPackageInput())->startDate('2024-01-15');
+        $input = (new WorkPackageInput())->startDate(new \DateTimeImmutable('2024-01-15'));
 
         self::assertSame(['startDate' => '2024-01-15'], $input->toArray());
     }
 
     public function testDueDateSetter(): void
     {
-        $input = (new WorkPackageInput())->dueDate('2024-02-28');
+        $input = (new WorkPackageInput())->dueDate(new \DateTimeImmutable('2024-02-28'));
 
         self::assertSame(['dueDate' => '2024-02-28'], $input->toArray());
+    }
+
+    public function testDateSetterSendsTheCalendarDateInTheValuesOwnTimeZone(): void
+    {
+        // Still January 14 in UTC.
+        $date = new \DateTimeImmutable('2024-01-15 08:00', new \DateTimeZone('Pacific/Auckland'));
+
+        $input = (new WorkPackageInput())->dueDate($date);
+
+        self::assertSame(['dueDate' => '2024-01-15'], $input->toArray());
     }
 
     public function testEstimatedTimeSetter(): void
@@ -182,8 +192,8 @@ final class WorkPackageInputTest extends TestCase
         $input = (new WorkPackageInput())
             ->subject('Full task')
             ->description('Some description')
-            ->startDate('2024-01-01')
-            ->dueDate('2024-01-31')
+            ->startDate(new \DateTimeImmutable('2024-01-01'))
+            ->dueDate(new \DateTimeImmutable('2024-01-31'))
             ->estimatedTime('PT4H')
             ->scheduleManually(false)
             ->percentageDone(25)

@@ -21,7 +21,7 @@ final class TimeEntryInputTest extends TestCase
 
     public function testSpentOnSetter(): void
     {
-        $input = (new TimeEntryInput())->spentOn('2026-07-23');
+        $input = (new TimeEntryInput())->spentOn(new \DateTimeImmutable('2026-07-23'));
 
         self::assertSame(['spentOn' => '2026-07-23'], $input->toArray());
     }
@@ -142,7 +142,7 @@ final class TimeEntryInputTest extends TestCase
     public function testChainingReturnsSameInstance(): void
     {
         $input = new TimeEntryInput();
-        $result = $input->spentOn('2026-07-23');
+        $result = $input->spentOn(new \DateTimeImmutable('2026-07-23'));
 
         self::assertSame($input, $result);
     }
@@ -150,7 +150,7 @@ final class TimeEntryInputTest extends TestCase
     public function testFullInputProducesExpectedPayload(): void
     {
         $input = (new TimeEntryInput())
-            ->spentOn('2026-07-23')
+            ->spentOn(new \DateTimeImmutable('2026-07-23'))
             ->hours('PT2H')
             ->ongoing(false)
             ->startTime('2026-07-23T09:00:00.000Z')

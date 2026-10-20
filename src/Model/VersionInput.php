@@ -66,9 +66,9 @@ final class VersionInput
     /**
      * Sets the start date.
      */
-    public function startDate(string $startDate): self
+    public function startDate(\DateTimeInterface $startDate): self
     {
-        $this->properties['startDate'] = $startDate;
+        $this->properties['startDate'] = $startDate->format('Y-m-d');
 
         return $this;
     }
@@ -76,9 +76,9 @@ final class VersionInput
     /**
      * Sets the end date.
      */
-    public function endDate(string $endDate): self
+    public function endDate(\DateTimeInterface $endDate): self
     {
-        $this->properties['endDate'] = $endDate;
+        $this->properties['endDate'] = $endDate->format('Y-m-d');
 
         return $this;
     }
