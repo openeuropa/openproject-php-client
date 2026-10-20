@@ -22,6 +22,9 @@ final class WorkPackagesTest extends IntegrationTestCase
         $fetched = $this->client->workPackages()->get($id);
         self::assertSame($id, $fetched->id);
         self::assertNotEmpty($fetched->subject);
+        // An unparseable timestamp reads as null, so these prove the live format parses.
+        self::assertNotNull($fetched->createdAt);
+        self::assertNotNull($fetched->updatedAt);
     }
 
     public function testListPageReturnsNonNegativeTotal(): void

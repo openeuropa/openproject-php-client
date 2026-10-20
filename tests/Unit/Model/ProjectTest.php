@@ -32,8 +32,8 @@ final class ProjectTest extends TestCase
         self::assertTrue($project->active);
         self::assertFalse($project->public);
         self::assertFalse($project->favorited);
-        self::assertSame('2014-05-21T08:51:20.396Z', $project->createdAt);
-        self::assertSame('2014-05-21T08:51:20.396Z', $project->updatedAt);
+        self::assertEquals(new \DateTimeImmutable('2014-05-21T08:51:20.396Z'), $project->createdAt);
+        self::assertEquals(new \DateTimeImmutable('2014-05-21T08:51:20.396Z'), $project->updatedAt);
 
         self::assertInstanceOf(Formattable::class, $project->description);
         self::assertSame('markdown', $project->description->format);

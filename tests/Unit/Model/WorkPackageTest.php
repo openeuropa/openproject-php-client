@@ -39,7 +39,7 @@ final class WorkPackageTest extends TestCase
         self::assertSame('PT0S', $workPackage->spentTime);
         self::assertNull($workPackage->percentageDone);
         self::assertFalse($workPackage->scheduleManually);
-        self::assertSame('2026-06-18T09:44:04.846Z', $workPackage->createdAt);
+        self::assertEquals(new \DateTimeImmutable('2026-06-18T09:44:04.846Z'), $workPackage->createdAt);
 
         self::assertInstanceOf(Formattable::class, $workPackage->description);
         self::assertSame('markdown', $workPackage->description->format);

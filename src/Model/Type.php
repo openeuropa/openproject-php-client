@@ -21,8 +21,8 @@ final readonly class Type
         public ?int $position,
         public ?bool $isDefault,
         public ?bool $isMilestone,
-        public ?string $createdAt,
-        public ?string $updatedAt,
+        public ?\DateTimeImmutable $createdAt,
+        public ?\DateTimeImmutable $updatedAt,
     ) {
     }
 
@@ -45,8 +45,8 @@ final readonly class Type
             $hal->getInt('position'),
             $hal->getBool('isDefault'),
             $hal->getBool('isMilestone'),
-            $hal->getString('createdAt'),
-            $hal->getString('updatedAt'),
+            $hal->getDateTime('createdAt'),
+            $hal->getDateTime('updatedAt'),
         );
     }
 }

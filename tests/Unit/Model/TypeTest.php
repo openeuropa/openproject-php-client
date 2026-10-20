@@ -43,8 +43,8 @@ final class TypeTest extends TestCase
         self::assertSame(1, $type->position);
         self::assertTrue($type->isDefault);
         self::assertFalse($type->isMilestone);
-        self::assertSame('2014-05-21T08:51:20.396Z', $type->createdAt);
-        self::assertSame('2014-05-21T08:51:20.396Z', $type->updatedAt);
+        self::assertEquals(new \DateTimeImmutable('2014-05-21T08:51:20.396Z'), $type->createdAt);
+        self::assertEquals(new \DateTimeImmutable('2014-05-21T08:51:20.396Z'), $type->updatedAt);
     }
 
     public function testAbsentOptionalFieldsAreNull(): void

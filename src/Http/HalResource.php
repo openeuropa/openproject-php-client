@@ -105,6 +105,28 @@ final class HalResource
     }
 
     /**
+     * Returns the timestamp for the given key, or null when absent or not an RFC 3339 date-time.
+     */
+    public function getDateTime(string $key): ?\DateTimeImmutable
+    {
+        $value = $this->getString($key);
+        if ($value === null) {
+            return null;
+        }
+
+        // RFC 3339 makes fractional seconds optional, and each format accepts only one form.
+        $dateTime = \DateTimeImmutable::createFromFormat('Y-m-d\TH:i:s.uP', $value)
+            ?: \DateTimeImmutable::createFromFormat(\DateTimeInterface::RFC3339, $value);
+
+        // An impossible date such as February 30 parses with only a warning, rolled over into March.
+        if ($dateTime === false || \DateTimeImmutable::getLastErrors() !== false) {
+            return null;
+        }
+
+        return $dateTime;
+    }
+
+    /**
      * Returns the array value for the given key, or an empty array when absent or not an array.
      *
      * @return array<int|string, mixed>

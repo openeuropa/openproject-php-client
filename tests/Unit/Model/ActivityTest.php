@@ -34,8 +34,8 @@ final class ActivityTest extends TestCase
         self::assertSame('A fresh standalone comment for the activity fixture', $activity->comment->raw);
         self::assertSame([], $activity->details);
         self::assertFalse($activity->internal);
-        self::assertSame('2026-07-16T16:06:30.755Z', $activity->createdAt);
-        self::assertSame('2026-07-16T16:06:30.755Z', $activity->updatedAt);
+        self::assertEquals(new \DateTimeImmutable('2026-07-16T16:06:30.755Z'), $activity->createdAt);
+        self::assertEquals(new \DateTimeImmutable('2026-07-16T16:06:30.755Z'), $activity->updatedAt);
 
         self::assertSame(156, $activity->self?->id());
         self::assertSame(4, $activity->user?->id());

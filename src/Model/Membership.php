@@ -18,8 +18,8 @@ final readonly class Membership
      */
     public function __construct(
         public int $id,
-        public ?string $createdAt,
-        public ?string $updatedAt,
+        public ?\DateTimeImmutable $createdAt,
+        public ?\DateTimeImmutable $updatedAt,
         public ?Link $self,
         public ?Link $project,
         public ?Link $principal,
@@ -41,8 +41,8 @@ final readonly class Membership
 
         return new self(
             $hal->requireInt('id'),
-            $hal->getString('createdAt'),
-            $hal->getString('updatedAt'),
+            $hal->getDateTime('createdAt'),
+            $hal->getDateTime('updatedAt'),
             $hal->link('self'),
             $hal->link('project'),
             $hal->link('principal'),

@@ -25,8 +25,8 @@ final readonly class User
         public ?string $status,
         public ?string $language,
         public ?string $avatar,
-        public ?string $createdAt,
-        public ?string $updatedAt,
+        public ?\DateTimeImmutable $createdAt,
+        public ?\DateTimeImmutable $updatedAt,
         public CustomFields $customFields,
     ) {
     }
@@ -54,8 +54,8 @@ final readonly class User
             $hal->getString('status'),
             $hal->getString('language'),
             $hal->getString('avatar'),
-            $hal->getString('createdAt'),
-            $hal->getString('updatedAt'),
+            $hal->getDateTime('createdAt'),
+            $hal->getDateTime('updatedAt'),
             CustomFields::fromApiResponse($data),
         );
     }

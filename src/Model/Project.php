@@ -23,8 +23,8 @@ final readonly class Project
         public ?bool $favorited,
         public ?Formattable $description,
         public ?Formattable $statusExplanation,
-        public ?string $createdAt,
-        public ?string $updatedAt,
+        public ?\DateTimeImmutable $createdAt,
+        public ?\DateTimeImmutable $updatedAt,
     ) {
     }
 
@@ -49,8 +49,8 @@ final readonly class Project
             $hal->getBool('favorited'),
             $hal->formattable('description'),
             $hal->formattable('statusExplanation'),
-            $hal->getString('createdAt'),
-            $hal->getString('updatedAt'),
+            $hal->getDateTime('createdAt'),
+            $hal->getDateTime('updatedAt'),
         );
     }
 }

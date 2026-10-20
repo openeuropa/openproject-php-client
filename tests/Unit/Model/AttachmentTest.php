@@ -48,7 +48,7 @@ final class AttachmentTest extends TestCase
         self::assertSame(35, $attachment->fileSize);
         self::assertSame('uploaded', $attachment->status);
         self::assertSame('text/plain', $attachment->contentType);
-        self::assertSame('2026-07-01T17:02:16.648Z', $attachment->createdAt);
+        self::assertEquals(new \DateTimeImmutable('2026-07-01T17:02:16.648Z'), $attachment->createdAt);
 
         self::assertSame('plain', $attachment->description?->format);
 

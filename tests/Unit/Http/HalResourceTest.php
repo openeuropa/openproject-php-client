@@ -150,6 +150,64 @@ final class HalResourceTest extends TestCase
         self::assertNull($hal->getBool('isClosed'));
     }
 
+    public function testGetDateTimeReturnsTimestampWithFractionalSeconds(): void
+    {
+        $hal = new HalResource(['createdAt' => '2014-05-21T08:51:20.396Z']);
+
+        self::assertSame(
+            '2014-05-21T08:51:20.396+00:00',
+            $hal->getDateTime('createdAt')?->format(\DateTimeInterface::RFC3339_EXTENDED),
+        );
+    }
+
+    public function testGetDateTimeReturnsTimestampWithoutFractionalSeconds(): void
+    {
+        $hal = new HalResource(['createdAt' => '2014-05-21T08:51:20Z']);
+
+        self::assertSame(
+            '2014-05-21T08:51:20.000+00:00',
+            $hal->getDateTime('createdAt')?->format(\DateTimeInterface::RFC3339_EXTENDED),
+        );
+    }
+
+    public function testGetDateTimeKeepsTheOffset(): void
+    {
+        $hal = new HalResource(['createdAt' => '2014-05-21T10:51:20.396+02:00']);
+
+        self::assertSame(
+            '2014-05-21T10:51:20.396+02:00',
+            $hal->getDateTime('createdAt')?->format(\DateTimeInterface::RFC3339_EXTENDED),
+        );
+    }
+
+    public function testGetDateTimeReturnsNullWhenAbsent(): void
+    {
+        $hal = new HalResource([]);
+
+        self::assertNull($hal->getDateTime('createdAt'));
+    }
+
+    public function testGetDateTimeReturnsNullWhenNotAString(): void
+    {
+        $hal = new HalResource(['createdAt' => 1400662280]);
+
+        self::assertNull($hal->getDateTime('createdAt'));
+    }
+
+    public function testGetDateTimeReturnsNullWhenNotADateTime(): void
+    {
+        $hal = new HalResource(['createdAt' => '2014-05-21']);
+
+        self::assertNull($hal->getDateTime('createdAt'));
+    }
+
+    public function testGetDateTimeReturnsNullForAnImpossibleDate(): void
+    {
+        $hal = new HalResource(['createdAt' => '2014-02-30T08:51:20.396Z']);
+
+        self::assertNull($hal->getDateTime('createdAt'));
+    }
+
     public function testGetArrayReturnsArrayValue(): void
     {
         $hal = new HalResource(['items' => [1, 2, 3]]);

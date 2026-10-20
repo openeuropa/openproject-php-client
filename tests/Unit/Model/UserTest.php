@@ -38,8 +38,8 @@ final class UserTest extends TestCase
         self::assertSame('active', $user->status);
         self::assertSame('en', $user->language);
         self::assertSame('https://example.org/users/1/avatar', $user->avatar);
-        self::assertSame('2014-05-21T08:51:20.396Z', $user->createdAt);
-        self::assertSame('2014-05-21T08:51:20.396Z', $user->updatedAt);
+        self::assertEquals(new \DateTimeImmutable('2014-05-21T08:51:20.396Z'), $user->createdAt);
+        self::assertEquals(new \DateTimeImmutable('2014-05-21T08:51:20.396Z'), $user->updatedAt);
 
         self::assertSame('User String CF value', $user->customFields->values['customField1']);
         self::assertCount(1, $user->customFields->links['customField2']);

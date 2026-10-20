@@ -38,10 +38,10 @@ final class TimeEntryTest extends TestCase
         self::assertSame('2023-01-11', $timeEntry->spentOn);
         self::assertSame('PT4H', $timeEntry->hours);
         self::assertNull($timeEntry->ongoing);
-        self::assertSame('2023-01-11T09:58:00.000Z', $timeEntry->startTime);
-        self::assertSame('2023-01-11T13:58:00.000Z', $timeEntry->endTime);
-        self::assertSame('2023-01-11T13:58:24.927Z', $timeEntry->createdAt);
-        self::assertSame('2023-01-11T13:58:24.927Z', $timeEntry->updatedAt);
+        self::assertEquals(new \DateTimeImmutable('2023-01-11T09:58:00.000Z'), $timeEntry->startTime);
+        self::assertEquals(new \DateTimeImmutable('2023-01-11T13:58:00.000Z'), $timeEntry->endTime);
+        self::assertEquals(new \DateTimeImmutable('2023-01-11T13:58:24.927Z'), $timeEntry->createdAt);
+        self::assertEquals(new \DateTimeImmutable('2023-01-11T13:58:24.927Z'), $timeEntry->updatedAt);
         self::assertSame(42, $timeEntry->self?->id());
         self::assertSame(11, $timeEntry->project?->id());
         self::assertSame(77, $timeEntry->entity?->id());

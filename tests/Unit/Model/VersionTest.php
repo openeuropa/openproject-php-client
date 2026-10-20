@@ -45,8 +45,8 @@ final class VersionTest extends TestCase
         self::assertSame('v0.9.1-alpha', $version->name);
         self::assertSame('closed', $version->status);
         self::assertSame('none', $version->sharing);
-        self::assertSame('2026-02-06T09:30:49.157Z', $version->createdAt);
-        self::assertSame('2026-02-10T09:53:21.620Z', $version->updatedAt);
+        self::assertEquals(new \DateTimeImmutable('2026-02-06T09:30:49.157Z'), $version->createdAt);
+        self::assertEquals(new \DateTimeImmutable('2026-02-10T09:53:21.620Z'), $version->updatedAt);
         self::assertSame('plain', $version->description?->format);
 
         self::assertSame(3, $version->self?->id());

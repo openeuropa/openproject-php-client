@@ -39,8 +39,8 @@ final class MembershipTest extends TestCase
         $membership = Membership::fromApiResponse($data);
 
         self::assertSame(11, $membership->id);
-        self::assertSame('2015-03-20T12:56:56.626Z', $membership->createdAt);
-        self::assertSame('2018-12-20T18:16:11.563Z', $membership->updatedAt);
+        self::assertEquals(new \DateTimeImmutable('2015-03-20T12:56:56.626Z'), $membership->createdAt);
+        self::assertEquals(new \DateTimeImmutable('2018-12-20T18:16:11.563Z'), $membership->updatedAt);
         self::assertSame(11, $membership->self?->id());
         self::assertSame(3, $membership->project?->id());
         self::assertSame(5, $membership->principal?->id());
