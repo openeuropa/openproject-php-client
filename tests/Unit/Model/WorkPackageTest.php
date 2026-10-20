@@ -33,8 +33,8 @@ final class WorkPackageTest extends TestCase
         self::assertSame(2, $workPackage->id);
         self::assertSame(0, $workPackage->lockVersion);
         self::assertSame('Organize open source conference', $workPackage->subject);
-        self::assertSame('2026-06-15', $workPackage->startDate);
-        self::assertSame('2026-06-29', $workPackage->dueDate);
+        self::assertEquals(new \DateTimeImmutable('2026-06-15'), $workPackage->startDate);
+        self::assertEquals(new \DateTimeImmutable('2026-06-29'), $workPackage->dueDate);
         self::assertNull($workPackage->date);
         self::assertSame('PT0S', $workPackage->spentTime);
         self::assertNull($workPackage->percentageDone);

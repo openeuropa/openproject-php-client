@@ -208,6 +208,51 @@ final class HalResourceTest extends TestCase
         self::assertNull($hal->getDateTime('createdAt'));
     }
 
+    public function testGetDateReturnsMidnightInTheDefaultTimeZone(): void
+    {
+        $defaultTimeZone = date_default_timezone_get();
+        date_default_timezone_set('Europe/Brussels');
+
+        try {
+            $hal = new HalResource(['dueDate' => '2026-10-20']);
+
+            self::assertSame(
+                '2026-10-20T00:00:00.000+02:00',
+                $hal->getDate('dueDate')?->format(\DateTimeInterface::RFC3339_EXTENDED),
+            );
+        } finally {
+            date_default_timezone_set($defaultTimeZone);
+        }
+    }
+
+    public function testGetDateReturnsNullWhenAbsent(): void
+    {
+        $hal = new HalResource([]);
+
+        self::assertNull($hal->getDate('dueDate'));
+    }
+
+    public function testGetDateReturnsNullWhenNotAString(): void
+    {
+        $hal = new HalResource(['dueDate' => 20261020]);
+
+        self::assertNull($hal->getDate('dueDate'));
+    }
+
+    public function testGetDateReturnsNullWhenNotADate(): void
+    {
+        $hal = new HalResource(['dueDate' => '2026-10-20T10:00:00Z']);
+
+        self::assertNull($hal->getDate('dueDate'));
+    }
+
+    public function testGetDateReturnsNullForAnImpossibleDate(): void
+    {
+        $hal = new HalResource(['dueDate' => '2026-02-30']);
+
+        self::assertNull($hal->getDate('dueDate'));
+    }
+
     public function testGetArrayReturnsArrayValue(): void
     {
         $hal = new HalResource(['items' => [1, 2, 3]]);

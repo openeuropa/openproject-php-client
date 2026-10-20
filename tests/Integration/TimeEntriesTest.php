@@ -87,6 +87,8 @@ final class TimeEntriesTest extends IntegrationTestCase
 
         $fetched = $this->client->timeEntries()->get($created->id);
         self::assertSame($comment, $fetched->comment?->raw);
+        // An unparseable date reads as null, so this proves the live format parses.
+        self::assertNotNull($fetched->spentOn);
 
         $this->client->timeEntries()->delete($created->id);
 

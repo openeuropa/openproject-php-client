@@ -17,7 +17,7 @@ final readonly class TimeEntry
     public function __construct(
         public int $id,
         public ?Formattable $comment,
-        public ?string $spentOn,
+        public ?\DateTimeImmutable $spentOn,
         public ?string $hours,
         public ?bool $ongoing,
         public ?\DateTimeImmutable $startTime,
@@ -48,7 +48,7 @@ final readonly class TimeEntry
         return new self(
             $hal->requireInt('id'),
             $hal->formattable('comment'),
-            $hal->getString('spentOn'),
+            $hal->getDate('spentOn'),
             $hal->getString('hours'),
             $hal->getBool('ongoing'),
             $hal->getDateTime('startTime'),

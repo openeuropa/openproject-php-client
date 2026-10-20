@@ -115,15 +115,24 @@ final class HalResource
         }
 
         // RFC 3339 makes fractional seconds optional, and each format accepts only one form.
-        $dateTime = \DateTimeImmutable::createFromFormat('Y-m-d\TH:i:s.uP', $value)
-            ?: \DateTimeImmutable::createFromFormat(\DateTimeInterface::RFC3339, $value);
+        return $this->parseDateTime('Y-m-d\TH:i:s.uP', $value)
+            ?? $this->parseDateTime(\DateTimeInterface::RFC3339, $value);
+    }
 
-        // An impossible date such as February 30 parses with only a warning, rolled over into March.
-        if ($dateTime === false || \DateTimeImmutable::getLastErrors() !== false) {
+    /**
+     * Returns the date for the given key, or null when absent or not a YYYY-MM-DD date.
+     *
+     * The date is set at midnight in PHP's default time zone, since the API sends none.
+     */
+    public function getDate(string $key): ?\DateTimeImmutable
+    {
+        $value = $this->getString($key);
+        if ($value === null) {
             return null;
         }
 
-        return $dateTime;
+        // Without "!", the time fields the format does not parse take the current time.
+        return $this->parseDateTime('!Y-m-d', $value);
     }
 
     /**
@@ -204,5 +213,20 @@ final class HalResource
         }
 
         return $list;
+    }
+
+    /**
+     * Parses the value with the given format, or returns null when it does not match or is not a valid date.
+     */
+    private function parseDateTime(string $format, string $value): ?\DateTimeImmutable
+    {
+        $dateTime = \DateTimeImmutable::createFromFormat($format, $value);
+
+        // An impossible date such as February 30 parses with only a warning, rolled over into March.
+        if ($dateTime === false || \DateTimeImmutable::getLastErrors() !== false) {
+            return null;
+        }
+
+        return $dateTime;
     }
 }

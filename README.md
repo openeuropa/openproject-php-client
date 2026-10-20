@@ -114,6 +114,15 @@ $workPackage->description?->raw;
 $workPackage->description?->html;
 ```
 
+A date, such as a due date, is a `DateTimeImmutable` at midnight in PHP's
+default time zone, because the API sends dates without one. A timestamp
+keeps the offset the API sent:
+
+```php
+$workPackage->dueDate?->format('Y-m-d'); // e.g. "2026-06-29"
+$workPackage->createdAt?->format('c');   // e.g. "2026-06-18T09:44:04+00:00"
+```
+
 Custom fields are in `customFields` (on work packages, time entries, and
 users):
 
