@@ -42,17 +42,10 @@ final readonly class Version
     {
         $hal = new HalResource($data);
 
-        $descriptionData = $data['description'] ?? null;
-        $description = null;
-        if (is_array($descriptionData) && isset($descriptionData['format']) && is_string($descriptionData['format'])) {
-            /** @var array<string, mixed> $descriptionData */
-            $description = Formattable::fromApiResponse($descriptionData);
-        }
-
         return new self(
             $hal->requireInt('id'),
             $hal->requireString('name'),
-            $description,
+            $hal->formattable('description'),
             $hal->getString('startDate'),
             $hal->getString('endDate'),
             $hal->getString('status'),

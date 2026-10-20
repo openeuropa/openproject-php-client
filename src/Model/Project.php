@@ -40,24 +40,6 @@ final readonly class Project
     {
         $hal = new HalResource($data);
 
-        $descriptionData = $data['description'] ?? null;
-        $description = null;
-        if (is_array($descriptionData) && isset($descriptionData['format']) && is_string($descriptionData['format'])) {
-            /** @var array<string, mixed> $descriptionData */
-            $description = Formattable::fromApiResponse($descriptionData);
-        }
-
-        $statusExplanationData = $data['statusExplanation'] ?? null;
-        $statusExplanation = null;
-        if (
-            is_array($statusExplanationData)
-            && isset($statusExplanationData['format'])
-            && is_string($statusExplanationData['format'])
-        ) {
-            /** @var array<string, mixed> $statusExplanationData */
-            $statusExplanation = Formattable::fromApiResponse($statusExplanationData);
-        }
-
         return new self(
             $hal->requireInt('id'),
             $hal->getString('identifier'),
@@ -65,8 +47,8 @@ final readonly class Project
             $hal->getBool('active'),
             $hal->getBool('public'),
             $hal->getBool('favorited'),
-            $description,
-            $statusExplanation,
+            $hal->formattable('description'),
+            $hal->formattable('statusExplanation'),
             $hal->getString('createdAt'),
             $hal->getString('updatedAt'),
         );

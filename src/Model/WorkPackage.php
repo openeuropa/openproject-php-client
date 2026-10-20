@@ -52,13 +52,6 @@ final readonly class WorkPackage
     {
         $hal = new HalResource($data);
 
-        $descriptionData = $data['description'] ?? null;
-        $description = null;
-        if (is_array($descriptionData) && isset($descriptionData['format']) && is_string($descriptionData['format'])) {
-            /** @var array<string, mixed> $descriptionData */
-            $description = Formattable::fromApiResponse($descriptionData);
-        }
-
         return new self(
             $hal->requireInt('id'),
             $hal->getInt('lockVersion'),
@@ -74,7 +67,7 @@ final readonly class WorkPackage
             $hal->getString('updatedAt'),
             $hal->getBool('scheduleManually'),
             $hal->getBool('readonly'),
-            $description,
+            $hal->formattable('description'),
             $hal->link('status'),
             $hal->link('type'),
             $hal->link('priority'),

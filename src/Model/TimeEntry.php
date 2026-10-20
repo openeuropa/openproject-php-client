@@ -45,16 +45,9 @@ final readonly class TimeEntry
     {
         $hal = new HalResource($data);
 
-        $commentData = $data['comment'] ?? null;
-        $comment = null;
-        if (is_array($commentData) && isset($commentData['format']) && is_string($commentData['format'])) {
-            /** @var array<string, mixed> $commentData */
-            $comment = Formattable::fromApiResponse($commentData);
-        }
-
         return new self(
             $hal->requireInt('id'),
-            $comment,
+            $hal->formattable('comment'),
             $hal->getString('spentOn'),
             $hal->getString('hours'),
             $hal->getBool('ongoing'),

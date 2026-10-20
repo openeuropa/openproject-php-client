@@ -6,12 +6,14 @@ namespace OpenEuropa\OpenProjectClient\Tests\Unit\Http;
 
 use OpenEuropa\OpenProjectClient\Exception\UnexpectedResponseException;
 use OpenEuropa\OpenProjectClient\Http\HalResource;
+use OpenEuropa\OpenProjectClient\Model\Formattable;
 use OpenEuropa\OpenProjectClient\Model\Link;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
 #[CoversClass(HalResource::class)]
+#[UsesClass(Formattable::class)]
 #[UsesClass(Link::class)]
 #[UsesClass(UnexpectedResponseException::class)]
 final class HalResourceTest extends TestCase
@@ -167,6 +169,48 @@ final class HalResourceTest extends TestCase
         $hal = new HalResource(['items' => 'not-an-array']);
 
         self::assertSame([], $hal->getArray('items'));
+    }
+
+    public function testFormattableReturnsParsedFormattableWhenPresent(): void
+    {
+        $hal = new HalResource([
+            'description' => ['format' => 'markdown', 'raw' => 'Hello', 'html' => '<p>Hello</p>'],
+        ]);
+
+        $description = $hal->formattable('description');
+
+        self::assertInstanceOf(Formattable::class, $description);
+        self::assertSame('markdown', $description->format);
+        self::assertSame('Hello', $description->raw);
+        self::assertSame('<p>Hello</p>', $description->html);
+    }
+
+    public function testFormattableReturnsNullWhenAbsent(): void
+    {
+        $hal = new HalResource([]);
+
+        self::assertNull($hal->formattable('description'));
+    }
+
+    public function testFormattableReturnsNullWhenNotAnArray(): void
+    {
+        $hal = new HalResource(['description' => 'Hello']);
+
+        self::assertNull($hal->formattable('description'));
+    }
+
+    public function testFormattableReturnsNullWhenFormatAbsent(): void
+    {
+        $hal = new HalResource(['description' => ['raw' => 'Hello']]);
+
+        self::assertNull($hal->formattable('description'));
+    }
+
+    public function testFormattableReturnsNullWhenFormatNotAString(): void
+    {
+        $hal = new HalResource(['description' => ['format' => 1, 'raw' => 'Hello']]);
+
+        self::assertNull($hal->formattable('description'));
     }
 
     public function testLinkReturnsParsedLinkWhenPresent(): void

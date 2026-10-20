@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace OpenEuropa\OpenProjectClient\Http;
 
 use OpenEuropa\OpenProjectClient\Exception\UnexpectedResponseException;
+use OpenEuropa\OpenProjectClient\Model\Formattable;
 use OpenEuropa\OpenProjectClient\Model\Link;
 
 /**
@@ -113,6 +114,20 @@ final class HalResource
         $value = $this->data[$key] ?? null;
 
         return is_array($value) ? $value : [];
+    }
+
+    /**
+     * Returns the Formattable for the given key, or null when absent or without a string format.
+     */
+    public function formattable(string $key): ?Formattable
+    {
+        $value = $this->data[$key] ?? null;
+        if (!is_array($value) || !is_string($value['format'] ?? null)) {
+            return null;
+        }
+
+        /** @var array<string, mixed> $value */
+        return Formattable::fromApiResponse($value);
     }
 
     /**

@@ -42,13 +42,6 @@ final readonly class Attachment
     {
         $hal = new HalResource($data);
 
-        $descriptionData = $data['description'] ?? null;
-        $description = null;
-        if (is_array($descriptionData) && isset($descriptionData['format']) && is_string($descriptionData['format'])) {
-            /** @var array<string, mixed> $descriptionData */
-            $description = Formattable::fromApiResponse($descriptionData);
-        }
-
         $digestData = $data['digest'] ?? null;
         $digest = null;
         if (
@@ -64,7 +57,7 @@ final readonly class Attachment
             $hal->requireInt('id'),
             $hal->requireString('fileName'),
             $hal->getInt('fileSize'),
-            $description,
+            $hal->formattable('description'),
             $hal->getString('status'),
             $hal->getString('contentType'),
             $digest,

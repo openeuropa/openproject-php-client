@@ -44,13 +44,6 @@ final readonly class Activity
     {
         $hal = new HalResource($data);
 
-        $commentData = $data['comment'] ?? null;
-        $comment = null;
-        if (is_array($commentData) && isset($commentData['format']) && is_string($commentData['format'])) {
-            /** @var array<string, mixed> $commentData */
-            $comment = Formattable::fromApiResponse($commentData);
-        }
-
         $detailsData = $data['details'] ?? null;
         $details = [];
         if (is_array($detailsData)) {
@@ -65,7 +58,7 @@ final readonly class Activity
         return new self(
             $hal->requireInt('id'),
             $hal->getInt('version'),
-            $comment,
+            $hal->formattable('comment'),
             $details,
             $hal->getBool('internal'),
             $hal->getString('createdAt'),
