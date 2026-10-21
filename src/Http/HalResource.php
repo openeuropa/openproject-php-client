@@ -136,6 +136,23 @@ final class HalResource
     }
 
     /**
+     * Returns the duration for the given key, or null when absent or not an ISO 8601 duration.
+     */
+    public function getDuration(string $key): ?\DateInterval
+    {
+        $value = $this->getString($key);
+        if ($value === null) {
+            return null;
+        }
+
+        try {
+            return new \DateInterval($value);
+        } catch (\DateMalformedIntervalStringException) {
+            return null;
+        }
+    }
+
+    /**
      * Returns the array value for the given key, or an empty array when absent or not an array.
      *
      * @return array<int|string, mixed>

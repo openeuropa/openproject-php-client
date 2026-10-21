@@ -36,7 +36,7 @@ final class WorkPackageTest extends TestCase
         self::assertEquals(new \DateTimeImmutable('2026-06-15'), $workPackage->startDate);
         self::assertEquals(new \DateTimeImmutable('2026-06-29'), $workPackage->dueDate);
         self::assertNull($workPackage->date);
-        self::assertSame('PT0S', $workPackage->spentTime);
+        self::assertEquals(new \DateInterval('PT0S'), $workPackage->spentTime);
         self::assertNull($workPackage->percentageDone);
         self::assertFalse($workPackage->scheduleManually);
         self::assertEquals(new \DateTimeImmutable('2026-06-18T09:44:04.846Z'), $workPackage->createdAt);

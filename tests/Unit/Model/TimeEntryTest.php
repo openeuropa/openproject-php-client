@@ -36,7 +36,7 @@ final class TimeEntryTest extends TestCase
         self::assertSame('The force shall set me free.', $timeEntry->comment->raw);
         self::assertSame('<p>The force shall set me free.</p>', $timeEntry->comment->html);
         self::assertEquals(new \DateTimeImmutable('2023-01-11'), $timeEntry->spentOn);
-        self::assertSame('PT4H', $timeEntry->hours);
+        self::assertEquals(new \DateInterval('PT4H'), $timeEntry->hours);
         self::assertNull($timeEntry->ongoing);
         self::assertEquals(new \DateTimeImmutable('2023-01-11T09:58:00.000Z'), $timeEntry->startTime);
         self::assertEquals(new \DateTimeImmutable('2023-01-11T13:58:00.000Z'), $timeEntry->endTime);

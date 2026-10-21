@@ -253,6 +253,34 @@ final class HalResourceTest extends TestCase
         self::assertNull($hal->getDate('dueDate'));
     }
 
+    public function testGetDurationReturnsDuration(): void
+    {
+        $hal = new HalResource(['spentTime' => 'P1DT9H20M49S']);
+
+        self::assertSame('1D 9H 20M 49S', $hal->getDuration('spentTime')?->format('%dD %hH %iM %sS'));
+    }
+
+    public function testGetDurationReturnsNullWhenAbsent(): void
+    {
+        $hal = new HalResource([]);
+
+        self::assertNull($hal->getDuration('spentTime'));
+    }
+
+    public function testGetDurationReturnsNullWhenNotAString(): void
+    {
+        $hal = new HalResource(['spentTime' => 7200]);
+
+        self::assertNull($hal->getDuration('spentTime'));
+    }
+
+    public function testGetDurationReturnsNullWhenNotADuration(): void
+    {
+        $hal = new HalResource(['spentTime' => 'two hours']);
+
+        self::assertNull($hal->getDuration('spentTime'));
+    }
+
     public function testGetArrayReturnsArrayValue(): void
     {
         $hal = new HalResource(['items' => [1, 2, 3]]);
