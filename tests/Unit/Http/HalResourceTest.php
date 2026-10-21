@@ -8,6 +8,7 @@ use OpenEuropa\OpenProjectClient\Exception\UnexpectedResponseException;
 use OpenEuropa\OpenProjectClient\Http\HalResource;
 use OpenEuropa\OpenProjectClient\Model\Formattable;
 use OpenEuropa\OpenProjectClient\Model\Link;
+use OpenEuropa\OpenProjectClient\Model\RelationType;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
@@ -15,6 +16,7 @@ use PHPUnit\Framework\TestCase;
 #[CoversClass(HalResource::class)]
 #[UsesClass(Formattable::class)]
 #[UsesClass(Link::class)]
+#[UsesClass(RelationType::class)]
 #[UsesClass(UnexpectedResponseException::class)]
 final class HalResourceTest extends TestCase
 {
@@ -279,6 +281,34 @@ final class HalResourceTest extends TestCase
         $hal = new HalResource(['spentTime' => 'two hours']);
 
         self::assertNull($hal->getDuration('spentTime'));
+    }
+
+    public function testGetEnumReturnsCase(): void
+    {
+        $hal = new HalResource(['type' => 'blocks']);
+
+        self::assertSame(RelationType::BLOCKS, $hal->getEnum('type', RelationType::class));
+    }
+
+    public function testGetEnumReturnsNullWhenNoCaseMatches(): void
+    {
+        $hal = new HalResource(['type' => 'parent']);
+
+        self::assertNull($hal->getEnum('type', RelationType::class));
+    }
+
+    public function testGetEnumReturnsNullWhenAbsent(): void
+    {
+        $hal = new HalResource([]);
+
+        self::assertNull($hal->getEnum('type', RelationType::class));
+    }
+
+    public function testGetEnumReturnsNullWhenNotAString(): void
+    {
+        $hal = new HalResource(['type' => 1]);
+
+        self::assertNull($hal->getEnum('type', RelationType::class));
     }
 
     public function testGetArrayReturnsArrayValue(): void

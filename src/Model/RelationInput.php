@@ -34,11 +34,11 @@ final class RelationInput
     }
 
     /**
-     * Sets the relation type (e.g. relates, follows, precedes, blocks, duplicates).
+     * Sets the relation type.
      */
-    public function type(string $type): self
+    public function type(RelationType $type): self
     {
-        $this->properties['type'] = $type;
+        $this->properties['type'] = $type->value;
 
         return $this;
     }

@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace OpenEuropa\OpenProjectClient\Tests\Unit\Model;
 
 use OpenEuropa\OpenProjectClient\Model\RelationInput;
+use OpenEuropa\OpenProjectClient\Model\RelationType;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
 #[CoversClass(RelationInput::class)]
+#[UsesClass(RelationType::class)]
 final class RelationInputTest extends TestCase
 {
     public function testEmptyInputProducesEmptyArray(): void
@@ -18,7 +21,7 @@ final class RelationInputTest extends TestCase
 
     public function testTypeSetter(): void
     {
-        $input = (new RelationInput())->type('relates');
+        $input = (new RelationInput())->type(RelationType::RELATES);
 
         self::assertSame(['type' => 'relates'], $input->toArray());
     }
@@ -54,7 +57,7 @@ final class RelationInputTest extends TestCase
     public function testChainingReturnsSameInstance(): void
     {
         $input = new RelationInput();
-        $result = $input->type('relates');
+        $result = $input->type(RelationType::RELATES);
 
         self::assertSame($input, $result);
     }
@@ -62,7 +65,7 @@ final class RelationInputTest extends TestCase
     public function testFullInputProducesExpectedPayload(): void
     {
         $input = (new RelationInput())
-            ->type('follows')
+            ->type(RelationType::FOLLOWS)
             ->description('A relation description')
             ->lag(2)
             ->to(78);
@@ -110,8 +113,8 @@ final class RelationInputTest extends TestCase
     public function testFromArrayScalarOverride(): void
     {
         self::assertSame(
-            ['type' => 'override'],
-            RelationInput::fromArray(['type' => 'relates'])->type('override')->toArray()
+            ['type' => 'follows'],
+            RelationInput::fromArray(['type' => 'relates'])->type(RelationType::FOLLOWS)->toArray()
         );
     }
 

@@ -8,6 +8,7 @@ use OpenEuropa\OpenProjectClient\Exception\NotFoundException;
 use OpenEuropa\OpenProjectClient\Exception\ValidationException;
 use OpenEuropa\OpenProjectClient\Model\Relation;
 use OpenEuropa\OpenProjectClient\Model\RelationInput;
+use OpenEuropa\OpenProjectClient\Model\RelationType;
 use PHPUnit\Framework\Attributes\CoversNothing;
 
 #[CoversNothing]
@@ -38,10 +39,10 @@ final class RelationsTest extends IntegrationTestCase
 
         $relation = $this->client->relations()->create(
             $from->id,
-            (new RelationInput())->type('relates')->to($to->id),
+            (new RelationInput())->type(RelationType::RELATES)->to($to->id),
         );
 
-        self::assertSame('relates', $relation->type);
+        self::assertSame(RelationType::RELATES, $relation->type);
         self::assertNotNull($relation->from);
         self::assertNotNull($relation->to);
         self::assertSame($from->id, $relation->from->id());
@@ -49,7 +50,8 @@ final class RelationsTest extends IntegrationTestCase
 
         $fetched = $this->client->relations()->get($relation->id);
         self::assertSame($relation->id, $fetched->id);
-        self::assertSame('relates', $fetched->type);
+        self::assertSame(RelationType::RELATES, $fetched->type);
+        self::assertSame(RelationType::RELATES, $fetched->reverseType);
 
         $this->client->relations()->delete($relation->id);
 
@@ -64,7 +66,7 @@ final class RelationsTest extends IntegrationTestCase
 
         $relation = $this->client->relations()->create(
             $from->id,
-            (new RelationInput())->type('relates')->to($to->id),
+            (new RelationInput())->type(RelationType::RELATES)->to($to->id),
         );
 
         $newDescription = 'phpclient-updated-' . uniqid();
@@ -86,10 +88,10 @@ final class RelationsTest extends IntegrationTestCase
 
         $relation = $this->client->relations()->create(
             $from->id,
-            (new RelationInput())->type('relates')->to($to->id),
+            (new RelationInput())->type(RelationType::RELATES)->to($to->id),
         );
 
         $this->expectException(ValidationException::class);
-        $this->client->relations()->update($relation->id, (new RelationInput())->type('notarelationtype'));
+        $this->client->relations()->update($relation->id, (new RelationInput())->set('type', 'notarelationtype'));
     }
 }

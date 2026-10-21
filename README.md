@@ -265,8 +265,8 @@ $input = (new WorkPackageInput())
 ```
 
 The builders have methods for the common fields. To send a field they don't
-cover, use `set()` with the API's property name, e.g.
-`->set('remainingTime', 'PT2H')`.
+cover, or a value an enum has no case for, use `set()` with the API's
+property name, e.g. `->set('remainingTime', 'PT2H')`.
 
 ### Exceptions
 

@@ -8,6 +8,7 @@ use OpenEuropa\OpenProjectClient\Exception\UnexpectedResponseException;
 use OpenEuropa\OpenProjectClient\Http\HalResource;
 use OpenEuropa\OpenProjectClient\Model\Link;
 use OpenEuropa\OpenProjectClient\Model\Relation;
+use OpenEuropa\OpenProjectClient\Model\RelationType;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
@@ -16,6 +17,7 @@ use PHPUnit\Framework\TestCase;
 #[UsesClass(HalResource::class)]
 #[UsesClass(UnexpectedResponseException::class)]
 #[UsesClass(Link::class)]
+#[UsesClass(RelationType::class)]
 final class RelationTest extends TestCase
 {
     public function testDecodesRelationFixture(): void
@@ -28,13 +30,20 @@ final class RelationTest extends TestCase
 
         self::assertSame(650, $relation->id);
         self::assertSame('duplicated by', $relation->name);
-        self::assertSame('duplicated', $relation->type);
-        self::assertSame('duplicates', $relation->reverseType);
+        self::assertSame(RelationType::DUPLICATED, $relation->type);
+        self::assertSame(RelationType::DUPLICATES, $relation->reverseType);
         self::assertSame('Those are the same... stupid Stormtroopers!', $relation->description);
         self::assertNull($relation->lag);
         self::assertSame(650, $relation->self?->id());
         self::assertSame(108, $relation->from?->id());
         self::assertSame(78, $relation->to?->id());
+    }
+
+    public function testUnknownTypeIsNull(): void
+    {
+        $relation = Relation::fromApiResponse(['id' => 42, 'type' => 'parent']);
+
+        self::assertNull($relation->type);
     }
 
     public function testLagIsMappedWhenPresent(): void

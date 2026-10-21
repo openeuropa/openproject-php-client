@@ -153,6 +153,23 @@ final class HalResource
     }
 
     /**
+     * Returns the enum case for the given key, or null when absent or not one of its values.
+     *
+     * @template T of \BackedEnum
+     *
+     * @param class-string<T> $enum
+     *   A string-backed enum.
+     *
+     * @return T|null
+     */
+    public function getEnum(string $key, string $enum): ?\BackedEnum
+    {
+        $value = $this->getString($key);
+
+        return $value === null ? null : $enum::tryFrom($value);
+    }
+
+    /**
      * Returns the array value for the given key, or an empty array when absent or not an array.
      *
      * @return array<int|string, mixed>

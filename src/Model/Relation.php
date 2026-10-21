@@ -17,8 +17,8 @@ final readonly class Relation
     public function __construct(
         public int $id,
         public ?string $name,
-        public ?string $type,
-        public ?string $reverseType,
+        public ?RelationType $type,
+        public ?RelationType $reverseType,
         public ?string $description,
         public ?int $lag,
         public ?Link $self,
@@ -42,8 +42,8 @@ final readonly class Relation
         return new self(
             $hal->requireInt('id'),
             $hal->getString('name'),
-            $hal->getString('type'),
-            $hal->getString('reverseType'),
+            $hal->getEnum('type', RelationType::class),
+            $hal->getEnum('reverseType', RelationType::class),
             $hal->getString('description'),
             $hal->getInt('lag'),
             $hal->link('self'),

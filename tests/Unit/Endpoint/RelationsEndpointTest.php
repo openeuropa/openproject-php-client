@@ -14,6 +14,7 @@ use OpenEuropa\OpenProjectClient\Model\Link;
 use OpenEuropa\OpenProjectClient\Model\PageResults;
 use OpenEuropa\OpenProjectClient\Model\Relation;
 use OpenEuropa\OpenProjectClient\Model\RelationInput;
+use OpenEuropa\OpenProjectClient\Model\RelationType;
 use OpenEuropa\OpenProjectClient\Query\Filter;
 use OpenEuropa\OpenProjectClient\Query\FilterOperator;
 use OpenEuropa\OpenProjectClient\Query\FilterSet;
@@ -28,6 +29,7 @@ use PHPUnit\Framework\TestCase;
 #[UsesClass(ApiKeyAuthentication::class)]
 #[UsesClass(Relation::class)]
 #[UsesClass(RelationInput::class)]
+#[UsesClass(RelationType::class)]
 #[UsesClass(Link::class)]
 #[UsesClass(PageResults::class)]
 #[UsesClass(HalResource::class)]
@@ -105,7 +107,7 @@ final class RelationsEndpointTest extends TestCase
         $endpoint = $this->createEndpoint();
         $this->queueFixtureResponse('relation.json', 201);
 
-        $relation = $endpoint->create(108, (new RelationInput())->type('relates')->to(78));
+        $relation = $endpoint->create(108, (new RelationInput())->type(RelationType::RELATES)->to(78));
 
         $request = $this->lastRequest();
         self::assertSame('POST', $request->getMethod());
