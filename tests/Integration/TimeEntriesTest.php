@@ -109,7 +109,7 @@ final class TimeEntriesTest extends IntegrationTestCase
         $created = $this->client->timeEntries()->create(
             (new TimeEntryInput())
                 ->spentOn($startTime)
-                ->hours('PT2H')
+                ->hours(new \DateInterval('PT2H'))
                 ->startTime($startTime)
                 ->project($projectId)
                 ->workPackage($workPackage->id),
@@ -153,9 +153,11 @@ final class TimeEntriesTest extends IntegrationTestCase
     public function testUpdateWithInvalidPayloadThrowsValidationException(): void
     {
         $created = $this->createTimeEntry('phpclient time entry ' . uniqid());
+        // The server rejects a negative duration.
+        $negativeHours = (new \DateTimeImmutable('11:00'))->diff(new \DateTimeImmutable('09:00'));
 
         $this->expectException(ValidationException::class);
-        $this->client->timeEntries()->update($created->id, (new TimeEntryInput())->hours('not-a-duration'));
+        $this->client->timeEntries()->update($created->id, (new TimeEntryInput())->hours($negativeHours));
     }
 
     private function createTimeEntry(string $comment): TimeEntry
@@ -166,7 +168,7 @@ final class TimeEntriesTest extends IntegrationTestCase
         $timeEntry = $this->client->timeEntries()->create(
             (new TimeEntryInput())
                 ->spentOn(new \DateTimeImmutable())
-                ->hours('PT2H')
+                ->hours(new \DateInterval('PT2H'))
                 ->comment($comment)
                 ->project($projectId)
                 ->workPackage($workPackage->id),

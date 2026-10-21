@@ -153,10 +153,10 @@ final class TimeEntriesEndpointTest extends TestCase
         $endpoint = $this->createEndpoint();
         $this->queueFixtureResponse('form.json');
 
-        $endpoint->createForm((new TimeEntryInput())->hours('PT2H'));
+        $endpoint->createForm((new TimeEntryInput())->hours(new \DateInterval('PT2H')));
 
         $request = $this->lastRequest();
-        self::assertStringContainsString('"hours":"PT2H"', (string) $request->getBody());
+        self::assertStringContainsString('"hours":"P0Y0M0DT2H0M0S"', (string) $request->getBody());
         self::assertSame('application/json', $request->getHeaderLine('Content-Type'));
     }
 
@@ -165,12 +165,12 @@ final class TimeEntriesEndpointTest extends TestCase
         $endpoint = $this->createEndpoint();
         $this->queueFixtureResponse('time-entry.json', 201);
 
-        $timeEntry = $endpoint->create((new TimeEntryInput())->hours('PT2H'));
+        $timeEntry = $endpoint->create((new TimeEntryInput())->hours(new \DateInterval('PT2H')));
 
         $request = $this->lastRequest();
         self::assertSame('POST', $request->getMethod());
         self::assertSame('http://example.test/api/v3/time_entries', (string) $request->getUri());
-        self::assertStringContainsString('"hours":"PT2H"', (string) $request->getBody());
+        self::assertStringContainsString('"hours":"P0Y0M0DT2H0M0S"', (string) $request->getBody());
         self::assertSame('application/json', $request->getHeaderLine('Content-Type'));
         self::assertSame(42, $timeEntry->id);
     }
@@ -180,7 +180,7 @@ final class TimeEntriesEndpointTest extends TestCase
         $endpoint = $this->createEndpoint();
         $this->queueFixtureResponse('form.json');
 
-        $form = $endpoint->updateForm(42, (new TimeEntryInput())->hours('PT2H'));
+        $form = $endpoint->updateForm(42, (new TimeEntryInput())->hours(new \DateInterval('PT2H')));
 
         $request = $this->lastRequest();
         self::assertSame('POST', $request->getMethod());
@@ -188,7 +188,7 @@ final class TimeEntriesEndpointTest extends TestCase
             'http://example.test/api/v3/time_entries/42/form',
             (string) $request->getUri(),
         );
-        self::assertStringContainsString('"hours":"PT2H"', (string) $request->getBody());
+        self::assertStringContainsString('"hours":"P0Y0M0DT2H0M0S"', (string) $request->getBody());
         self::assertSame('application/json', $request->getHeaderLine('Content-Type'));
         self::assertTrue($form->hasErrors());
     }
@@ -198,7 +198,7 @@ final class TimeEntriesEndpointTest extends TestCase
         $endpoint = $this->createEndpoint();
         $this->queueFixtureResponse('time-entry.json');
 
-        $timeEntry = $endpoint->update(42, (new TimeEntryInput())->hours('PT2H'));
+        $timeEntry = $endpoint->update(42, (new TimeEntryInput())->hours(new \DateInterval('PT2H')));
 
         $request = $this->lastRequest();
         self::assertSame('PATCH', $request->getMethod());
@@ -206,7 +206,7 @@ final class TimeEntriesEndpointTest extends TestCase
             'http://example.test/api/v3/time_entries/42',
             (string) $request->getUri(),
         );
-        self::assertStringContainsString('"hours":"PT2H"', (string) $request->getBody());
+        self::assertStringContainsString('"hours":"P0Y0M0DT2H0M0S"', (string) $request->getBody());
         self::assertSame('application/json', $request->getHeaderLine('Content-Type'));
         self::assertSame(42, $timeEntry->id);
     }

@@ -28,9 +28,18 @@ final class TimeEntryInputTest extends TestCase
 
     public function testHoursSetter(): void
     {
-        $input = (new TimeEntryInput())->hours('PT2H');
+        $input = (new TimeEntryInput())->hours(new \DateInterval('P1DT6H30M'));
 
-        self::assertSame(['hours' => 'PT2H'], $input->toArray());
+        self::assertSame(['hours' => 'P0Y0M1DT6H30M0S'], $input->toArray());
+    }
+
+    public function testHoursSetterKeepsTheSignOfANegativeDuration(): void
+    {
+        $hours = (new \DateTimeImmutable('2026-07-23 11:00'))->diff(new \DateTimeImmutable('2026-07-23 09:00'));
+
+        $input = (new TimeEntryInput())->hours($hours);
+
+        self::assertSame(['hours' => '-P0Y0M0DT2H0M0S'], $input->toArray());
     }
 
     public function testOngoingSetter(): void
@@ -146,7 +155,7 @@ final class TimeEntryInputTest extends TestCase
     {
         $input = (new TimeEntryInput())
             ->spentOn(new \DateTimeImmutable('2026-07-23'))
-            ->hours('PT2H')
+            ->hours(new \DateInterval('PT2H'))
             ->ongoing(false)
             ->startTime(new \DateTimeImmutable('2026-07-23T09:00:00Z'))
             ->comment('A time entry comment')
@@ -158,7 +167,7 @@ final class TimeEntryInputTest extends TestCase
 
         self::assertSame([
             'spentOn' => '2026-07-23',
-            'hours' => 'PT2H',
+            'hours' => 'P0Y0M0DT2H0M0S',
             'ongoing' => false,
             'startTime' => '2026-07-23T09:00:00+00:00',
             'comment' => ['raw' => 'A time entry comment'],
@@ -206,8 +215,8 @@ final class TimeEntryInputTest extends TestCase
     public function testFromArrayScalarOverride(): void
     {
         self::assertSame(
-            ['hours' => 'PT4H'],
-            TimeEntryInput::fromArray(['hours' => 'PT2H'])->hours('PT4H')->toArray()
+            ['hours' => 'P0Y0M0DT4H0M0S'],
+            TimeEntryInput::fromArray(['hours' => 'PT2H'])->hours(new \DateInterval('PT4H'))->toArray()
         );
     }
 

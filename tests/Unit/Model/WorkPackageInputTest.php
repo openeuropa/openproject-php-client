@@ -59,9 +59,9 @@ final class WorkPackageInputTest extends TestCase
 
     public function testEstimatedTimeSetter(): void
     {
-        $input = (new WorkPackageInput())->estimatedTime('PT8H');
+        $input = (new WorkPackageInput())->estimatedTime(new \DateInterval('PT8H'));
 
-        self::assertSame(['estimatedTime' => 'PT8H'], $input->toArray());
+        self::assertSame(['estimatedTime' => 'P0Y0M0DT8H0M0S'], $input->toArray());
     }
 
     public function testScheduleManuallySetter(): void
@@ -194,7 +194,7 @@ final class WorkPackageInputTest extends TestCase
             ->description('Some description')
             ->startDate(new \DateTimeImmutable('2024-01-01'))
             ->dueDate(new \DateTimeImmutable('2024-01-31'))
-            ->estimatedTime('PT4H')
+            ->estimatedTime(new \DateInterval('PT4H'))
             ->scheduleManually(false)
             ->percentageDone(25)
             ->type(1)
@@ -207,7 +207,7 @@ final class WorkPackageInputTest extends TestCase
             'description' => ['raw' => 'Some description'],
             'startDate' => '2024-01-01',
             'dueDate' => '2024-01-31',
-            'estimatedTime' => 'PT4H',
+            'estimatedTime' => 'P0Y0M0DT4H0M0S',
             'scheduleManually' => false,
             'percentageDone' => 25,
             'customField1' => 'extra',

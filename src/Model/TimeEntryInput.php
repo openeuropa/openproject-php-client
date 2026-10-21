@@ -44,11 +44,11 @@ final class TimeEntryInput
     }
 
     /**
-     * Sets the time quantifying the expenditure, as an ISO 8601 duration.
+     * Sets the time quantifying the expenditure.
      */
-    public function hours(string $hours): self
+    public function hours(\DateInterval $hours): self
     {
-        $this->properties['hours'] = $hours;
+        $this->properties['hours'] = $hours->format('%rP%yY%mM%dDT%hH%iM%sS');
 
         return $this;
     }

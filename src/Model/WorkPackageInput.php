@@ -74,11 +74,11 @@ final class WorkPackageInput
     }
 
     /**
-     * Sets the estimated time as an ISO-8601 duration.
+     * Sets the estimated time.
      */
-    public function estimatedTime(string $duration): self
+    public function estimatedTime(\DateInterval $duration): self
     {
-        $this->properties['estimatedTime'] = $duration;
+        $this->properties['estimatedTime'] = $duration->format('%rP%yY%mM%dDT%hH%iM%sS');
 
         return $this;
     }
