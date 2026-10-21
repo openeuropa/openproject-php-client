@@ -40,6 +40,7 @@ services:
       # well-known default and reads this var without the OPENPROJECT_ prefix.
       SECRET_KEY_BASE: ec14f1f9f740c46af8150ebe8df168bb0f63f74244cb333148777e842949926c
       OPENPROJECT_SEED_ADMIN_USER_PASSWORD_RESET: "false"
+      OPENPROJECT_ALLOW__TRACKING__START__AND__END__TIMES: "true"
     volumes:
       - openproject-data:/var/openproject/pgdata
       - openproject-assets:/var/openproject/assets

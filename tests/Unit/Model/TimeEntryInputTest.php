@@ -42,16 +42,11 @@ final class TimeEntryInputTest extends TestCase
 
     public function testStartTimeSetter(): void
     {
-        $input = (new TimeEntryInput())->startTime('2026-07-23T09:00:00.000Z');
+        $startTime = new \DateTimeImmutable('2026-07-23 09:00', new \DateTimeZone('Europe/Brussels'));
 
-        self::assertSame(['startTime' => '2026-07-23T09:00:00.000Z'], $input->toArray());
-    }
+        $input = (new TimeEntryInput())->startTime($startTime);
 
-    public function testEndTimeSetter(): void
-    {
-        $input = (new TimeEntryInput())->endTime('2026-07-23T11:00:00.000Z');
-
-        self::assertSame(['endTime' => '2026-07-23T11:00:00.000Z'], $input->toArray());
+        self::assertSame(['startTime' => '2026-07-23T09:00:00+02:00'], $input->toArray());
     }
 
     public function testCommentProducesRawFormattable(): void
@@ -153,8 +148,7 @@ final class TimeEntryInputTest extends TestCase
             ->spentOn(new \DateTimeImmutable('2026-07-23'))
             ->hours('PT2H')
             ->ongoing(false)
-            ->startTime('2026-07-23T09:00:00.000Z')
-            ->endTime('2026-07-23T11:00:00.000Z')
+            ->startTime(new \DateTimeImmutable('2026-07-23T09:00:00Z'))
             ->comment('A time entry comment')
             ->project(11)
             ->workPackage(77)
@@ -166,8 +160,7 @@ final class TimeEntryInputTest extends TestCase
             'spentOn' => '2026-07-23',
             'hours' => 'PT2H',
             'ongoing' => false,
-            'startTime' => '2026-07-23T09:00:00.000Z',
-            'endTime' => '2026-07-23T11:00:00.000Z',
+            'startTime' => '2026-07-23T09:00:00+00:00',
             'comment' => ['raw' => 'A time entry comment'],
             'customField1' => 'extra',
             '_links' => [

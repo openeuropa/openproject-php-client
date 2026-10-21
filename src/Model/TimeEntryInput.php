@@ -64,25 +64,15 @@ final class TimeEntryInput
     }
 
     /**
-     * Sets the time the time entry started.
+     * Sets the start time.
      *
      * Writable only when the instance has start and end time tracking enabled.
+     * The start must fall on the spentOn date in the time zone of the time
+     * entry's user.
      */
-    public function startTime(string $startTime): self
+    public function startTime(\DateTimeInterface $startTime): self
     {
-        $this->properties['startTime'] = $startTime;
-
-        return $this;
-    }
-
-    /**
-     * Sets the time the time entry ended.
-     *
-     * Writable only when the instance has start and end time tracking enabled.
-     */
-    public function endTime(string $endTime): self
-    {
-        $this->properties['endTime'] = $endTime;
+        $this->properties['startTime'] = $startTime->format(\DateTimeInterface::RFC3339);
 
         return $this;
     }

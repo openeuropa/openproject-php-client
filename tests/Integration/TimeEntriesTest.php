@@ -96,6 +96,30 @@ final class TimeEntriesTest extends IntegrationTestCase
         $this->client->timeEntries()->get($created->id);
     }
 
+    public function testCreateWithStartTimeReadsBackStartAndComputedEndTime(): void
+    {
+        $projectId = $this->firstActiveProjectAcceptingTimeEntries();
+        $workPackage = $this->createWorkPackage($projectId);
+        // Start and end time tracking is enabled on the compose instance. The
+        // start is midday UTC, so it falls on spentOn in nearly every user
+        // time zone the server checks it against.
+        $startTime = new \DateTimeImmutable('2026-07-23 14:00', new \DateTimeZone('Europe/Brussels'));
+
+        $created = $this->client->timeEntries()->create(
+            (new TimeEntryInput())
+                ->spentOn($startTime)
+                ->hours('PT2H')
+                ->startTime($startTime)
+                ->project($projectId)
+                ->workPackage($workPackage->id),
+        );
+        $this->createdTimeEntryIds[] = $created->id;
+
+        $fetched = $this->client->timeEntries()->get($created->id);
+        self::assertEquals($startTime, $fetched->startTime);
+        self::assertEquals($startTime->add(new \DateInterval('PT2H')), $fetched->endTime);
+    }
+
     public function testUpdateFormReturnsFormWithSchema(): void
     {
         $created = $this->createTimeEntry('phpclient time entry ' . uniqid());
