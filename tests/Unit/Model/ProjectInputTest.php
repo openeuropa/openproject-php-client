@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace OpenEuropa\OpenProjectClient\Tests\Unit\Model;
 
 use OpenEuropa\OpenProjectClient\Model\ProjectInput;
+use OpenEuropa\OpenProjectClient\Model\ProjectStatus;
 use OpenEuropa\OpenProjectClient\Model\WorkPackageLinks;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
 #[CoversClass(ProjectInput::class)]
+#[UsesClass(ProjectStatus::class)]
 #[UsesClass(WorkPackageLinks::class)]
 final class ProjectInputTest extends TestCase
 {
@@ -70,12 +72,19 @@ final class ProjectInputTest extends TestCase
 
     public function testStatusSetterProducesCorrectHref(): void
     {
-        $input = (new ProjectInput())->status('on_track');
+        $input = (new ProjectInput())->status(ProjectStatus::ON_TRACK);
 
         self::assertSame(
             ['_links' => ['status' => ['href' => '/api/v3/project_statuses/on_track']]],
             $input->toArray()
         );
+    }
+
+    public function testStatusSetterWithNullSendsNullHref(): void
+    {
+        $input = (new ProjectInput())->status(null);
+
+        self::assertSame(['_links' => ['status' => ['href' => null]]], $input->toArray());
     }
 
     public function testCustomFieldSetsTopLevelProperty(): void
@@ -134,7 +143,7 @@ final class ProjectInputTest extends TestCase
             ->description('A project description')
             ->statusExplanation('On schedule')
             ->parent(1)
-            ->status('on_track')
+            ->status(ProjectStatus::ON_TRACK)
             ->customField(1, 'extra');
 
         self::assertSame([
@@ -159,7 +168,7 @@ final class ProjectInputTest extends TestCase
                 'customRel' => ['href' => '/api/v3/foo/1'],
                 'status' => ['href' => '/api/v3/project_statuses/off_track'],
             ])
-            ->status('on_track');
+            ->status(ProjectStatus::ON_TRACK);
 
         $payload = $input->toArray();
 
@@ -196,7 +205,7 @@ final class ProjectInputTest extends TestCase
     {
         $result = ProjectInput::fromArray([
             '_links' => ['status' => ['href' => '/api/v3/project_statuses/off_track']],
-        ])->status('on_track')->toArray();
+        ])->status(ProjectStatus::ON_TRACK)->toArray();
 
         self::assertSame(['_links' => ['status' => ['href' => '/api/v3/project_statuses/on_track']]], $result);
     }

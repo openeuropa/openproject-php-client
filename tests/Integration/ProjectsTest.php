@@ -8,6 +8,7 @@ use OpenEuropa\OpenProjectClient\Exception\NotFoundException;
 use OpenEuropa\OpenProjectClient\Exception\ValidationException;
 use OpenEuropa\OpenProjectClient\Model\Form\Form;
 use OpenEuropa\OpenProjectClient\Model\ProjectInput;
+use OpenEuropa\OpenProjectClient\Model\ProjectStatus;
 use OpenEuropa\OpenProjectClient\Query\CollectionParams;
 use OpenEuropa\OpenProjectClient\Query\Filter;
 use OpenEuropa\OpenProjectClient\Query\FilterOperator;
@@ -136,6 +137,33 @@ final class ProjectsTest extends IntegrationTestCase
 
         $fetched = $this->client->projects()->get($created->id);
         self::assertSame($newName, $fetched->name);
+    }
+
+    public function testUpdateSetsAndClearsStatus(): void
+    {
+        $created = $this->createProject();
+
+        // Project does not read the status back, so the accepted update is
+        // the proof: the server answers an unknown status with a 422.
+        $updated = $this->client->projects()->update(
+            $created->id,
+            (new ProjectInput())->status(ProjectStatus::FINISHED),
+        );
+        self::assertSame($created->id, $updated->id);
+
+        $cleared = $this->client->projects()->update($created->id, (new ProjectInput())->status(null));
+        self::assertSame($created->id, $cleared->id);
+    }
+
+    public function testUpdateWithUnknownStatusThrowsValidationException(): void
+    {
+        $created = $this->createProject();
+
+        $this->expectException(ValidationException::class);
+        $this->client->projects()->update(
+            $created->id,
+            (new ProjectInput())->set('_links', ['status' => ['href' => '/api/v3/project_statuses/bogus']]),
+        );
     }
 
     public function testUpdateArchivesProjectAndCanBeReadBack(): void

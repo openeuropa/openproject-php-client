@@ -15,7 +15,7 @@ final class ProjectInput
     private array $properties = [];
 
     /**
-     * @var array<string, array{href: string}>
+     * @var array<string, array{href: string|null}>
      */
     private array $links = [];
 
@@ -106,11 +106,12 @@ final class ProjectInput
     /**
      * Sets the status relationship.
      *
-     * The identifier is the project-status slug (e.g. `on_track`).
+     * @param ProjectStatus|null $status
+     *   Null clears the status.
      */
-    public function status(string $identifier): self
+    public function status(?ProjectStatus $status): self
     {
-        $this->links['status'] = ['href' => '/api/v3/project_statuses/' . $identifier];
+        $this->links['status'] = ['href' => $status !== null ? '/api/v3/project_statuses/' . $status->value : null];
 
         return $this;
     }
