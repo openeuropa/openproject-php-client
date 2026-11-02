@@ -132,6 +132,28 @@ final class ProjectsEndpointTest extends TestCase
         self::assertStringContainsString('offset=2', $lastUri);
     }
 
+    public function testAllGeneratorStopsOnAnEmptyPageThatLinksToANextOne(): void
+    {
+        $endpoint = $this->createEndpoint();
+        $this->queueJsonResponse(json_encode([
+            '_type' => 'Collection',
+            'total' => 2,
+            'count' => 0,
+            'pageSize' => 0,
+            'offset' => 1,
+            '_embedded' => ['elements' => []],
+            '_links' => [
+                'self' => ['href' => '/api/v3/projects?offset=1&pageSize=0'],
+                'nextByOffset' => ['href' => '/api/v3/projects?offset=2&pageSize=0'],
+            ],
+        ], JSON_THROW_ON_ERROR));
+
+        $projects = iterator_to_array($endpoint->all(params: new CollectionParams(pageSize: 0)));
+
+        self::assertSame([], $projects);
+        self::assertCount(1, $this->requestHistory);
+    }
+
     public function testCreateFormWithNoPayloadSendsPostToGlobalFormUri(): void
     {
         $endpoint = $this->createEndpoint();

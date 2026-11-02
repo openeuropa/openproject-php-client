@@ -96,8 +96,9 @@ abstract class AbstractEndpoint
             }
 
             // A page without this link is the API's signal that no further
-            // pages exist.
-            if ($page->nextByOffset === null) {
+            // pages exist. An empty page ends the loop too: with a page size
+            // of 0 the API links every page to a next one.
+            if ($page->nextByOffset === null || $page->elements === []) {
                 return;
             }
 

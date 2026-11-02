@@ -8,6 +8,7 @@ use OpenEuropa\OpenProjectClient\Exception\NotFoundException;
 use OpenEuropa\OpenProjectClient\Exception\ValidationException;
 use OpenEuropa\OpenProjectClient\Model\Form\Form;
 use OpenEuropa\OpenProjectClient\Model\ProjectInput;
+use OpenEuropa\OpenProjectClient\Query\CollectionParams;
 use OpenEuropa\OpenProjectClient\Query\Filter;
 use OpenEuropa\OpenProjectClient\Query\FilterOperator;
 use OpenEuropa\OpenProjectClient\Query\FilterSet;
@@ -66,6 +67,13 @@ final class ProjectsTest extends IntegrationTestCase
         self::assertNotEmpty($projects, 'The instance must have at least one project.');
 
         self::assertNotEmpty($projects[0]->name);
+    }
+
+    public function testAllGeneratorWithPageSizeZeroYieldsNothingAndStops(): void
+    {
+        $projects = iterator_to_array($this->client->projects()->all(params: new CollectionParams(pageSize: 0)));
+
+        self::assertSame([], $projects);
     }
 
     public function testGetReturnsProjectWithMatchingId(): void
