@@ -9,6 +9,7 @@ use OpenEuropa\OpenProjectClient\Exception\ValidationException;
 use OpenEuropa\OpenProjectClient\Model\Form\Form;
 use OpenEuropa\OpenProjectClient\Model\Version;
 use OpenEuropa\OpenProjectClient\Model\VersionInput;
+use OpenEuropa\OpenProjectClient\Model\VersionStatus;
 use PHPUnit\Framework\Attributes\CoversNothing;
 
 #[CoversNothing]
@@ -84,6 +85,7 @@ final class VersionsTest extends IntegrationTestCase
 
         $fetched = $this->client->versions()->get($created->id);
         self::assertSame($name, $fetched->name);
+        self::assertSame(VersionStatus::OPEN, $fetched->status);
 
         $this->client->versions()->delete($created->id);
 
@@ -135,13 +137,17 @@ final class VersionsTest extends IntegrationTestCase
         $created = $this->createVersion($project->id, 'phpclient version ' . uniqid());
 
         $this->expectException(ValidationException::class);
-        $this->client->versions()->update($created->id, (new VersionInput())->status('not-a-status'));
+        $this->client->versions()->update($created->id, (new VersionInput())->set('status', 'not-a-status'));
     }
 
     private function createVersion(int $projectId, string $name): Version
     {
         $version = $this->client->versions()->create(
-            (new VersionInput())->name($name)->status('open')->sharing('none')->definingProject($projectId),
+            (new VersionInput())
+                ->name($name)
+                ->status(VersionStatus::OPEN)
+                ->sharing('none')
+                ->definingProject($projectId),
         );
 
         $this->createdVersionIds[] = $version->id;

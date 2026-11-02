@@ -46,9 +46,9 @@ final class VersionInput
     /**
      * Sets the status.
      */
-    public function status(string $status): self
+    public function status(VersionStatus $status): self
     {
-        $this->properties['status'] = $status;
+        $this->properties['status'] = $status->value;
 
         return $this;
     }

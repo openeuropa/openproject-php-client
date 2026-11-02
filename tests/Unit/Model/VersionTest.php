@@ -9,6 +9,7 @@ use OpenEuropa\OpenProjectClient\Http\HalResource;
 use OpenEuropa\OpenProjectClient\Model\Formattable;
 use OpenEuropa\OpenProjectClient\Model\Link;
 use OpenEuropa\OpenProjectClient\Model\Version;
+use OpenEuropa\OpenProjectClient\Model\VersionStatus;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
@@ -18,6 +19,7 @@ use PHPUnit\Framework\TestCase;
 #[UsesClass(UnexpectedResponseException::class)]
 #[UsesClass(Formattable::class)]
 #[UsesClass(Link::class)]
+#[UsesClass(VersionStatus::class)]
 final class VersionTest extends TestCase
 {
     /**
@@ -43,7 +45,7 @@ final class VersionTest extends TestCase
 
         self::assertSame(3, $version->id);
         self::assertSame('v0.9.1-alpha', $version->name);
-        self::assertSame('closed', $version->status);
+        self::assertSame(VersionStatus::CLOSED, $version->status);
         self::assertSame('none', $version->sharing);
         self::assertEquals(new \DateTimeImmutable('2026-02-02'), $version->startDate);
         self::assertEquals(new \DateTimeImmutable('2026-02-09'), $version->endDate);
@@ -70,6 +72,13 @@ final class VersionTest extends TestCase
         self::assertNull($version->self);
         self::assertNull($version->definingProject);
         self::assertNull($version->availableInProjects);
+    }
+
+    public function testUnknownStatusIsNull(): void
+    {
+        $version = Version::fromApiResponse(self::baseData() + ['status' => 'archived']);
+
+        self::assertNull($version->status);
     }
 
     public function testMalformedDescriptionIsNull(): void
