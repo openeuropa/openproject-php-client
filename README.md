@@ -142,8 +142,7 @@ models the collection:
 | Endpoints | Methods |
 | --- | --- |
 | `statuses()`, `types()`, `priorities()` | `all(): PageResults` only. The API models these collections as unpaginated. |
-| `projects()`, `users()`, `workPackages()`, `timeEntries()`, `memberships()` | `all(?FilterSet, ?CollectionParams): \Generator` and `listPage(?FilterSet, ?CollectionParams): PageResults` |
-| `relations()` | `all(?FilterSet $filters = null): PageResults` and `listPage(?FilterSet, ?CollectionParams): PageResults` |
+| `projects()`, `users()`, `workPackages()`, `timeEntries()`, `memberships()`, `relations()` | `all(?FilterSet, ?CollectionParams): \Generator` and `listPage(?FilterSet, ?CollectionParams): PageResults` |
 | `versions()` | `all(?FilterSet $filters = null): PageResults` only. Filterable, but unpaginated in the same way. |
 
 `all()` on the generator-backed endpoints paginates automatically:

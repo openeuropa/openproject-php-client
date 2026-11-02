@@ -26,15 +26,15 @@ final class RelationsEndpoint extends AbstractEndpoint
     }
 
     /**
-     * Returns all relations matching the given filters as a single decoded collection.
+     * Returns a generator that yields all relations, paginating automatically.
      *
-     * @return PageResults<Relation>
+     * @return \Generator<int, Relation>
      *
      * @throws \OpenEuropa\OpenProjectClient\Exception\OpenProjectException
      */
-    public function all(?FilterSet $filters = null): PageResults
+    public function all(?FilterSet $filters = null, ?CollectionParams $params = null): \Generator
     {
-        return $this->getCollectionPage('relations', Relation::fromApiResponse(...), $filters);
+        return $this->paginate('relations', Relation::fromApiResponse(...), $filters, $params);
     }
 
     /**

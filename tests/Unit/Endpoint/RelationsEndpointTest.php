@@ -73,35 +73,41 @@ final class RelationsEndpointTest extends TestCase
         self::assertSame('duplicated by', $relation->name);
     }
 
-    public function testAllReturnsPageResultsAndSendsToCorrectUriWithNoFilters(): void
+    public function testAllGeneratorPaginatesAcrossTwoPagesAndTerminates(): void
     {
         $endpoint = $this->createEndpoint();
         $this->queueFixtureResponse('relations.json');
+        $this->queueFixtureResponse('relations-page2.json');
 
-        $results = $endpoint->all();
+        $relations = iterator_to_array($endpoint->all());
 
-        self::assertSame(
-            'http://example.test/api/v3/relations',
-            (string) $this->lastRequest()->getUri(),
-        );
-        self::assertInstanceOf(PageResults::class, $results);
-        self::assertSame(3, $results->total);
-        self::assertSame(2, $results->count);
-        self::assertInstanceOf(Relation::class, $results->elements[0]);
-        self::assertSame(650, $results->elements[0]->id);
-        self::assertSame(652, $results->elements[1]->id);
+        self::assertCount(3, $relations);
+        self::assertInstanceOf(Relation::class, $relations[0]);
+        self::assertSame(650, $relations[0]->id);
+        self::assertSame(652, $relations[1]->id);
+        self::assertSame(654, $relations[2]->id);
+
+        $lastUri = $this->lastRequest()->getUri();
+        self::assertSame('/api/v3/relations', $lastUri->getPath());
+        self::assertStringContainsString('offset=2', (string) $lastUri);
     }
 
-    public function testAllWithFiltersSendsFiltersQueryParam(): void
+    public function testAllSendsFiltersAndParamsWithEveryPage(): void
     {
         $endpoint = $this->createEndpoint();
         $this->queueFixtureResponse('relations.json');
+        $this->queueFixtureResponse('relations-page2.json');
 
-        $endpoint->all(new FilterSet(new Filter('from', FilterOperator::EQUAL, ['42'])));
+        iterator_to_array($endpoint->all(
+            new FilterSet(new Filter('from', FilterOperator::EQUAL, ['42'])),
+            new CollectionParams(pageSize: 2, sortBy: [['id', 'desc']]),
+        ));
 
-        $uri = (string) $this->lastRequest()->getUri();
-        self::assertSame('/api/v3/relations', $this->lastRequest()->getUri()->getPath());
-        self::assertStringContainsString('filters=', $uri);
+        $lastUri = (string) $this->lastRequest()->getUri();
+        self::assertStringContainsString('filters=', $lastUri);
+        self::assertStringContainsString('offset=2', $lastUri);
+        self::assertStringContainsString('pageSize=2', $lastUri);
+        self::assertStringContainsString('sortBy=', $lastUri);
     }
 
     public function testListPageReturnsRelationsAndSendsToCorrectUri(): void

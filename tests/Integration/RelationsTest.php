@@ -18,28 +18,39 @@ use PHPUnit\Framework\Attributes\CoversNothing;
 #[CoversNothing]
 final class RelationsTest extends IntegrationTestCase
 {
-    public function testAllDecodesEveryRelationWithAnIntId(): void
+    public function testAllGeneratorYieldsEveryRelation(): void
     {
-        $results = $this->client->relations()->all();
+        $total = $this->client->relations()->listPage()->total;
+        self::assertGreaterThan(0, $total);
 
-        self::assertNotEmpty($results->elements);
-
-        foreach ($results->elements as $relation) {
-            self::assertInstanceOf(Relation::class, $relation);
+        $yielded = 0;
+        foreach ($this->client->relations()->all() as $relation) {
             self::assertGreaterThan(0, $relation->id);
+            $yielded++;
         }
+
+        self::assertSame($total, $yielded);
+    }
+
+    public function testAllYieldsRelationsFromEveryPage(): void
+    {
+        $workPackage = $this->createWorkPackage();
+        $relationIds = $this->relateToTwoNewWorkPackages($workPackage->id);
+
+        $relations = $this->client->relations()->all(
+            new FilterSet(new Filter('involved', FilterOperator::EQUAL, [(string) $workPackage->id])),
+            new CollectionParams(pageSize: 1),
+        );
+        $yieldedIds = array_map(static fn (Relation $relation): int => $relation->id, iterator_to_array($relations));
+        sort($yieldedIds);
+
+        self::assertSame($relationIds, $yieldedIds);
     }
 
     public function testListPageReturnsOnePageOfTheRequestedSize(): void
     {
         $workPackage = $this->createWorkPackage();
-        $relationIds = [];
-        foreach ([$this->createWorkPackage(), $this->createWorkPackage()] as $other) {
-            $relationIds[] = $this->client->relations()->create(
-                $workPackage->id,
-                (new RelationInput())->type(RelationType::RELATES)->to($other->id),
-            )->id;
-        }
+        $relationIds = $this->relateToTwoNewWorkPackages($workPackage->id);
 
         $filters = new FilterSet(new Filter('involved', FilterOperator::EQUAL, [(string) $workPackage->id]));
         $first = $this->client->relations()->listPage($filters, new CollectionParams(pageSize: 1));
@@ -54,7 +65,6 @@ final class RelationsTest extends IntegrationTestCase
 
         $listedIds = [$first->elements[0]->id, $second->elements[0]->id];
         sort($listedIds);
-        sort($relationIds);
         self::assertSame($relationIds, $listedIds);
     }
 
@@ -125,5 +135,25 @@ final class RelationsTest extends IntegrationTestCase
 
         $this->expectException(ValidationException::class);
         $this->client->relations()->update($relation->id, (new RelationInput())->set('type', 'notarelationtype'));
+    }
+
+    /**
+     * Relates the given work package to two new work packages.
+     *
+     * @return list<int>
+     *   The IDs of the two relations, in ascending order.
+     */
+    private function relateToTwoNewWorkPackages(int $workPackageId): array
+    {
+        $relationIds = [];
+        foreach ([$this->createWorkPackage(), $this->createWorkPackage()] as $other) {
+            $relationIds[] = $this->client->relations()->create(
+                $workPackageId,
+                (new RelationInput())->type(RelationType::RELATES)->to($other->id),
+            )->id;
+        }
+        sort($relationIds);
+
+        return $relationIds;
     }
 }

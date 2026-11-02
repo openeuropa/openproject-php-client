@@ -1,0 +1,31 @@
+{
+    "_type": "Collection",
+    "total": 3,
+    "count": 1,
+    "pageSize": 2,
+    "offset": 2,
+    "_embedded": {
+        "elements": [
+            {
+                "_type": "Relation",
+                "id": 654,
+                "name": "precedes",
+                "type": "precedes",
+                "reverseType": "follows",
+                "lag": 2,
+                "description": null,
+                "_links": {
+                    "self": {"href": "/api/v3/relations/654"},
+                    "from": {"href": "/api/v3/work_packages/108", "title": "Destroy Rebel Base"},
+                    "to": {"href": "/api/v3/work_packages/1337", "title": "Build hangar"}
+                }
+            }
+        ]
+    },
+    "_links": {
+        "self": {"href": "/api/v3/relations?filters=%5B%5D&offset=2&pageSize=2"},
+        "jumpTo": {"href": "/api/v3/relations?filters=%5B%5D&offset=%7Boffset%7D&pageSize=2", "templated": true},
+        "changeSize": {"href": "/api/v3/relations?filters=%5B%5D&offset=2&pageSize=%7Bsize%7D", "templated": true},
+        "previousByOffset": {"href": "/api/v3/relations?filters=%5B%5D&offset=1&pageSize=2"}
+    }
+}
