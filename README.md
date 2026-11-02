@@ -122,12 +122,16 @@ Custom fields are in `customFields` (on work packages, time entries, and
 users):
 
 ```php
-// Text, number, date, and similar fields.
-$workPackage->customFields->values['customField3']; // e.g. "ACME Corp"
+// Text, number, date, and similar fields, by custom field id.
+$workPackage->customFields->get(3); // e.g. "ACME Corp"
 
 // List, user, and version fields: always a list of links.
-$workPackage->customFields->links['customField4'][0]->title; // e.g. "High"
+$workPackage->customFields->getLinks(4)[0]->title; // e.g. "High"
 ```
+
+Values come as the API sends them: a date is a `YYYY-MM-DD` string, and a
+long text field is an array with `format`, `raw`, and `html` keys. The
+`values` and `links` arrays hold every custom field, keyed `customField<id>`.
 
 ### Pagination
 

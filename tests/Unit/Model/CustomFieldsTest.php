@@ -147,6 +147,52 @@ final class CustomFieldsTest extends TestCase
         self::assertSame([], $bag->links);
     }
 
+    public function testGetReturnsTheValueAsSent(): void
+    {
+        $formattable = ['format' => 'markdown', 'raw' => '**bold**', 'html' => '<b>bold</b>'];
+        $bag = CustomFields::fromApiResponse([
+            'customField2' => 99,
+            'customField5' => $formattable,
+            'customField7' => '2026-12-31',
+        ]);
+
+        self::assertSame(99, $bag->get(2));
+        self::assertSame($formattable, $bag->get(5));
+        self::assertSame('2026-12-31', $bag->get(7));
+    }
+
+    public function testGetReturnsNullWhenAbsent(): void
+    {
+        $bag = CustomFields::fromApiResponse(['customField2' => 99]);
+
+        self::assertNull($bag->get(3));
+    }
+
+    public function testGetLinksReturnsTheLinks(): void
+    {
+        $bag = CustomFields::fromApiResponse([
+            '_links' => [
+                'customField20' => [
+                    ['href' => '/api/v3/custom_options/1', 'title' => 'Option A'],
+                    ['href' => '/api/v3/custom_options/2', 'title' => 'Option B'],
+                ],
+            ],
+        ]);
+
+        $links = $bag->getLinks(20);
+
+        self::assertCount(2, $links);
+        self::assertSame('Option A', $links[0]->title);
+        self::assertSame('/api/v3/custom_options/2', $links[1]->href);
+    }
+
+    public function testGetLinksReturnsEmptyListWhenAbsent(): void
+    {
+        $bag = CustomFields::fromApiResponse([]);
+
+        self::assertSame([], $bag->getLinks(20));
+    }
+
     public function testNonArrayLinkEntryIsIgnored(): void
     {
         $data = [

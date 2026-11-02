@@ -67,6 +67,24 @@ final readonly class CustomFields
         return new self($values, $links);
     }
 
+    /**
+     * Returns the value of the custom field with the given id as the API sent it, or null when absent.
+     */
+    public function get(int $id): mixed
+    {
+        return $this->values['customField' . $id] ?? null;
+    }
+
+    /**
+     * Returns the links of the custom field with the given id, or an empty list when absent.
+     *
+     * @return list<Link>
+     */
+    public function getLinks(int $id): array
+    {
+        return $this->links['customField' . $id] ?? [];
+    }
+
     private static function isCustomFieldKey(string $key): bool
     {
         return preg_match('/^customField\d+$/', $key) === 1;
