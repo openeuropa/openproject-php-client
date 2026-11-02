@@ -255,9 +255,11 @@ Work package, project, version, and time entry inputs also set custom
 fields:
 
 ```php
+use OpenEuropa\OpenProjectClient\Model\CustomFieldLinkResource;
+
 $input = (new WorkPackageInput())
-    ->customField(3, 'ACME Corp')                      // text, number, date, and similar fields
-    ->customFieldLink(4, $optionId, 'custom_options'); // list field; 'users' or 'versions' for those
+    ->customField(3, 'ACME Corp') // text, number, date, and similar fields
+    ->customFieldLink(4, $optionId, CustomFieldLinkResource::CUSTOM_OPTIONS); // list field
 ```
 
 The builders have methods for the common fields. To send a field they don't

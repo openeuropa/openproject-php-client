@@ -4,11 +4,15 @@ declare(strict_types=1);
 
 namespace OpenEuropa\OpenProjectClient\Tests\Unit\Model;
 
+use OpenEuropa\OpenProjectClient\Model\CustomFieldLinkResource;
 use OpenEuropa\OpenProjectClient\Model\WorkPackageLinks;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
 #[CoversClass(WorkPackageLinks::class)]
+#[UsesClass(CustomFieldLinkResource::class)]
 final class WorkPackageLinksTest extends TestCase
 {
     public function testType(): void
@@ -56,12 +60,25 @@ final class WorkPackageLinksTest extends TestCase
         self::assertSame(['category' => ['href' => '/api/v3/categories/6']], WorkPackageLinks::category(6));
     }
 
-    public function testCustomField(): void
+    #[DataProvider('customFieldLinkResources')]
+    public function testCustomField(CustomFieldLinkResource $resource, string $href): void
     {
-        self::assertSame(
-            ['customField26' => ['href' => '/api/v3/custom_options/5']],
-            WorkPackageLinks::customField(26, 5, 'custom_options')
-        );
+        self::assertSame(['customField26' => ['href' => $href]], WorkPackageLinks::customField(26, 5, $resource));
+    }
+
+    /**
+     * @return array<string, array{CustomFieldLinkResource, string}>
+     */
+    public static function customFieldLinkResources(): array
+    {
+        return [
+            'list option' => [CustomFieldLinkResource::CUSTOM_OPTIONS, '/api/v3/custom_options/5'],
+            'user' => [CustomFieldLinkResource::USERS, '/api/v3/users/5'],
+            'group' => [CustomFieldLinkResource::GROUPS, '/api/v3/groups/5'],
+            'placeholder user' => [CustomFieldLinkResource::PLACEHOLDER_USERS, '/api/v3/placeholder_users/5'],
+            'version' => [CustomFieldLinkResource::VERSIONS, '/api/v3/versions/5'],
+            'hierarchy item' => [CustomFieldLinkResource::CUSTOM_FIELD_ITEMS, '/api/v3/custom_field_items/5'],
+        ];
     }
 
     public function testFragmentsCompose(): void

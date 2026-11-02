@@ -119,14 +119,10 @@ final class VersionInput
     /**
      * Sets a reference-type custom field by its number, as a link.
      *
-     * Use this for custom fields whose value is a list option, user, or
-     * version, rather than a simple scalar.
-     *
-     * @param string $resource
-     *   The referenced resource path segment (e.g. `custom_options`, `users`,
-     *   `versions`).
+     * Use this for custom fields whose value is a list option, user, version,
+     * or hierarchy item, rather than a simple scalar.
      */
-    public function customFieldLink(int $number, int $id, string $resource): self
+    public function customFieldLink(int $number, int $id, CustomFieldLinkResource $resource): self
     {
         $this->links = array_merge($this->links, WorkPackageLinks::customField($number, $id, $resource));
 

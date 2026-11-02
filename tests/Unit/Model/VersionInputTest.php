@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace OpenEuropa\OpenProjectClient\Tests\Unit\Model;
 
+use OpenEuropa\OpenProjectClient\Model\CustomFieldLinkResource;
 use OpenEuropa\OpenProjectClient\Model\VersionInput;
 use OpenEuropa\OpenProjectClient\Model\VersionSharing;
 use OpenEuropa\OpenProjectClient\Model\VersionStatus;
@@ -13,6 +14,7 @@ use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
 #[CoversClass(VersionInput::class)]
+#[UsesClass(CustomFieldLinkResource::class)]
 #[UsesClass(VersionSharing::class)]
 #[UsesClass(VersionStatus::class)]
 #[UsesClass(WorkPackageLinks::class)]
@@ -84,7 +86,7 @@ final class VersionInputTest extends TestCase
 
     public function testCustomFieldLinkProducesReferenceUnderLinks(): void
     {
-        $input = (new VersionInput())->customFieldLink(26, 5, 'custom_options');
+        $input = (new VersionInput())->customFieldLink(26, 5, CustomFieldLinkResource::CUSTOM_OPTIONS);
 
         self::assertSame(
             ['_links' => ['customField26' => ['href' => '/api/v3/custom_options/5']]],
@@ -96,7 +98,7 @@ final class VersionInputTest extends TestCase
     {
         $input = (new VersionInput())
             ->customField(1, 'plain value')
-            ->customFieldLink(2, 9, 'users');
+            ->customFieldLink(2, 9, CustomFieldLinkResource::USERS);
 
         self::assertSame([
             'customField1' => 'plain value',

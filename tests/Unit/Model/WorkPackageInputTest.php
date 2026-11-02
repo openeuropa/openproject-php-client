@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace OpenEuropa\OpenProjectClient\Tests\Unit\Model;
 
+use OpenEuropa\OpenProjectClient\Model\CustomFieldLinkResource;
 use OpenEuropa\OpenProjectClient\Model\WorkPackageInput;
 use OpenEuropa\OpenProjectClient\Model\WorkPackageLinks;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -11,6 +12,7 @@ use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
 #[CoversClass(WorkPackageInput::class)]
+#[UsesClass(CustomFieldLinkResource::class)]
 #[UsesClass(WorkPackageLinks::class)]
 final class WorkPackageInputTest extends TestCase
 {
@@ -150,7 +152,7 @@ final class WorkPackageInputTest extends TestCase
 
     public function testCustomFieldLinkProducesReferenceUnderLinks(): void
     {
-        $input = (new WorkPackageInput())->customFieldLink(26, 5, 'custom_options');
+        $input = (new WorkPackageInput())->customFieldLink(26, 5, CustomFieldLinkResource::CUSTOM_OPTIONS);
 
         self::assertSame(
             ['_links' => ['customField26' => ['href' => '/api/v3/custom_options/5']]],
@@ -162,7 +164,7 @@ final class WorkPackageInputTest extends TestCase
     {
         $input = (new WorkPackageInput())
             ->customField(1, 'plain value')
-            ->customFieldLink(2, 9, 'users');
+            ->customFieldLink(2, 9, CustomFieldLinkResource::USERS);
 
         self::assertSame([
             'customField1' => 'plain value',

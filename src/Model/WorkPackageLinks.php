@@ -104,14 +104,10 @@ final class WorkPackageLinks
     /**
      * Builds a reference-type custom field fragment by its number.
      *
-     * @param string $resource
-     *   The referenced resource path segment (e.g. `custom_options`, `users`,
-     *   `versions`).
-     *
      * @return array<string, array{href: string}>
      */
-    public static function customField(int $number, int $id, string $resource): array
+    public static function customField(int $number, int $id, CustomFieldLinkResource $resource): array
     {
-        return ['customField' . $number => ['href' => '/api/v3/' . $resource . '/' . $id]];
+        return ['customField' . $number => ['href' => '/api/v3/' . $resource->value . '/' . $id]];
     }
 }
