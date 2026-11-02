@@ -10,13 +10,16 @@ namespace OpenEuropa\OpenProjectClient\Query;
 final readonly class Filter
 {
     /**
+     * @param FilterOperator|string $operator
+     *   A string is sent as is. Use one only for an operator the enum has no
+     *   case for, such as one a plugin registers.
      * @param list<string>|null $values
      *   Values as strings (IDs as "5", booleans as "t"/"f"). Null for
      *   operators that take no values (null checks, date keywords).
      */
     public function __construct(
         public string $name,
-        public FilterOperator $operator,
+        public FilterOperator|string $operator,
         public ?array $values,
     ) {
     }
@@ -30,6 +33,8 @@ final readonly class Filter
      */
     public function toArray(): array
     {
-        return [$this->name => ['operator' => $this->operator->value, 'values' => $this->values]];
+        $operator = $this->operator instanceof FilterOperator ? $this->operator->value : $this->operator;
+
+        return [$this->name => ['operator' => $operator, 'values' => $this->values]];
     }
 }

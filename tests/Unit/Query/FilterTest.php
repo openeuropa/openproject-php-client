@@ -24,6 +24,16 @@ final class FilterTest extends TestCase
         );
     }
 
+    public function testToArraySendsAStringOperatorAsIs(): void
+    {
+        $filter = new Filter('pluginFilter', 'plugin_operator', ['1']);
+
+        self::assertSame(
+            ['pluginFilter' => ['operator' => 'plugin_operator', 'values' => ['1']]],
+            $filter->toArray(),
+        );
+    }
+
     public function testToArrayWithNullValues(): void
     {
         $filter = new Filter('assignee', FilterOperator::IS_NULL, null);

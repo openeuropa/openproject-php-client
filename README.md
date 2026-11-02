@@ -191,7 +191,8 @@ Filter values are always strings, in the shape the API's filter grammar
 expects rather than PHP's native types: an id filters as `"5"`, not `5`;
 a boolean filters as `"t"` or `"f"`, not `true`/`false`. Operators that take
 no values (`IS_NULL`, `NOT_NULL`, `TODAY`, and similar) take `null` rather
-than an empty array.
+than an empty array. For an operator `FilterOperator` has no case for, such
+as one a plugin registers, pass the API's operator string instead.
 
 `CollectionParams` covers the non-filter query parameters:
 
