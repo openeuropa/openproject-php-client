@@ -56,9 +56,9 @@ final class VersionInput
     /**
      * Sets the sharing mode.
      */
-    public function sharing(string $sharing): self
+    public function sharing(VersionSharing $sharing): self
     {
-        $this->properties['sharing'] = $sharing;
+        $this->properties['sharing'] = $sharing->value;
 
         return $this;
     }

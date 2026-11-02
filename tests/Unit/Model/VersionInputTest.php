@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace OpenEuropa\OpenProjectClient\Tests\Unit\Model;
 
 use OpenEuropa\OpenProjectClient\Model\VersionInput;
+use OpenEuropa\OpenProjectClient\Model\VersionSharing;
 use OpenEuropa\OpenProjectClient\Model\VersionStatus;
 use OpenEuropa\OpenProjectClient\Model\WorkPackageLinks;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -12,6 +13,7 @@ use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
 #[CoversClass(VersionInput::class)]
+#[UsesClass(VersionSharing::class)]
 #[UsesClass(VersionStatus::class)]
 #[UsesClass(WorkPackageLinks::class)]
 final class VersionInputTest extends TestCase
@@ -37,7 +39,7 @@ final class VersionInputTest extends TestCase
 
     public function testSharingSetter(): void
     {
-        $input = (new VersionInput())->sharing('none');
+        $input = (new VersionInput())->sharing(VersionSharing::NONE);
 
         self::assertSame(['sharing' => 'none'], $input->toArray());
     }
@@ -124,7 +126,7 @@ final class VersionInputTest extends TestCase
         $input = (new VersionInput())
             ->name('Full version')
             ->status(VersionStatus::OPEN)
-            ->sharing('none')
+            ->sharing(VersionSharing::NONE)
             ->startDate(new \DateTimeImmutable('2026-02-02'))
             ->endDate(new \DateTimeImmutable('2026-02-09'))
             ->description('A version description')

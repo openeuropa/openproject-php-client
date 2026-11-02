@@ -9,6 +9,7 @@ use OpenEuropa\OpenProjectClient\Exception\ValidationException;
 use OpenEuropa\OpenProjectClient\Model\Form\Form;
 use OpenEuropa\OpenProjectClient\Model\Version;
 use OpenEuropa\OpenProjectClient\Model\VersionInput;
+use OpenEuropa\OpenProjectClient\Model\VersionSharing;
 use OpenEuropa\OpenProjectClient\Model\VersionStatus;
 use PHPUnit\Framework\Attributes\CoversNothing;
 
@@ -86,6 +87,7 @@ final class VersionsTest extends IntegrationTestCase
         $fetched = $this->client->versions()->get($created->id);
         self::assertSame($name, $fetched->name);
         self::assertSame(VersionStatus::OPEN, $fetched->status);
+        self::assertSame(VersionSharing::NONE, $fetched->sharing);
 
         $this->client->versions()->delete($created->id);
 
@@ -146,7 +148,7 @@ final class VersionsTest extends IntegrationTestCase
             (new VersionInput())
                 ->name($name)
                 ->status(VersionStatus::OPEN)
-                ->sharing('none')
+                ->sharing(VersionSharing::NONE)
                 ->definingProject($projectId),
         );
 
