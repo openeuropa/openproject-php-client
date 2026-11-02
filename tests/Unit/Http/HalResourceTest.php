@@ -8,6 +8,7 @@ use OpenEuropa\OpenProjectClient\Exception\UnexpectedResponseException;
 use OpenEuropa\OpenProjectClient\Http\HalResource;
 use OpenEuropa\OpenProjectClient\Model\Formattable;
 use OpenEuropa\OpenProjectClient\Model\Link;
+use OpenEuropa\OpenProjectClient\Model\ProjectStatus;
 use OpenEuropa\OpenProjectClient\Model\RelationType;
 use OpenEuropa\OpenProjectClient\Model\TextFormat;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -18,6 +19,7 @@ use PHPUnit\Framework\TestCase;
 #[UsesClass(Formattable::class)]
 #[UsesClass(TextFormat::class)]
 #[UsesClass(Link::class)]
+#[UsesClass(ProjectStatus::class)]
 #[UsesClass(RelationType::class)]
 #[UsesClass(UnexpectedResponseException::class)]
 final class HalResourceTest extends TestCase
@@ -311,6 +313,34 @@ final class HalResourceTest extends TestCase
         $hal = new HalResource(['type' => 1]);
 
         self::assertNull($hal->getEnum('type', RelationType::class));
+    }
+
+    public function testLinkEnumReturnsCaseForLastHrefSegment(): void
+    {
+        $hal = new HalResource(['_links' => ['status' => ['href' => '/api/v3/project_statuses/at_risk']]]);
+
+        self::assertSame(ProjectStatus::AT_RISK, $hal->linkEnum('status', ProjectStatus::class));
+    }
+
+    public function testLinkEnumReturnsNullWhenNoCaseMatches(): void
+    {
+        $hal = new HalResource(['_links' => ['status' => ['href' => '/api/v3/project_statuses/bogus']]]);
+
+        self::assertNull($hal->linkEnum('status', ProjectStatus::class));
+    }
+
+    public function testLinkEnumReturnsNullWhenHrefIsNull(): void
+    {
+        $hal = new HalResource(['_links' => ['status' => ['href' => null]]]);
+
+        self::assertNull($hal->linkEnum('status', ProjectStatus::class));
+    }
+
+    public function testLinkEnumReturnsNullWhenRelationAbsent(): void
+    {
+        $hal = new HalResource(['_links' => []]);
+
+        self::assertNull($hal->linkEnum('status', ProjectStatus::class));
     }
 
     public function testGetArrayReturnsArrayValue(): void

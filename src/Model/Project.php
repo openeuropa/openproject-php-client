@@ -13,6 +13,9 @@ final readonly class Project
 {
     /**
      * @internal
+     *
+     * @param ProjectStatus|null $status
+     *   Null when the project has no status, or one the enum has no case for.
      */
     public function __construct(
         public int $id,
@@ -22,6 +25,7 @@ final readonly class Project
         public ?bool $public,
         public ?bool $favorited,
         public ?Formattable $description,
+        public ?ProjectStatus $status,
         public ?Formattable $statusExplanation,
         public ?\DateTimeImmutable $createdAt,
         public ?\DateTimeImmutable $updatedAt,
@@ -48,6 +52,7 @@ final readonly class Project
             $hal->getBool('public'),
             $hal->getBool('favorited'),
             $hal->formattable('description'),
+            $hal->linkEnum('status', ProjectStatus::class),
             $hal->formattable('statusExplanation'),
             $hal->getDateTime('createdAt'),
             $hal->getDateTime('updatedAt'),

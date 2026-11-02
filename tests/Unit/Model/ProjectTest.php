@@ -7,7 +7,9 @@ namespace OpenEuropa\OpenProjectClient\Tests\Unit\Model;
 use OpenEuropa\OpenProjectClient\Exception\UnexpectedResponseException;
 use OpenEuropa\OpenProjectClient\Http\HalResource;
 use OpenEuropa\OpenProjectClient\Model\Formattable;
+use OpenEuropa\OpenProjectClient\Model\Link;
 use OpenEuropa\OpenProjectClient\Model\Project;
+use OpenEuropa\OpenProjectClient\Model\ProjectStatus;
 use OpenEuropa\OpenProjectClient\Model\TextFormat;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\UsesClass;
@@ -16,6 +18,8 @@ use PHPUnit\Framework\TestCase;
 #[CoversClass(Project::class)]
 #[UsesClass(HalResource::class)]
 #[UsesClass(Formattable::class)]
+#[UsesClass(Link::class)]
+#[UsesClass(ProjectStatus::class)]
 #[UsesClass(TextFormat::class)]
 #[UsesClass(UnexpectedResponseException::class)]
 final class ProjectTest extends TestCase
@@ -41,12 +45,26 @@ final class ProjectTest extends TestCase
         self::assertSame(TextFormat::MARKDOWN, $project->description->format);
         self::assertSame('Lorem **ipsum**', $project->description->raw);
 
+        self::assertSame(ProjectStatus::ON_TRACK, $project->status);
+
         self::assertInstanceOf(Formattable::class, $project->statusExplanation);
         self::assertSame(TextFormat::MARKDOWN, $project->statusExplanation->format);
         self::assertSame('Everything **fine**', $project->statusExplanation->raw);
     }
 
-    public function testAbsentFormattableFieldsAreNull(): void
+    public function testStatusIsNullWhenTheProjectHasNone(): void
+    {
+        $data = [
+            '_type' => 'Project',
+            'id' => 5,
+            'name' => 'Minimal Project',
+            '_links' => ['status' => ['href' => null]],
+        ];
+
+        self::assertNull(Project::fromApiResponse($data)->status);
+    }
+
+    public function testAbsentOptionalFieldsAreNull(): void
     {
         $data = [
             '_type' => 'Project',
@@ -59,6 +77,7 @@ final class ProjectTest extends TestCase
         self::assertSame(5, $project->id);
         self::assertSame('Minimal Project', $project->name);
         self::assertNull($project->description);
+        self::assertNull($project->status);
         self::assertNull($project->statusExplanation);
     }
 

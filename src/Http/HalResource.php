@@ -170,6 +170,23 @@ final class HalResource
     }
 
     /**
+     * Returns the enum case for the last path segment of the relation's href, or null when absent or not a case.
+     *
+     * @template T of \BackedEnum
+     *
+     * @param class-string<T> $enum
+     *   A string-backed enum.
+     *
+     * @return T|null
+     */
+    public function linkEnum(string $rel, string $enum): ?\BackedEnum
+    {
+        $href = $this->link($rel)?->href;
+
+        return $href === null ? null : $enum::tryFrom(basename($href));
+    }
+
+    /**
      * Returns the array value for the given key, or an empty array when absent or not an array.
      *
      * @return array<int|string, mixed>

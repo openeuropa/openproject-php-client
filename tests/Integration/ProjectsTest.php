@@ -142,17 +142,18 @@ final class ProjectsTest extends IntegrationTestCase
     public function testUpdateSetsAndClearsStatus(): void
     {
         $created = $this->createProject();
+        self::assertNull($created->status);
 
-        // Project does not read the status back, so the accepted update is
-        // the proof: the server answers an unknown status with a 422.
         $updated = $this->client->projects()->update(
             $created->id,
             (new ProjectInput())->status(ProjectStatus::FINISHED),
         );
-        self::assertSame($created->id, $updated->id);
+        self::assertSame(ProjectStatus::FINISHED, $updated->status);
+        self::assertSame(ProjectStatus::FINISHED, $this->client->projects()->get($created->id)->status);
 
         $cleared = $this->client->projects()->update($created->id, (new ProjectInput())->status(null));
-        self::assertSame($created->id, $cleared->id);
+        self::assertNull($cleared->status);
+        self::assertNull($this->client->projects()->get($created->id)->status);
     }
 
     public function testUpdateWithUnknownStatusThrowsValidationException(): void
