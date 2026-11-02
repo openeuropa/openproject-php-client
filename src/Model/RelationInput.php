@@ -20,10 +20,9 @@ final class RelationInput
     private array $links = [];
 
     /**
-     * Creates an instance seeded from an existing payload array.
+     * Creates an instance from a payload array in the API's request format.
      *
      * @param array<string, mixed> $data
-     *   The payload array, in the shape toArray() produces.
      */
     public static function fromArray(array $data): self
     {

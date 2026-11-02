@@ -25,10 +25,10 @@ final class MembershipInput
     private array $meta = [];
 
     /**
-     * Creates an instance seeded from an existing payload array.
+     * Creates an instance from a payload array in the API's request format.
      *
      * @param array<string, mixed> $data
-     *   The payload array, in the shape toArray() produces.
+     *   The payload, for example a form's payload.
      */
     public static function fromArray(array $data): self
     {
