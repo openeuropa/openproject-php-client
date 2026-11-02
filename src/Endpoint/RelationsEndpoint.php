@@ -7,6 +7,7 @@ namespace OpenEuropa\OpenProjectClient\Endpoint;
 use OpenEuropa\OpenProjectClient\Model\PageResults;
 use OpenEuropa\OpenProjectClient\Model\Relation;
 use OpenEuropa\OpenProjectClient\Model\RelationInput;
+use OpenEuropa\OpenProjectClient\Query\CollectionParams;
 use OpenEuropa\OpenProjectClient\Query\FilterSet;
 
 /**
@@ -34,6 +35,18 @@ final class RelationsEndpoint extends AbstractEndpoint
     public function all(?FilterSet $filters = null): PageResults
     {
         return $this->getCollectionPage('relations', Relation::fromApiResponse(...), $filters);
+    }
+
+    /**
+     * Returns one page of relations as a PageResults object.
+     *
+     * @return PageResults<Relation>
+     *
+     * @throws \OpenEuropa\OpenProjectClient\Exception\OpenProjectException
+     */
+    public function listPage(?FilterSet $filters = null, ?CollectionParams $params = null): PageResults
+    {
+        return $this->getCollectionPage('relations', Relation::fromApiResponse(...), $filters, $params);
     }
 
     /**

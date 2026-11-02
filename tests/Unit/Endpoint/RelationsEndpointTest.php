@@ -15,6 +15,7 @@ use OpenEuropa\OpenProjectClient\Model\PageResults;
 use OpenEuropa\OpenProjectClient\Model\Relation;
 use OpenEuropa\OpenProjectClient\Model\RelationInput;
 use OpenEuropa\OpenProjectClient\Model\RelationType;
+use OpenEuropa\OpenProjectClient\Query\CollectionParams;
 use OpenEuropa\OpenProjectClient\Query\Filter;
 use OpenEuropa\OpenProjectClient\Query\FilterOperator;
 use OpenEuropa\OpenProjectClient\Query\FilterSet;
@@ -36,6 +37,7 @@ use PHPUnit\Framework\TestCase;
 #[UsesClass(FilterSet::class)]
 #[UsesClass(Filter::class)]
 #[UsesClass(FilterOperator::class)]
+#[UsesClass(CollectionParams::class)]
 final class RelationsEndpointTest extends TestCase
 {
     use MockClientTrait;
@@ -83,7 +85,7 @@ final class RelationsEndpointTest extends TestCase
             (string) $this->lastRequest()->getUri(),
         );
         self::assertInstanceOf(PageResults::class, $results);
-        self::assertSame(2, $results->total);
+        self::assertSame(3, $results->total);
         self::assertSame(2, $results->count);
         self::assertInstanceOf(Relation::class, $results->elements[0]);
         self::assertSame(650, $results->elements[0]->id);
@@ -100,6 +102,46 @@ final class RelationsEndpointTest extends TestCase
         $uri = (string) $this->lastRequest()->getUri();
         self::assertSame('/api/v3/relations', $this->lastRequest()->getUri()->getPath());
         self::assertStringContainsString('filters=', $uri);
+    }
+
+    public function testListPageReturnsRelationsAndSendsToCorrectUri(): void
+    {
+        $endpoint = $this->createEndpoint();
+        $this->queueFixtureResponse('relations.json');
+
+        $results = $endpoint->listPage();
+
+        self::assertSame(
+            'http://example.test/api/v3/relations',
+            (string) $this->lastRequest()->getUri(),
+        );
+        self::assertInstanceOf(PageResults::class, $results);
+        self::assertSame(3, $results->total);
+        self::assertSame(2, $results->count);
+        self::assertSame(2, $results->pageSize);
+        self::assertSame(1, $results->offset);
+        self::assertSame('/api/v3/relations?filters=%5B%5D&offset=2&pageSize=2', $results->nextByOffset);
+        self::assertInstanceOf(Relation::class, $results->elements[0]);
+        self::assertSame(650, $results->elements[0]->id);
+        self::assertSame(652, $results->elements[1]->id);
+    }
+
+    public function testListPageWithFiltersAndParamsSendsQueryString(): void
+    {
+        $endpoint = $this->createEndpoint();
+        $this->queueFixtureResponse('relations.json');
+
+        $endpoint->listPage(
+            new FilterSet(new Filter('from', FilterOperator::EQUAL, ['42'])),
+            new CollectionParams(offset: 1, pageSize: 2, sortBy: [['id', 'desc']]),
+        );
+
+        $uri = $this->lastRequest()->getUri();
+        self::assertSame('/api/v3/relations', $uri->getPath());
+        self::assertStringContainsString('filters=', (string) $uri);
+        self::assertStringContainsString('offset=1', (string) $uri);
+        self::assertStringContainsString('pageSize=2', (string) $uri);
+        self::assertStringContainsString('sortBy=', (string) $uri);
     }
 
     public function testCreatePostsToWorkPackageRelationsUriAndReturnsRelation(): void

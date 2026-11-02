@@ -9,6 +9,10 @@ use OpenEuropa\OpenProjectClient\Exception\ValidationException;
 use OpenEuropa\OpenProjectClient\Model\Relation;
 use OpenEuropa\OpenProjectClient\Model\RelationInput;
 use OpenEuropa\OpenProjectClient\Model\RelationType;
+use OpenEuropa\OpenProjectClient\Query\CollectionParams;
+use OpenEuropa\OpenProjectClient\Query\Filter;
+use OpenEuropa\OpenProjectClient\Query\FilterOperator;
+use OpenEuropa\OpenProjectClient\Query\FilterSet;
 use PHPUnit\Framework\Attributes\CoversNothing;
 
 #[CoversNothing]
@@ -24,6 +28,34 @@ final class RelationsTest extends IntegrationTestCase
             self::assertInstanceOf(Relation::class, $relation);
             self::assertGreaterThan(0, $relation->id);
         }
+    }
+
+    public function testListPageReturnsOnePageOfTheRequestedSize(): void
+    {
+        $workPackage = $this->createWorkPackage();
+        $relationIds = [];
+        foreach ([$this->createWorkPackage(), $this->createWorkPackage()] as $other) {
+            $relationIds[] = $this->client->relations()->create(
+                $workPackage->id,
+                (new RelationInput())->type(RelationType::RELATES)->to($other->id),
+            )->id;
+        }
+
+        $filters = new FilterSet(new Filter('involved', FilterOperator::EQUAL, [(string) $workPackage->id]));
+        $first = $this->client->relations()->listPage($filters, new CollectionParams(pageSize: 1));
+        $second = $this->client->relations()->listPage($filters, new CollectionParams(offset: 2, pageSize: 1));
+
+        self::assertSame(2, $first->total);
+        self::assertSame(1, $first->count);
+        self::assertSame(1, $first->pageSize);
+        self::assertNotNull($first->nextByOffset);
+        self::assertSame(2, $second->offset);
+        self::assertNull($second->nextByOffset);
+
+        $listedIds = [$first->elements[0]->id, $second->elements[0]->id];
+        sort($listedIds);
+        sort($relationIds);
+        self::assertSame($relationIds, $listedIds);
     }
 
     public function testGetWithNonexistentIdThrowsNotFoundException(): void

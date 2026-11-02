@@ -1,7 +1,9 @@
 {
     "_type": "Collection",
-    "total": 2,
+    "total": 3,
     "count": 2,
+    "pageSize": 2,
+    "offset": 1,
     "_embedded": {
         "elements": [
             {
@@ -29,5 +31,10 @@
             }
         ]
     },
-    "_links": {"self": {"href": "/api/v3/relations?filters=%5B%5D"}}
+    "_links": {
+        "self": {"href": "/api/v3/relations?filters=%5B%5D&offset=1&pageSize=2"},
+        "jumpTo": {"href": "/api/v3/relations?filters=%5B%5D&offset=%7Boffset%7D&pageSize=2", "templated": true},
+        "changeSize": {"href": "/api/v3/relations?filters=%5B%5D&offset=1&pageSize=%7Bsize%7D", "templated": true},
+        "nextByOffset": {"href": "/api/v3/relations?filters=%5B%5D&offset=2&pageSize=2"}
+    }
 }
