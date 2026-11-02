@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace OpenEuropa\OpenProjectClient\Tests\Integration;
 
+use OpenEuropa\OpenProjectClient\Model\UserStatus;
 use PHPUnit\Framework\Attributes\CoversNothing;
 
 #[CoversNothing]
@@ -15,6 +16,7 @@ final class UsersTest extends IntegrationTestCase
 
         self::assertSame(1, $user->id);
         self::assertNotSame('', $user->name);
+        self::assertSame(UserStatus::ACTIVE, $user->status);
     }
 
     public function testListPageYieldsUsersWithIds(): void

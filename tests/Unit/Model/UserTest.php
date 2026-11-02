@@ -9,6 +9,7 @@ use OpenEuropa\OpenProjectClient\Http\HalResource;
 use OpenEuropa\OpenProjectClient\Model\CustomFields;
 use OpenEuropa\OpenProjectClient\Model\Link;
 use OpenEuropa\OpenProjectClient\Model\User;
+use OpenEuropa\OpenProjectClient\Model\UserStatus;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
@@ -18,6 +19,7 @@ use PHPUnit\Framework\TestCase;
 #[UsesClass(UnexpectedResponseException::class)]
 #[UsesClass(CustomFields::class)]
 #[UsesClass(Link::class)]
+#[UsesClass(UserStatus::class)]
 final class UserTest extends TestCase
 {
     public function testDecodesUserFixture(): void
@@ -35,7 +37,7 @@ final class UserTest extends TestCase
         self::assertSame('Sheppard', $user->lastName);
         self::assertSame('shep@mail.com', $user->email);
         self::assertTrue($user->admin);
-        self::assertSame('active', $user->status);
+        self::assertSame(UserStatus::ACTIVE, $user->status);
         self::assertSame('en', $user->language);
         self::assertSame('https://example.org/users/1/avatar', $user->avatar);
         self::assertEquals(new \DateTimeImmutable('2014-05-21T08:51:20.396Z'), $user->createdAt);
@@ -67,6 +69,13 @@ final class UserTest extends TestCase
         self::assertNull($user->updatedAt);
         self::assertSame([], $user->customFields->values);
         self::assertSame([], $user->customFields->links);
+    }
+
+    public function testUnknownStatusIsNull(): void
+    {
+        $user = User::fromApiResponse(['id' => 5, 'name' => 'Jane Doe', 'status' => 'deleted']);
+
+        self::assertNull($user->status);
     }
 
     public function testThrowsWhenRequiredIdMissing(): void
