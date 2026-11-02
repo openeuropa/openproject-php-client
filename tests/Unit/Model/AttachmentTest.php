@@ -8,6 +8,7 @@ use OpenEuropa\OpenProjectClient\Exception\UnexpectedResponseException;
 use OpenEuropa\OpenProjectClient\Http\HalResource;
 use OpenEuropa\OpenProjectClient\Model\Attachment;
 use OpenEuropa\OpenProjectClient\Model\AttachmentDigest;
+use OpenEuropa\OpenProjectClient\Model\AttachmentStatus;
 use OpenEuropa\OpenProjectClient\Model\Formattable;
 use OpenEuropa\OpenProjectClient\Model\Link;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -20,6 +21,7 @@ use PHPUnit\Framework\TestCase;
 #[UsesClass(Formattable::class)]
 #[UsesClass(Link::class)]
 #[UsesClass(AttachmentDigest::class)]
+#[UsesClass(AttachmentStatus::class)]
 final class AttachmentTest extends TestCase
 {
     /**
@@ -46,7 +48,7 @@ final class AttachmentTest extends TestCase
         self::assertSame(3, $attachment->id);
         self::assertSame('phpclient-test.txt', $attachment->fileName);
         self::assertSame(35, $attachment->fileSize);
-        self::assertSame('uploaded', $attachment->status);
+        self::assertSame(AttachmentStatus::UPLOADED, $attachment->status);
         self::assertSame('text/plain', $attachment->contentType);
         self::assertEquals(new \DateTimeImmutable('2026-07-01T17:02:16.648Z'), $attachment->createdAt);
 
@@ -60,6 +62,13 @@ final class AttachmentTest extends TestCase
         self::assertSame(1, $attachment->container?->id());
         self::assertSame(4, $attachment->author?->id());
         self::assertSame('/api/v3/attachments/3/content', $attachment->downloadLocation?->href);
+    }
+
+    public function testUnknownStatusIsNull(): void
+    {
+        $attachment = Attachment::fromApiResponse(self::baseData() + ['status' => 'deleted']);
+
+        self::assertNull($attachment->status);
     }
 
     public function testAbsentOptionalFieldsAreNull(): void

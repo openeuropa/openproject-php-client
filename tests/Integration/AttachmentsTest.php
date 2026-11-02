@@ -7,6 +7,7 @@ namespace OpenEuropa\OpenProjectClient\Tests\Integration;
 use GuzzleHttp\Psr7\HttpFactory;
 use OpenEuropa\OpenProjectClient\Exception\NotFoundException;
 use OpenEuropa\OpenProjectClient\Model\AttachmentDigest;
+use OpenEuropa\OpenProjectClient\Model\AttachmentStatus;
 use OpenEuropa\OpenProjectClient\Model\Formattable;
 use PHPUnit\Framework\Attributes\CoversNothing;
 
@@ -47,7 +48,7 @@ final class AttachmentsTest extends IntegrationTestCase
         $this->createdAttachmentIds[] = $attachment->id;
         self::assertSame($fileName, $attachment->fileName);
         self::assertNotEmpty($attachment->contentType);
-        self::assertNotEmpty($attachment->status);
+        self::assertInstanceOf(AttachmentStatus::class, $attachment->status);
         self::assertInstanceOf(Formattable::class, $attachment->description);
         self::assertInstanceOf(AttachmentDigest::class, $attachment->digest);
         self::assertNotEmpty($attachment->digest->algorithm);
@@ -69,7 +70,7 @@ final class AttachmentsTest extends IntegrationTestCase
 
         self::assertSame($fileName, $attachment->fileName);
         self::assertNotEmpty($attachment->contentType);
-        self::assertNotEmpty($attachment->status);
+        self::assertInstanceOf(AttachmentStatus::class, $attachment->status);
         self::assertInstanceOf(Formattable::class, $attachment->description);
         self::assertInstanceOf(AttachmentDigest::class, $attachment->digest);
         self::assertNotEmpty($attachment->digest->algorithm);
