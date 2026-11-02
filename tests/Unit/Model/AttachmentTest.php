@@ -11,6 +11,7 @@ use OpenEuropa\OpenProjectClient\Model\AttachmentDigest;
 use OpenEuropa\OpenProjectClient\Model\AttachmentStatus;
 use OpenEuropa\OpenProjectClient\Model\Formattable;
 use OpenEuropa\OpenProjectClient\Model\Link;
+use OpenEuropa\OpenProjectClient\Model\TextFormat;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
@@ -19,6 +20,7 @@ use PHPUnit\Framework\TestCase;
 #[UsesClass(HalResource::class)]
 #[UsesClass(UnexpectedResponseException::class)]
 #[UsesClass(Formattable::class)]
+#[UsesClass(TextFormat::class)]
 #[UsesClass(Link::class)]
 #[UsesClass(AttachmentDigest::class)]
 #[UsesClass(AttachmentStatus::class)]
@@ -52,7 +54,7 @@ final class AttachmentTest extends TestCase
         self::assertSame('text/plain', $attachment->contentType);
         self::assertEquals(new \DateTimeImmutable('2026-07-01T17:02:16.648Z'), $attachment->createdAt);
 
-        self::assertSame('plain', $attachment->description?->format);
+        self::assertSame(TextFormat::PLAIN, $attachment->description?->format);
 
         self::assertNotNull($attachment->digest);
         self::assertSame('md5', $attachment->digest->algorithm);

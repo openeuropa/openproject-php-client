@@ -7,6 +7,7 @@ namespace OpenEuropa\OpenProjectClient\Tests\Unit\Model;
 use OpenEuropa\OpenProjectClient\Exception\UnexpectedResponseException;
 use OpenEuropa\OpenProjectClient\Http\HalResource;
 use OpenEuropa\OpenProjectClient\Model\Formattable;
+use OpenEuropa\OpenProjectClient\Model\TextFormat;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
@@ -14,6 +15,7 @@ use PHPUnit\Framework\TestCase;
 #[CoversClass(Formattable::class)]
 #[UsesClass(HalResource::class)]
 #[UsesClass(UnexpectedResponseException::class)]
+#[UsesClass(TextFormat::class)]
 final class FormattableTest extends TestCase
 {
     public function testMapsAllFields(): void
@@ -24,7 +26,7 @@ final class FormattableTest extends TestCase
             'html' => '<strong>Hello</strong>',
         ]);
 
-        self::assertSame('markdown', $formattable->format);
+        self::assertSame(TextFormat::MARKDOWN, $formattable->format);
         self::assertSame('**Hello**', $formattable->raw);
         self::assertSame('<strong>Hello</strong>', $formattable->html);
     }
@@ -33,7 +35,7 @@ final class FormattableTest extends TestCase
     {
         $formattable = Formattable::fromApiResponse(['format' => 'plain']);
 
-        self::assertSame('plain', $formattable->format);
+        self::assertSame(TextFormat::PLAIN, $formattable->format);
         self::assertNull($formattable->raw);
         self::assertNull($formattable->html);
     }
@@ -66,5 +68,13 @@ final class FormattableTest extends TestCase
         $this->expectExceptionMessage('format');
 
         Formattable::fromApiResponse(['format' => 123]);
+    }
+
+    public function testUnknownFormatIsNullAndTextIsKept(): void
+    {
+        $formattable = Formattable::fromApiResponse(['format' => 'textile', 'raw' => 'some text']);
+
+        self::assertNull($formattable->format);
+        self::assertSame('some text', $formattable->raw);
     }
 }

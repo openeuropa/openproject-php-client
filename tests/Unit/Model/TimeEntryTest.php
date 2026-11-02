@@ -9,6 +9,7 @@ use OpenEuropa\OpenProjectClient\Http\HalResource;
 use OpenEuropa\OpenProjectClient\Model\CustomFields;
 use OpenEuropa\OpenProjectClient\Model\Formattable;
 use OpenEuropa\OpenProjectClient\Model\Link;
+use OpenEuropa\OpenProjectClient\Model\TextFormat;
 use OpenEuropa\OpenProjectClient\Model\TimeEntry;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\UsesClass;
@@ -19,6 +20,7 @@ use PHPUnit\Framework\TestCase;
 #[UsesClass(UnexpectedResponseException::class)]
 #[UsesClass(CustomFields::class)]
 #[UsesClass(Formattable::class)]
+#[UsesClass(TextFormat::class)]
 #[UsesClass(Link::class)]
 final class TimeEntryTest extends TestCase
 {
@@ -32,7 +34,7 @@ final class TimeEntryTest extends TestCase
 
         self::assertSame(42, $timeEntry->id);
         self::assertInstanceOf(Formattable::class, $timeEntry->comment);
-        self::assertSame('plain', $timeEntry->comment->format);
+        self::assertSame(TextFormat::PLAIN, $timeEntry->comment->format);
         self::assertSame('The force shall set me free.', $timeEntry->comment->raw);
         self::assertSame('<p>The force shall set me free.</p>', $timeEntry->comment->html);
         self::assertEquals(new \DateTimeImmutable('2023-01-11'), $timeEntry->spentOn);

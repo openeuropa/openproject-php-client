@@ -8,6 +8,7 @@ use OpenEuropa\OpenProjectClient\Exception\UnexpectedResponseException;
 use OpenEuropa\OpenProjectClient\Http\HalResource;
 use OpenEuropa\OpenProjectClient\Model\Formattable;
 use OpenEuropa\OpenProjectClient\Model\Link;
+use OpenEuropa\OpenProjectClient\Model\TextFormat;
 use OpenEuropa\OpenProjectClient\Model\Version;
 use OpenEuropa\OpenProjectClient\Model\VersionSharing;
 use OpenEuropa\OpenProjectClient\Model\VersionStatus;
@@ -19,6 +20,7 @@ use PHPUnit\Framework\TestCase;
 #[UsesClass(HalResource::class)]
 #[UsesClass(UnexpectedResponseException::class)]
 #[UsesClass(Formattable::class)]
+#[UsesClass(TextFormat::class)]
 #[UsesClass(Link::class)]
 #[UsesClass(VersionSharing::class)]
 #[UsesClass(VersionStatus::class)]
@@ -53,7 +55,7 @@ final class VersionTest extends TestCase
         self::assertEquals(new \DateTimeImmutable('2026-02-09'), $version->endDate);
         self::assertEquals(new \DateTimeImmutable('2026-02-06T09:30:49.157Z'), $version->createdAt);
         self::assertEquals(new \DateTimeImmutable('2026-02-10T09:53:21.620Z'), $version->updatedAt);
-        self::assertSame('plain', $version->description?->format);
+        self::assertSame(TextFormat::PLAIN, $version->description?->format);
 
         self::assertSame(3, $version->self?->id());
         self::assertSame(10, $version->definingProject?->id());

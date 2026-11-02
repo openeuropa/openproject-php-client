@@ -13,9 +13,13 @@ final readonly class Formattable
 {
     /**
      * @internal
+     *
+     * @param TextFormat|null $format
+     *   Null when the API sends a format the enum has no case for, such as
+     *   one a plugin adds.
      */
     public function __construct(
-        public string $format,
+        public ?TextFormat $format,
         public ?string $raw,
         public ?string $html,
     ) {
@@ -34,7 +38,7 @@ final readonly class Formattable
         $hal = new HalResource($data);
 
         return new self(
-            $hal->requireString('format'),
+            TextFormat::tryFrom($hal->requireString('format')),
             $hal->getString('raw'),
             $hal->getString('html'),
         );

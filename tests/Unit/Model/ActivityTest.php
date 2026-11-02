@@ -9,6 +9,7 @@ use OpenEuropa\OpenProjectClient\Http\HalResource;
 use OpenEuropa\OpenProjectClient\Model\Activity;
 use OpenEuropa\OpenProjectClient\Model\Formattable;
 use OpenEuropa\OpenProjectClient\Model\Link;
+use OpenEuropa\OpenProjectClient\Model\TextFormat;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
@@ -17,6 +18,7 @@ use PHPUnit\Framework\TestCase;
 #[UsesClass(HalResource::class)]
 #[UsesClass(UnexpectedResponseException::class)]
 #[UsesClass(Formattable::class)]
+#[UsesClass(TextFormat::class)]
 #[UsesClass(Link::class)]
 final class ActivityTest extends TestCase
 {
@@ -30,7 +32,7 @@ final class ActivityTest extends TestCase
 
         self::assertSame(156, $activity->id);
         self::assertSame(3, $activity->version);
-        self::assertSame('markdown', $activity->comment?->format);
+        self::assertSame(TextFormat::MARKDOWN, $activity->comment?->format);
         self::assertSame('A fresh standalone comment for the activity fixture', $activity->comment->raw);
         self::assertSame([], $activity->details);
         self::assertFalse($activity->internal);
@@ -54,6 +56,7 @@ final class ActivityTest extends TestCase
 
         self::assertCount(2, $activity->details);
         self::assertInstanceOf(Formattable::class, $activity->details[0]);
+        self::assertSame(TextFormat::CUSTOM, $activity->details[0]->format);
         self::assertSame('Status set to New', $activity->details[0]->raw);
         self::assertSame('Priority set to Normal', $activity->details[1]->raw);
     }

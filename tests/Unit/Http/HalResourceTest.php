@@ -9,12 +9,14 @@ use OpenEuropa\OpenProjectClient\Http\HalResource;
 use OpenEuropa\OpenProjectClient\Model\Formattable;
 use OpenEuropa\OpenProjectClient\Model\Link;
 use OpenEuropa\OpenProjectClient\Model\RelationType;
+use OpenEuropa\OpenProjectClient\Model\TextFormat;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
 #[CoversClass(HalResource::class)]
 #[UsesClass(Formattable::class)]
+#[UsesClass(TextFormat::class)]
 #[UsesClass(Link::class)]
 #[UsesClass(RelationType::class)]
 #[UsesClass(UnexpectedResponseException::class)]
@@ -341,7 +343,7 @@ final class HalResourceTest extends TestCase
         $description = $hal->formattable('description');
 
         self::assertInstanceOf(Formattable::class, $description);
-        self::assertSame('markdown', $description->format);
+        self::assertSame(TextFormat::MARKDOWN, $description->format);
         self::assertSame('Hello', $description->raw);
         self::assertSame('<p>Hello</p>', $description->html);
     }
@@ -372,6 +374,17 @@ final class HalResourceTest extends TestCase
         $hal = new HalResource(['description' => ['format' => 1, 'raw' => 'Hello']]);
 
         self::assertNull($hal->formattable('description'));
+    }
+
+    public function testFormattableKeepsTextWhenFormatUnknown(): void
+    {
+        $hal = new HalResource(['description' => ['format' => 'textile', 'raw' => 'Hello']]);
+
+        $description = $hal->formattable('description');
+
+        self::assertInstanceOf(Formattable::class, $description);
+        self::assertNull($description->format);
+        self::assertSame('Hello', $description->raw);
     }
 
     public function testLinkReturnsParsedLinkWhenPresent(): void

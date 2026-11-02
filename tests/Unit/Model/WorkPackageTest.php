@@ -9,6 +9,7 @@ use OpenEuropa\OpenProjectClient\Http\HalResource;
 use OpenEuropa\OpenProjectClient\Model\CustomFields;
 use OpenEuropa\OpenProjectClient\Model\Formattable;
 use OpenEuropa\OpenProjectClient\Model\Link;
+use OpenEuropa\OpenProjectClient\Model\TextFormat;
 use OpenEuropa\OpenProjectClient\Model\WorkPackage;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\UsesClass;
@@ -18,6 +19,7 @@ use PHPUnit\Framework\TestCase;
 #[UsesClass(HalResource::class)]
 #[UsesClass(UnexpectedResponseException::class)]
 #[UsesClass(Formattable::class)]
+#[UsesClass(TextFormat::class)]
 #[UsesClass(Link::class)]
 #[UsesClass(CustomFields::class)]
 final class WorkPackageTest extends TestCase
@@ -42,7 +44,7 @@ final class WorkPackageTest extends TestCase
         self::assertEquals(new \DateTimeImmutable('2026-06-18T09:44:04.846Z'), $workPackage->createdAt);
 
         self::assertInstanceOf(Formattable::class, $workPackage->description);
-        self::assertSame('markdown', $workPackage->description->format);
+        self::assertSame(TextFormat::MARKDOWN, $workPackage->description->format);
 
         self::assertInstanceOf(Link::class, $workPackage->status);
         self::assertSame('In progress', $workPackage->status->title);

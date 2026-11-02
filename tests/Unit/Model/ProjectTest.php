@@ -8,6 +8,7 @@ use OpenEuropa\OpenProjectClient\Exception\UnexpectedResponseException;
 use OpenEuropa\OpenProjectClient\Http\HalResource;
 use OpenEuropa\OpenProjectClient\Model\Formattable;
 use OpenEuropa\OpenProjectClient\Model\Project;
+use OpenEuropa\OpenProjectClient\Model\TextFormat;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
@@ -15,6 +16,7 @@ use PHPUnit\Framework\TestCase;
 #[CoversClass(Project::class)]
 #[UsesClass(HalResource::class)]
 #[UsesClass(Formattable::class)]
+#[UsesClass(TextFormat::class)]
 #[UsesClass(UnexpectedResponseException::class)]
 final class ProjectTest extends TestCase
 {
@@ -36,11 +38,11 @@ final class ProjectTest extends TestCase
         self::assertEquals(new \DateTimeImmutable('2014-05-21T08:51:20.396Z'), $project->updatedAt);
 
         self::assertInstanceOf(Formattable::class, $project->description);
-        self::assertSame('markdown', $project->description->format);
+        self::assertSame(TextFormat::MARKDOWN, $project->description->format);
         self::assertSame('Lorem **ipsum**', $project->description->raw);
 
         self::assertInstanceOf(Formattable::class, $project->statusExplanation);
-        self::assertSame('markdown', $project->statusExplanation->format);
+        self::assertSame(TextFormat::MARKDOWN, $project->statusExplanation->format);
         self::assertSame('Everything **fine**', $project->statusExplanation->raw);
     }
 
