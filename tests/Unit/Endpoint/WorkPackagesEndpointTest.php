@@ -24,6 +24,7 @@ use OpenEuropa\OpenProjectClient\Query\CollectionParams;
 use OpenEuropa\OpenProjectClient\Query\Filter;
 use OpenEuropa\OpenProjectClient\Query\FilterOperator;
 use OpenEuropa\OpenProjectClient\Query\FilterSet;
+use OpenEuropa\OpenProjectClient\Query\SortDirection;
 use OpenEuropa\OpenProjectClient\Tests\Support\MockClientTrait;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\UsesClass;
@@ -46,6 +47,7 @@ use PHPUnit\Framework\TestCase;
 #[UsesClass(Filter::class)]
 #[UsesClass(FilterOperator::class)]
 #[UsesClass(CollectionParams::class)]
+#[UsesClass(SortDirection::class)]
 #[UsesClass(WorkPackageInput::class)]
 #[UsesClass(WorkPackageLinks::class)]
 final class WorkPackagesEndpointTest extends TestCase
@@ -136,7 +138,7 @@ final class WorkPackagesEndpointTest extends TestCase
 
         $results = $endpoint->listPage(
             new FilterSet(new Filter('status', FilterOperator::EQUAL, ['1'])),
-            new CollectionParams(pageSize: 2, sortBy: [['id', 'asc']]),
+            new CollectionParams(pageSize: 2, sortBy: [['id', SortDirection::ASC]]),
         );
 
         $uri = (string) $this->lastRequest()->getUri();

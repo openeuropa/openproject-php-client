@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace OpenEuropa\OpenProjectClient\Tests\Unit\Query;
 
 use OpenEuropa\OpenProjectClient\Query\CollectionParams;
+use OpenEuropa\OpenProjectClient\Query\SortDirection;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
 #[CoversClass(CollectionParams::class)]
+#[UsesClass(SortDirection::class)]
 final class CollectionParamsTest extends TestCase
 {
     public function testAllFieldsSetProducesCorrectQueryParams(): void
@@ -16,7 +19,7 @@ final class CollectionParamsTest extends TestCase
         $params = new CollectionParams(
             offset: 2,
             pageSize: 25,
-            sortBy: [['name', 'asc'], ['id', 'desc']],
+            sortBy: [['name', SortDirection::ASC], ['id', SortDirection::DESC]],
             groupBy: 'status',
             showSums: true,
         );

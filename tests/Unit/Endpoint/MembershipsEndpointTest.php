@@ -21,6 +21,7 @@ use OpenEuropa\OpenProjectClient\Query\CollectionParams;
 use OpenEuropa\OpenProjectClient\Query\Filter;
 use OpenEuropa\OpenProjectClient\Query\FilterOperator;
 use OpenEuropa\OpenProjectClient\Query\FilterSet;
+use OpenEuropa\OpenProjectClient\Query\SortDirection;
 use OpenEuropa\OpenProjectClient\Tests\Support\MockClientTrait;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\UsesClass;
@@ -38,6 +39,7 @@ use PHPUnit\Framework\TestCase;
 #[UsesClass(Filter::class)]
 #[UsesClass(FilterOperator::class)]
 #[UsesClass(CollectionParams::class)]
+#[UsesClass(SortDirection::class)]
 #[UsesClass(Form::class)]
 #[UsesClass(SchemaProperty::class)]
 #[UsesClass(ValidationError::class)]
@@ -102,7 +104,7 @@ final class MembershipsEndpointTest extends TestCase
 
         $results = $endpoint->listPage(
             new FilterSet(new Filter('project', FilterOperator::EQUAL, ['1'])),
-            new CollectionParams(pageSize: 20, sortBy: [['id', 'asc']]),
+            new CollectionParams(pageSize: 20, sortBy: [['id', SortDirection::ASC]]),
         );
 
         $uri = (string) $this->lastRequest()->getUri();

@@ -14,8 +14,8 @@ final readonly class CollectionParams
      *   1-based page number.
      * @param int|null $pageSize
      *   Number of results per page.
-     * @param list<array{0: string, 1: string}>|null $sortBy
-     *   Sort criteria as pairs, e.g. [['id', 'asc']].
+     * @param list<array{0: string, 1: SortDirection}>|null $sortBy
+     *   Sort criteria as field and direction pairs, e.g. [['id', SortDirection::ASC]].
      * @param string|null $groupBy
      *   Field name to group results by.
      * @param bool|null $showSums

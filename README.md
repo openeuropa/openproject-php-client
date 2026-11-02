@@ -198,11 +198,12 @@ as one a plugin registers, pass the API's operator string instead.
 
 ```php
 use OpenEuropa\OpenProjectClient\Query\CollectionParams;
+use OpenEuropa\OpenProjectClient\Query\SortDirection;
 
 $params = new CollectionParams(
     offset: 2,               // 1-based page number
     pageSize: 25,
-    sortBy: [['id', 'desc']],
+    sortBy: [['id', SortDirection::DESC]],
     groupBy: 'status',
     showSums: true,
 );

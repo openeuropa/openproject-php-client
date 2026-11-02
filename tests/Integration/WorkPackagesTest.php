@@ -8,10 +8,13 @@ use OpenEuropa\OpenProjectClient\Exception\ConflictException;
 use OpenEuropa\OpenProjectClient\Exception\NotFoundException;
 use OpenEuropa\OpenProjectClient\Exception\ValidationException;
 use OpenEuropa\OpenProjectClient\Model\Form\Form;
+use OpenEuropa\OpenProjectClient\Model\WorkPackage;
 use OpenEuropa\OpenProjectClient\Model\WorkPackageInput;
+use OpenEuropa\OpenProjectClient\Query\CollectionParams;
 use OpenEuropa\OpenProjectClient\Query\Filter;
 use OpenEuropa\OpenProjectClient\Query\FilterOperator;
 use OpenEuropa\OpenProjectClient\Query\FilterSet;
+use OpenEuropa\OpenProjectClient\Query\SortDirection;
 use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\Attributes\DataProvider;
 
@@ -108,6 +111,36 @@ final class WorkPackagesTest extends IntegrationTestCase
         }
 
         self::assertNotEmpty($results->elements[0]->subject);
+    }
+
+    #[DataProvider('sortDirections')]
+    public function testListPageSortsInTheGivenDirection(SortDirection $direction): void
+    {
+        $results = $this->client->workPackages()->listPage(
+            null,
+            new CollectionParams(pageSize: 5, sortBy: [['id', $direction]]),
+        );
+        $ids = array_map(static fn(WorkPackage $workPackage): int => $workPackage->id, $results->elements);
+        self::assertGreaterThan(1, count($ids), 'The instance must have at least two work packages.');
+
+        $expected = $ids;
+        if ($direction === SortDirection::ASC) {
+            sort($expected);
+        } else {
+            rsort($expected);
+        }
+        self::assertSame($expected, $ids);
+    }
+
+    /**
+     * @return array<string, array{SortDirection}>
+     */
+    public static function sortDirections(): array
+    {
+        return [
+            'ascending' => [SortDirection::ASC],
+            'descending' => [SortDirection::DESC],
+        ];
     }
 
     public function testAllYieldsWorkPackagesWithIdAndSubject(): void
