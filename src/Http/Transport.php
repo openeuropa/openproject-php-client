@@ -77,6 +77,8 @@ final class Transport
     /**
      * Performs an authenticated GET and returns the raw response body stream.
      *
+     * A redirect is followed once, without authentication.
+     *
      * @param string $path
      *   Resource path relative to the API root.
      *
@@ -86,9 +88,18 @@ final class Transport
     public function getRaw(string $path): StreamInterface
     {
         $request = $this->requestFactory->createRequest('GET', $this->apiRoot . ltrim($path, '/'));
-        $request = $this->authentication->authenticate($request);
+        $response = $this->send($this->authentication->authenticate($request));
 
-        return $this->dispatch($request)->getBody();
+        // An instance with remote attachment storage redirects to a presigned
+        // URL, which carries its own credentials. The API token must not
+        // reach the storage host.
+        $status = $response->getStatusCode();
+        $location = $response->getHeaderLine('Location');
+        if ($status >= 300 && $status < 400 && $location !== '') {
+            $response = $this->send($this->requestFactory->createRequest('GET', $location));
+        }
+
+        return $this->ensureSuccess($response)->getBody();
     }
 
     /**
@@ -238,15 +249,33 @@ final class Transport
      */
     private function dispatch(RequestInterface $request): ResponseInterface
     {
+        return $this->ensureSuccess($this->send($request));
+    }
+
+    /**
+     * Sends the request, throwing on a network failure.
+     *
+     * @throws \OpenEuropa\OpenProjectClient\Exception\ApiUnreachableException
+     */
+    private function send(RequestInterface $request): ResponseInterface
+    {
         try {
-            $response = $this->httpClient->sendRequest($request);
+            return $this->httpClient->sendRequest($request);
         } catch (ClientExceptionInterface $exception) {
             throw new ApiUnreachableException(
                 sprintf('Could not reach the OpenProject API: %s', $exception->getMessage()),
                 previous: $exception,
             );
         }
+    }
 
+    /**
+     * Returns the response, throwing when its status is not 2xx.
+     *
+     * @throws \OpenEuropa\OpenProjectClient\Exception\OpenProjectException
+     */
+    private function ensureSuccess(ResponseInterface $response): ResponseInterface
+    {
         $status = $response->getStatusCode();
         if ($status < 200 || $status >= 300) {
             throw $this->mapErrorResponse($status, (string) $response->getBody());

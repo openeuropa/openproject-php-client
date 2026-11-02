@@ -6,6 +6,7 @@ namespace OpenEuropa\OpenProjectClient\Tests\Unit\Http;
 
 use GuzzleHttp\Psr7\FnStream;
 use GuzzleHttp\Psr7\HttpFactory;
+use GuzzleHttp\Psr7\Response;
 use OpenEuropa\OpenProjectClient\Authentication\ApiKeyAuthentication;
 use OpenEuropa\OpenProjectClient\Exception\ApiErrorException;
 use OpenEuropa\OpenProjectClient\Exception\ApiException;
@@ -126,6 +127,48 @@ final class TransportTest extends TestCase
             $request->getHeaderLine('Authorization'),
         );
         self::assertSame('', $request->getHeaderLine('Accept'));
+    }
+
+    public function testGetRawFollowsARedirectWithoutTheApiToken(): void
+    {
+        $transport = $this->createTransport('http://example.test');
+        $location = 'https://storage.example.test/bucket/3?X-Amz-Signature=abc';
+        $this->mockHandler->append(new Response(302, ['Location' => $location]));
+        $this->queueJsonResponse('raw file bytes');
+
+        $stream = $transport->getRaw('attachments/3/content');
+
+        self::assertSame('raw file bytes', (string) $stream);
+        self::assertCount(2, $this->requestHistory);
+        $request = $this->lastRequest();
+        self::assertSame('GET', $request->getMethod());
+        self::assertSame($location, (string) $request->getUri());
+        self::assertFalse($request->hasHeader('Authorization'));
+    }
+
+    public function testGetRawMapsAnErrorFromTheRedirectTarget(): void
+    {
+        $transport = $this->createTransport('http://example.test');
+        $this->mockHandler->append(new Response(302, ['Location' => 'https://storage.example.test/bucket/3']));
+        $this->mockHandler->append(new Response(403, [], '<Error><Code>AccessDenied</Code></Error>'));
+
+        $this->expectException(ForbiddenException::class);
+
+        $transport->getRaw('attachments/3/content');
+    }
+
+    public function testGetRawThrowsOnARedirectWithoutLocation(): void
+    {
+        $transport = $this->createTransport('http://example.test');
+        $this->mockHandler->append(new Response(302));
+
+        try {
+            $transport->getRaw('attachments/3/content');
+            self::fail('Expected an ApiErrorException.');
+        } catch (ApiErrorException $exception) {
+            self::assertSame(302, $exception->httpStatus);
+        }
+        self::assertCount(1, $this->requestHistory);
     }
 
     public function testThrowsWhenTheResponseBodyIsNotValidJson(): void
