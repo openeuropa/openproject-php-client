@@ -30,5 +30,27 @@ final class FilterOperatorTest extends TestCase
         self::assertSame('t+', FilterOperator::N_DAYS_FROM_NOW->value);
         self::assertSame('o', FilterOperator::OPEN->value);
         self::assertSame('c', FilterOperator::CLOSED->value);
+        self::assertSame('&=', FilterOperator::EQUAL_ALL->value);
+        self::assertSame('eq_with_descendants', FilterOperator::EQUAL_WITH_DESCENDANTS->value);
+        self::assertSame('>t-', FilterOperator::LESS_THAN_N_DAYS_AGO->value);
+        self::assertSame('<t-', FilterOperator::MORE_THAN_N_DAYS_AGO->value);
+        self::assertSame('<t+', FilterOperator::LESS_THAN_N_DAYS_FROM_NOW->value);
+        self::assertSame('>t+', FilterOperator::MORE_THAN_N_DAYS_FROM_NOW->value);
+        self::assertSame('l', FilterOperator::LOCKED->value);
+        self::assertSame('ow', FilterOperator::MANUALLY_SORTED->value);
+        self::assertSame('relates', FilterOperator::RELATES->value);
+        self::assertSame('precedes', FilterOperator::PRECEDES->value);
+        self::assertSame('follows', FilterOperator::FOLLOWS->value);
+        self::assertSame('blocks', FilterOperator::BLOCKS->value);
+        self::assertSame('blocked', FilterOperator::BLOCKED->value);
+        self::assertSame('duplicates', FilterOperator::DUPLICATES->value);
+        self::assertSame('duplicated', FilterOperator::DUPLICATED->value);
+        self::assertSame('includes', FilterOperator::INCLUDES->value);
+        self::assertSame('partof', FilterOperator::PART_OF->value);
+        self::assertSame('requires', FilterOperator::REQUIRES->value);
+        self::assertSame('required', FilterOperator::REQUIRED->value);
+        self::assertSame('parent', FilterOperator::PARENT->value);
+        self::assertSame('child', FilterOperator::CHILD->value);
+        self::assertSame('children', FilterOperator::CHILDREN->value);
     }
 }

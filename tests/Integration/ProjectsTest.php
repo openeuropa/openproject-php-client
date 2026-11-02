@@ -69,6 +69,15 @@ final class ProjectsTest extends IntegrationTestCase
         self::assertNotEmpty($projects[0]->name);
     }
 
+    public function testListPageAcceptsEqualAllOperator(): void
+    {
+        $results = $this->client->projects()->listPage(
+            new FilterSet(new Filter('userAction', FilterOperator::EQUAL_ALL, ['projects/create', 'users/read'])),
+        );
+
+        self::assertGreaterThanOrEqual(0, $results->total);
+    }
+
     public function testAllGeneratorWithPageSizeZeroYieldsNothingAndStops(): void
     {
         $projects = iterator_to_array($this->client->projects()->all(params: new CollectionParams(pageSize: 0)));

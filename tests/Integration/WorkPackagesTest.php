@@ -9,7 +9,11 @@ use OpenEuropa\OpenProjectClient\Exception\NotFoundException;
 use OpenEuropa\OpenProjectClient\Exception\ValidationException;
 use OpenEuropa\OpenProjectClient\Model\Form\Form;
 use OpenEuropa\OpenProjectClient\Model\WorkPackageInput;
+use OpenEuropa\OpenProjectClient\Query\Filter;
+use OpenEuropa\OpenProjectClient\Query\FilterOperator;
+use OpenEuropa\OpenProjectClient\Query\FilterSet;
 use PHPUnit\Framework\Attributes\CoversNothing;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 #[CoversNothing]
 final class WorkPackagesTest extends IntegrationTestCase
@@ -32,6 +36,67 @@ final class WorkPackagesTest extends IntegrationTestCase
         $results = $this->client->workPackages()->listPage();
 
         self::assertGreaterThanOrEqual(0, $results->total);
+    }
+
+    /**
+     * @param list<string>|null $values
+     */
+    #[DataProvider('filterOperators')]
+    public function testListPageAcceptsFilterOperator(string $name, FilterOperator $operator, ?array $values): void
+    {
+        $results = $this->client->workPackages()->listPage(new FilterSet(new Filter($name, $operator, $values)));
+
+        self::assertGreaterThanOrEqual(0, $results->total);
+    }
+
+    /**
+     * @return array<string, array{string, FilterOperator, list<string>|null}>
+     */
+    public static function filterOperators(): array
+    {
+        return [
+            'less than n days ago' => ['createdAt', FilterOperator::LESS_THAN_N_DAYS_AGO, ['5']],
+            'more than n days ago' => ['createdAt', FilterOperator::MORE_THAN_N_DAYS_AGO, ['5']],
+            'less than n days from now' => ['dueDate', FilterOperator::LESS_THAN_N_DAYS_FROM_NOW, ['5']],
+            'more than n days from now' => ['dueDate', FilterOperator::MORE_THAN_N_DAYS_FROM_NOW, ['5']],
+            'locked' => ['version', FilterOperator::LOCKED, null],
+            'manually sorted' => ['manualSort', FilterOperator::MANUALLY_SORTED, []],
+        ];
+    }
+
+    #[DataProvider('relationOperators')]
+    public function testListPageAcceptsRelationOperatorOnRelatableFilter(FilterOperator $operator): void
+    {
+        $workPackage = $this->createWorkPackage();
+
+        $results = $this->client->workPackages()->listPage(
+            new FilterSet(new Filter('relatable', $operator, [(string) $workPackage->id])),
+        );
+
+        self::assertGreaterThanOrEqual(0, $results->total);
+    }
+
+    /**
+     * @return array<string, array{FilterOperator}>
+     */
+    public static function relationOperators(): array
+    {
+        return [
+            'relates' => [FilterOperator::RELATES],
+            'precedes' => [FilterOperator::PRECEDES],
+            'follows' => [FilterOperator::FOLLOWS],
+            'blocks' => [FilterOperator::BLOCKS],
+            'blocked' => [FilterOperator::BLOCKED],
+            'duplicates' => [FilterOperator::DUPLICATES],
+            'duplicated' => [FilterOperator::DUPLICATED],
+            'includes' => [FilterOperator::INCLUDES],
+            'part of' => [FilterOperator::PART_OF],
+            'requires' => [FilterOperator::REQUIRES],
+            'required' => [FilterOperator::REQUIRED],
+            'parent' => [FilterOperator::PARENT],
+            'child' => [FilterOperator::CHILD],
+            'children' => [FilterOperator::CHILDREN],
+        ];
     }
 
     public function testListPageElementsHaveIdAndSubject(): void
